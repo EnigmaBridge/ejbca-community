@@ -8,4 +8,5 @@ build/
 *~
 *.swp
 *.iml
+.pc
 
