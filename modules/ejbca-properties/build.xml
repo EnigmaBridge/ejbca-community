@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ejbca-properties" default="build-jar">
+    <description>
+            The EJBCA properties files
+    	
+    		This module contains the .properties files used by ejbca-ejb and
+    		ejbca-ws-ejb
+    </description>
+
+	<dirname property="this.dir" file="${ant.file.ejbca-properties}"/>
+	<import file="${this.dir}/../build.xml"/>
+	
+	<property name="build.dir" location="${this.dir}/build"/>
+	<property name="src.dir" location="${this.dir}/src"/>
+	<property name="internalresources.base.dir" location="${ejbca.home}/src"/>
+
+    <target name="build-jar" description="Build this module">
+    	<copy todir="${build.dir}" file="${ejbca.home}/src/internal.properties">
+    		<filterchain>
+    			<replacestring from="#datasource.jndi-name-prefix=" to="datasource.jndi-name-prefix=${datasource.jndi-name-prefix}"/>
+    		</filterchain>
+    	</copy>
+		<!-- We deliberately do not include defaultvalues.properties in ejbca-properties.jar because it is included in ejbca-util.jar -->    	
+    	<dirname file="${mod.ejbca-properties.lib}" property="mod.ejbca-properties.lib.dir"/>
+    	<mkdir dir="${mod.ejbca-properties.lib.dir}" />
+        <jar destfile="${mod.ejbca-properties.lib}">
+        	<fileset dir="${build.dir}"/>
+            <fileset dir="${ejbca.home}" includes="conf/**/*.properties" excludes="conf/plugins/* conf/batchtool.properties"/>
+            <fileset dir="${ejbca.home}/src/upgrade"/>
+            <fileset dir="${internalresources.base.dir}" includes="*resources/*.properties"/>
+        </jar>
+    </target>
+    
+    <target name="clean" description="Clean up this module">
+		<delete dir="${build.dir}" />
+		<delete file="${mod.ejbca-properties.lib}" />
+    </target>
+</project>
+

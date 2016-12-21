@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app id="scep_web_1" version="2.5"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+    http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>SCEP</display-name>
+    
+    <servlet>
+        <servlet-name>ScepServlet</servlet-name>
+        <servlet-class>org.ejbca.ui.web.protocol.ScepServlet</servlet-class>
+    </servlet>
+ 
+    <servlet-mapping>
+      <servlet-name>ScepServlet</servlet-name>
+      <!--  <url-pattern>/scep/pkiclient.exe</url-pattern>  -->
+      <url-pattern>/scep/*</url-pattern>
+    </servlet-mapping>
+
+
+<!--  
+   <resource-ref id="EJBResRef_1">
+      <res-ref-name>@datasource.jndi-name-prefix@@datasource.jndi-name@</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+   </resource-ref>
+-->
+   
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>restricted methods</web-resource-name>
+            <url-pattern>/*</url-pattern>
+            <http-method>PUT</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>OPTIONS</http-method>
+            <http-method>TRACE</http-method>
+        </web-resource-collection>
+        <auth-constraint />
+    </security-constraint> 
+    
+    <ejb-local-ref>
+        <description>An EJB that can provide references to all other SSBs to avoid this kind of declarations</description>
+        <ejb-ref-name>EjbBridgeSession</ejb-ref-name>
+        <local>org.ejbca.core.ejb.EjbBridgeSessionLocal</local>
+        <ejb-link>EjbBridgeSessionBean</ejb-link>
+    </ejb-local-ref>
+
+<!--
+  <ejb-local-ref id="EJBLocalRef_1">
+    <ejb-ref-name>ejb/CAAdminSessionLocal</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local-home>org.ejbca.core.ejb.ca.caadmin.ICAAdminSessionLocalHome</local-home>
+    <local>org.ejbca.core.ejb.ca.caadmin.ICAAdminSessionLocal</local>
+    <ejb-link>CAAdminSession</ejb-link>
+  </ejb-local-ref>
+  <ejb-local-ref id="EJBLocalRef_2">
+    <ejb-ref-name>ejb/RSASignSessionLocal</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local-home>org.ejbca.core.ejb.ca.sign.ISignSessionLocalHome</local-home>
+    <local>org.ejbca.core.ejb.ca.sign.ISignSessionLocal</local>
+    <ejb-link>RSASignSession</ejb-link>
+  </ejb-local-ref>
+-->
+</web-app>

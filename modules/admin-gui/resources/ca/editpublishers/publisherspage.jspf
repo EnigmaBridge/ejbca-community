@@ -1,0 +1,86 @@
+<%
+  TreeMap publishernames = ejbcawebbean.getInformationMemory().getAuthorizedPublisherNames(); 
+
+%>
+
+
+<h1><%= ejbcawebbean.getText("MANAGEPUBLISHERS") %><%= ejbcawebbean.getHelpReference("/adminguide.html#LDAP%20and%20Publishers") %></h1>
+
+<!-- <a onclick='displayHelpWindow("<%= ejbcawebbean.getHelpfileInfix("ca_help.html") + "#publishers"%>")'>
+    <u><%= ejbcawebbean.getText("HELP") %></u> </a> -->
+
+<form name="editpublishers" method="post"  action="<%= THIS_FILENAME%>">
+
+  <input type="hidden" name='<%= publisherhelper.ACTION %>' value='<%=publisherhelper.ACTION_EDIT_PUBLISHERS %>'>
+
+  <table class="list">
+  <% if(publisherhelper.publisherexists){ 
+        publisherhelper.publisherexists= false;%> 
+    <tr> 
+      <td width="40%" class="alert"><%= ejbcawebbean.getText("PUBLISHERALREADY") %></td>
+      <td width="60%"></td>
+    </tr>
+  <% } %>
+  <% if(publisherhelper.publisherdeletefailed){
+        publisherhelper.publisherdeletefailed = false; 
+        %> 
+    <tr> 
+      <td width="40%" class="alert"><%= ejbcawebbean.getText("COULDNTDELETEPUBLISHER") %></td>
+      <td width="60%"></td>
+    </tr>
+  <% } %>
+    <tr> 
+      <td width="40%"><h3><%= ejbcawebbean.getText("LISTOFPUBLISHERS") %></h3></td>
+      <td width="60%"></td>
+    </tr>
+    <tr> 
+      <td width="40%">
+        <select name="<%=EditPublisherJSPHelper.SELECT_PUBLISHER%>" style="width: 50em" size="15"  >
+          <% Iterator iter = publishernames.keySet().iterator();
+             while(iter.hasNext()){
+               String publishername = (String) iter.next(); %>
+               
+            <option value="<c:out value="<%= publishername %>"/>">
+                <c:out value="<%= publishername %>"/> 
+             </option>
+          <%}%>
+        </select>
+      </td>
+      <td width="60%"></td>
+    </tr>
+    <tr> 
+      <td width="40%"> 
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td align="left">
+              <input type="submit" name="<%= publisherhelper.BUTTON_EDIT_PUBLISHER %>" value="<%= ejbcawebbean.getText("EDITPUBLISHER") %>">
+            </td>
+            <td align="center">
+              &nbsp;
+            </td>
+            <td align="right">
+              <input class="buttonstyle" type="submit" onClick="return confirm('<%= ejbcawebbean.getText("AREYOUSURE",true) %>');" name="<%= publisherhelper.BUTTON_DELETE_PUBLISHER %>" value="<%= ejbcawebbean.getText("DELETEPUBLISHER") %>">
+            </td>
+          </tr>
+        </table> 
+      </td>
+      <td width="60%"></td>
+    </tr>
+  </table>
+
+  <table class="actions">
+    <tr> 
+      <td width="100%"><h3><%= ejbcawebbean.getText("ADDPUBLISHER") %></h3></td>
+    </tr>
+    <tr> 
+      <td width="100%"> 
+        <input type="text" name="<%= publisherhelper.TEXTFIELD_PUBLISHERNAME%>" size="40" maxlength="255" title="<%= ejbcawebbean.getText("FORMAT_ID_STR") %>"> 
+        <input type="submit" name="<%= publisherhelper.BUTTON_ADD_PUBLISHER%>" onClick='return checkfieldforlegalchars("document.editpublishers.<%=publisherhelper.TEXTFIELD_PUBLISHERNAME%>","<%= ejbcawebbean.getText("ONLYCHARACTERS",true) %>")' value="<%= ejbcawebbean.getText("ADD") %>">&nbsp;&nbsp;&nbsp;
+        <input type="submit" name="<%= publisherhelper.BUTTON_RENAME_PUBLISHER%>" onClick='return checkfieldforlegalchars("document.editpublishers.<%=publisherhelper.TEXTFIELD_PUBLISHERNAME%>","<%= ejbcawebbean.getText("ONLYCHARACTERS",true) %>")' value="<%= ejbcawebbean.getText("RENAME") %>">&nbsp;&nbsp;&nbsp;
+        <input type="submit" name="<%= publisherhelper.BUTTON_CLONE_PUBLISHER%>" onClick='return checkfieldforlegalchars("document.editpublishers.<%=publisherhelper.TEXTFIELD_PUBLISHERNAME%>","<%= ejbcawebbean.getText("ONLYCHARACTERS",true) %>")' value="<%= ejbcawebbean.getText("USESELECTEDASTEMPLATE") %>">
+      </td>
+    </tr>
+  </table>
+
+</form>
+

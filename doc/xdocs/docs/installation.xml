@@ -1,0 +1,1329 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Installation</title>
+  </properties>
+<body>
+
+<section name="EJBCA Installation">
+<p>
+EJBCA is a fully functional Certificate Authority built in Java.
+Based on JEE5 technology it constitutes a robust, high
+performance and component based CA. Both flexible and platform independent,
+EJBCA can be used standalone or integrated in any JEE5 application.
+</p><p>
+The EJBCA Homepage can be found at <a href="http://www.ejbca.org/">http://www.ejbca.org</a>.
+Information about contacting the EJBCA team, contributing to
+EJBCA, etc can be found through the Homepage.
+</p><p>
+More documentation can also be found on the homepage and on the wiki site <a href="http://wiki.ejbca.org/">http://wiki.ejbca.org/</a>.
+</p><p>
+EJBCA is completely written in Java and should as such run on any
+platform where a JEE server runs. Development and testing is
+performed on Linux and Windows platforms.
+</p></section>
+
+<section name="Definitions and conventions">
+<p>
+In this document we use X_HOME to indicate the file system directory location of application X.
+For example EJBCA_HOME is the home directory of the unzipped EJBCA distribution.
+APPSRV_HOME is used interchangeably with for example JBOSS_HOME and is the home directory of the
+application server.
+</p>
+</section>
+
+<section name="Security">
+<p>
+Security is discussed below in the chapter about configuration in the User Guide
+and in <a href="security.html">Security</a>.
+</p><p>
+Please take a minute to thoroughly consider the security
+implications and make sure you know what you are doing when you are setting
+up a CA.
+</p><p>
+Whether running running on Linux or Windows, you should consider using multiple levels of firewalls.
+The first level of firewall could be a host based firewall such as IPTables in Linux or a similar approach on windows.
+See the Security document for information about ports that are used.
+</p>
+<p>
+Don't forget to configure your application server for security! See
+<a href="security.html">security</a>.
+Security is CRITICAL for a CA.
+</p>
+</section>
+
+<section name="Upgrade">
+<p>
+See EJBCA_HOME/doc/RELEASE_NOTES and UPGRADE for information about upgrading from an 
+earlier version of EJBCA.
+</p></section>
+
+<section name="Ubuntu quick start">
+<note>
+The current installation procedures for JBoss 7 / EAP 6 uses the JBoss CLI to configure the application server.
+The JBoss CLI turns out not to be well suited for automated deploys however, so functions can break. 
+For example if the machine has too few cores CLI connections will mysteriously terminate and report errors.
+<br/>
+Contributions to improve the automated installation on JBoss 7 / EAP 6 are welcome.
+</note>
+<p>This section provides a fast way to get installed and running for a test using Ubuntu Linux. 
+To get more information a about configuration options etc (there are plenty), you should follow the regular <strong>Installation guide</strong> below.
+</p><p>
+This quick start guide assumes EJBCA 6.0, JBoss 7.1.1.Final and Java 7, but other version should also be possible to use by just replacing the versions.
+We also assume installation is made in a user account with username "user". In your environment simply replace user with the username you are using.
+<br/><b>Note</b> that the quick install will create a H2 database as ~/ejbcadb. If you run this multiple times, delete this file in order to remove the old database.
+</p>
+<ol>
+<li>Install Ubuntu 12.04 server x64, default config, only OpenSSH server selected (or other Ubuntu of your choice, for example Ubuntu Desktop).
+<ul>
+<li>Add user with username 'user' during install. The path /home/user means the user's home directory below.</li>
+</ul>
+</li>
+<li>Open a new terminal "ejbca".</li>
+<li>Install needed software from Ubuntu repositories.
+<ul>
+<li>sudo apt-get install openjdk-7-jdk ant ant-optional unzip ntp</li>
+</ul>
+</li>
+<li>Install software not in Ubuntu repositories, JBoss 7.1.1.Final and EJBCA 6.0.<br/>
+<ul>
+<li>wget http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip</li>
+<li>wget http://sourceforge.net/projects/ejbca/files/ejbca6/ejbca_6_0_3/ejbca_6_0_3.zip</li>
+<li>unzip jboss-as-7.1.1.Final.zip</li>
+<li>unzip ejbca_6_0_3.zip</li>
+</ul>
+</li>
+<li>Configure EJBCA so it can find the application server (JBoss).
+<ul>
+<li>echo "appserver.home=/home/user/jboss-as-7.1.1.Final" >> ejbca_6_0_3/conf/ejbca.properties</li>
+</ul>
+</li>
+<li>Open new terminal "jboss" and start JBoss.<br/>
+<ul>
+<li>jboss-as-7.1.1.Final/bin/standalone.sh</li>
+</ul>
+</li>
+<li>Build and deploy EJBCA to JBoss.
+<ul>
+<li>cd ejbca_6_0_3</li>
+<li>ant deploy (just press enter if questions show up)</li>
+<li>(now wait a little for JBoss to reload)</li>
+</ul>
+</li>
+<li>Run install (in terminal "ejbca") to create initial Management CA and TLS keystores.<br/>
+<ul>
+<li>ant install (choose all default values)</li>
+</ul>
+<b>Note:</b> If ant install fails with errors this is typically due to deployment or start of JBoss that did not complete successfully. You will need to look in the server logs to find out
+why it will not start correctly in your environment, See the <a href="adminguide.html#Troubleshooting">Troubleshooting</a> section for more information.
+</li>
+<li>Go back to terminal "jboss" and restart JBoss.<br/>
+<ul>
+<li>ctrl-c</li>
+<li>jboss-as-7.1.1.Final/bin/standalone.sh</li>
+</ul>
+</li>
+<li>Copy /home/user/ejbca_6_0_3/p12/superadmin.p12 to admin desktop machine and import in web browser.</li>
+<li>Open URL https://server:8443/ejbca, where 'server' is the servers name/ip.</li>
+<li>Configure JBoss for logging, see <a href="#JBoss%207%20and%20EAP%206%20logging">JBoss 7 and EAP 6 logging</a> for instructions.</li>
+</ol>
+<p>Done!</p>
+<p>After installation <strong>do not</strong> forget to <strong>secure</strong> your installation as described in <a href="security.html#Securing JBoss">securing JBoss</a>.</p>
+</section>
+
+<section name="RedHat Enterprise Linux quick start">
+<p>This section provides a fast way to get installed and running for a test using RedHat Enterprise Linux. 
+To get more information a about configuration options etc (there are plenty), you should follow the regular <strong>Installation guide</strong> below.
+</p>
+<p>
+This quick start guide makes the same assumptions and uses the same procedures as the Ubuntu quick start guide.
+RHEL by default only installs with a 'root' account. Therefore we start by creating a user account with username "user". In your environment simply replace user with the username you are using.
+</p>
+<ol>
+<li>Install RHEL 6.4 x86_64, default config, 'Basic Server'.</li>
+<ul>
+<li>Don't forget to 'Configure Network' at the screen where you set the server hostname.</li>
+<li>Make sure the hostname you set is present in /etc/hosts, or in DNS (or use the default localhost). If not JBoss will not start.</li>
+<li>Log in as root.</li>
+<li>Test that hostname is reachable.</li>
+<ul>
+<li>ping hostname (where hostname is the name you set during installation)</li>
+</ul>
+<li>Add user with username 'user'. The path /home/user means the user's home directory below.</li>
+<ul>
+<li>adduser user</li>
+<li>passwd user</li>
+</ul>
+<li>Enable EJBCA ports in the firewall.</li>
+<ul>
+<li>system-config-firewall-tui</li>
+<li>Add port 8080, protocol tcp</li>
+<li>Add port 8442, protocol tcp</li>
+<li>Add port 8443, protocol tcp</li>
+</ul>
+</ul>
+<li>Install needed software from RedHat repositories, still logged in as root (assumes RHEL 6.4 DVD in cdrom).</li>
+<ul>
+<li>vi /etc/yum.repos.d/install_dvd.repo</li>
+</ul>
+<pre>
+[INSTALL_DVD] 
+name=Installation DVD 
+baseurl=file:///media/Server 
+enabled=1 
+gpgcheck=0 
+</pre>
+<ul>
+<li>mount /dev/cdrom /media/</li>
+<li>yum install ant ant-nodeps</li>
+<li>umount /media/</li>
+</ul>
+This will install OpenJDK and apache ant.
+<br/>Unfortunately the ant in RHEL 6 is too old (v1.7.1) so you need download a fresh version of ant. 
+<br/>RHEL 7 contains a fresh version of ant, so the following is not needed for RHEL 7.
+<li><a href="http://ant.apache.org/bindownload.cgi">Download apache ant</a> and set it up to be first in the path. run 'ant -version' to verify that you have a recent ant version.</li>
+<li>Log out from root account and log in as 'user' in a new terminal 'ejbca'.</li>
+<li>After this follow the same steps, 4-11 as in the 'Ubuntu quick start' above.</li>
+</ol>
+
+
+<p>Done!</p>
+<p>After installation <strong>do not</strong> forget to <strong>secure</strong> your installation as described in <a href="security.html#Securing JBoss">securing JBoss</a>.</p>
+</section>
+
+<section name="Installation guide">
+<p>
+If you want to get started really quick, and is using Ubuntu Linux, you can follow the <a href="#Ubuntu%20quick%20start">Ubuntu or RedHat quick start</a> guide above.
+This guide describes how to install on the most well supported application server JBoss AS. EJBCA might however also run on Glassfish and Weblogic, but your
+mileage may vary (see further below for details). 
+</p>
+<subsection name="Prerequisites">
+<note>
+EJBCA makes use of strong crypto and keystore passwords longer than 7 characters.
+For this to work you must install the 'Unlimited Strength Jurisdiction Policy Files' for JDK.
+The policy files can be found at the same place as the JDK download at
+<a href="http://www.oracle.com/technetwork/java/javase/downloads/">Oracle</a>. The text
+"Using exportable cryptography" is shown on the first page in the Admin GUI if you fail to
+install this package. Further information on this can be found in the Oracle documentation on
+the JCE.
+</note>
+<p>
+Needed to build and run are:</p>
+<ul>
+<li>JDK 7 OpenJDK or Oracle JDK (<a href="http://www.oracle.com/technetwork/java/javase/downloads/">download</a>), if available OpenJDK is recommended.</li>
+<li><i>Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files</i> for your JDK (<a href="http://www.oracle.com/technetwork/java/javase/downloads/">download for Oracle's JDK</a>, not required for OpenJDK).</li>
+<li>JBoss Application Server 7.1.x or later or JBoss EAP 6 or later (<a href="http://www.jboss.org/jbossas/downloads">download</a>, note that the absolute latest may not always be tested).</li>
+<li>Apache Ant 1.8 or later to build (<a href="http://ant.apache.org/">download</a>). Note that javascript support may be needed in ant for some components.</li>
+</ul>
+ <p>
+ Windows/Unix: 
+ When we describe command line commands below we use
+ unix notation, e.g. 'ejbca.sh' for the executable command files.
+ The same command files are available for windows as cmd-files,
+ e.g. 'ejbca.cmd.'
+</p>
+<p>If you are unsure what version of EJBCA you are running, type 'ant ejbcaversion' in the EJBCA_HOME directory.</p>
+<note>
+There is a bug in JBoss causing issues when using Oracle JDK on JBoss 5. See this <a href="faq.html#jboss600">FAQ entry</a> for more information.
+</note>
+</subsection>
+
+<subsection name="Configure">
+
+<subsubsection name="Configuration files">
+<p>The configuration of EJBCA that can not be configured in the Admin GUI is located in properties files in the <i>conf</i> directory.
+All properties are documented in sample files and to configure an option you copy the sample file, for example copy <i>conf/ejbca.properties.sample</i> to <i>conf/ejbca.properties</i>
+and configure <i>conf/ejbca.properties</i>. You should at least familiarize your self with the options in <i>conf/install.properties</i>, <i>conf/ejbca.properties</i> and <i>conf/cesecore.properties</i>.
+Most options, except those in install.properties can be changed after installation.
+</p> 
+</subsubsection>
+
+<subsubsection name="EJBCA configuration">
+<p>
+1) Copy conf/install.properties.sample to conf/install.properties, conf/ejbca.properties.sample to conf/ejbca.properties and conf/cesecore.properties.sample to conf/cesecore.properties 
+Customize if needed. The default values works fine for a test installation. 
+</p>
+<p>
+You must configure 'appserver.home' in ejbca.properties to point to your application server directory. You find examples of how
+to do this in ejbca.properties.sample.<br/> This makes libraries from the application server available to EJBCA during the build.
+</p>
+<p>
+If you are only testing EJBCA at this stage and is not setting up a production environment, you can skip the rest of this step.
+There are default configuration options, that should work in a test environment, for everything.
+</p>
+<p>
+<ul>
+<li>Customize the CA properties in conf/ejbca.properties if you need to do so.
+For production use you need to do this, don't forget to edit
+passwords to be secure and secret. Keep conf/ejbca.properties as secret as possible.
+DO NOT forget the passwords, if you need to re-install the software sometime.</li>
+<li>To use a hard ca token from start change ca.tokentype, ca.tokenpassword and ca.tokenproperties in install.properties. You also need to add the appropriate values to the ca.tokenproperties file for the HSM. Read the HSM documentation for the right values.</li>
+<li>
+To put the initial superadmin certificate on a smartcard, set superadmin.batch=false in
+web.properties. Enroll from public web after the installation is complete, as you would
+with any other smartcard user. Username is &quot;superadmin&quot; and password is superadmin.password
+from web.properties.
+</li>
+<li>If you are deploying on JBoss EAP you probably want to look at the property 'jboss.config' as well, since 'production' may be the default server to start on JBoss EAP (depends on your configuration).</li>
+</ul>
+Do the same with other configuration files that you might want to customize. The default values often works fine and is a safe bet if you are unsure.
+Most options are well documented in the sample files.
+<ul>
+<li>Customize the database in conf/database.properties if needed. 
+But easiest thing is to keep the default as it is,
+it will use the JBoss embedded HSQLDB and everything will be easier for you.
+For production use you should use a real database instead of the embedded one.</li>
+</ul>
+</p>
+</subsubsection>
+
+<subsubsection name="Configure application server">
+<p>Due to differences, and bugs, in different application servers you have to configure your application server with some settings, and EJBCA with server specific settings.
+<br/>See the <a href="#Application servers">application servers</a> section.</p>
+<note name="JBoss 7 logging">
+On JBoss 7 or EAP 6 you need to enable logging in order to see anything in the log files.
+See <a href="#JBoss%207%20and%20EAP%206%20logging">JBoss 7 and EAP 6 logging</a> for instructions.
+</note>
+</subsubsection>
+
+<subsubsection name="Considerations">
+<p>
+When everything is prepared, there are a few things to
+configure before starting your applications and running everything in a production environment.
+</p><p>
+In a production environment you should use something like the following structure:
+<ol>
+<li>Go through the install process creating an AdminCA. Use a simple DN. 
+This CA should only used to issue the administrator certificates. Not published in LDAP. 
+If you want to use an HSM for this CA, see the documentation in the configuration file conf/ejbca.properties.sample.</li>
+<li>Once installed, create all your REAL CAs using the admin-GUI. Now you can use the certificate 
+profiles etc that you like. These certificates can be published in LDAP.
+See doc/howto/HOWTO-multiplecas.txt for example of a detailed configuration guide.</li>
+</ol>
+</p><p>
+In a production environment you should use something else than the default Hypersonic database that comes 
+with JBoss for the reasons:
+<ol>
+<li>Hypersonic database is in-memory, which means that over time it will consume more memory. If a large
+number of certificates is issued, it will become an issue after a while.</li>
+<li>Hypersonic does not support full SQL, in particular ALTER statements. When a new version of EJBCA is 
+released we can not create scripts that updates the database if some tables changed. This will make 
+upgrades much much harder.</li>
+</ol>
+</p><p>
+For information about installing JDBC drivers for other databases, see the document <i>'doc/howto/HOWTO-database.txt'</i>
+in the distribution.
+</p>
+</subsubsection>
+
+</subsection>
+
+<subsection name="Install">
+<p>
+Note that the installation must be done with a user with privileges to write to APPSRV_HOME and sub directories. 
+</p><p>
+1) Set the property 'appserver.home' in conf/ejbca.properties to where your JBoss is installed,
+examples:
+</p> 
+<source>
+appserver.home=/opt/jboss-7.1.1.Final
+</source>
+<source>
+appserver.home=/opt/jboss-5.1.0.GA
+</source>
+<p>Also make sure the right java tools (javac/keytool) are available in your system PATH, ie. /usr/local/jdk1.7.0_25/bin.
+</p>
+<p>
+2) Open a console (terminal) and start JBoss.
+You can start JBoss with the normal command 'run.sh/cmd' (JBoss 5) or 'standalone.sh' (JBoss 7) from APPSRV_HOME/bin. You should see JBoss
+picking up everything and deploying the ear without errors.
+</p><p>
+3) Open a console and type:
+</p>
+<source>
+ant deploy
+</source>
+<p>it will compile and build EJBCA and deploy it to JBoss. You will be prompted to enter the value for database.password if it has
+not already been defined in database.properties. 
+</p><p>
+4) Type:
+</p>
+<source>
+ant install
+</source>
+<p>The command will generate all certificates, keys, etc needed to run with an initial CA, deploy the necessary datasources and services, and configure the servlet container to use the generated keystore and truststore files (which are also copied in the process).
+You will find admin keys in ${ejbca.home}/p12. (do not delete those files!)
+<br/>The command 'ant install' is only run once, when the CA is first installed. It creates lots of things in the database, 
+and can not be run again (it will give an error if you try).
+<ul>
+<li>tomcat.jks is for the Servlet container (don't bother with it)</li>
+<li>truststore.jks is for the Servlet container (don't bother with it)</li>
+<li>superadmin.p12 should be imported in your browser, that's your administration certificate.</li>
+</ul>
+</p>
+<note>
+Instead of creating an initial Admin CA and issuing administrator certificates from that, you can install using administrator certificates from an already existing external CA.
+See <a href="userguide.html#Administrators%20issued%20by%20external%20CAs">Administrators issued by external CAs</a> for more information. This would replace step 4-8, but instead require other steps.
+</note>
+<p>
+5) Restart JBoss (Ctrl+C if you run JBoss in the foreground in a terminal)
+</p><p>
+6) Import the certificate from EJBCA_HOME/p12/superadmin.p12 in your web browser. 
+This is the super administrators certificate used to access the admin GUI. 
+Other administrators with specific privileges can be created later on.
+The default password for superadmin.p12 is ejbca, and is configured in web.properties.
+</p><p>
+7) Go to https://localhost:8443/ejbca/ to access the Admin GUI, or http://localhost:8080/ejbca for the public web pages.
+</p><p>
+If you create other CAs that you want to add as acceptable CAs in the SSL server configuration, 
+or if you renew the CA certificate, you can install any CA certificate in the SSL server configuration afterwards 
+with the following command:
+</p>
+<source>
+ant -Dca.name="My CA Name" javatruststore
+</source>
+<p>
+What this does in the background is that it adds the CA certificate to p12/truststore.jks and copies this file
+to JBOSS_HOME/server/default/conf/keystore, where the SSL keystores are located.
+</p>
+<p>
+You must stop and start JBoss after doing this.
+</p>
+</subsection>
+
+</section>
+
+<section name="Upgrade and reconfigure">
+<p>
+When upgrading EJBCA, read doc/UPGRADE for instructions related to different versions, and upgrading between them.
+Upgrading withing patch verson (i.e. 6.0.3->6.04) are usually plug-in upgrades (you have to transfer your configuration though).</p>
+<p>When you upgrade, or simply change a configuration setting in properties files, you do not need to fully re-install EJBCA, or re-configure the application server.
+You simply want to deploy a new EJBCA application (ejbca.ear) to the application server. This is done with a simple command:
+</p>
+<source>
+ant clean deployear
+</source>
+<p>
+No need to run a full 'ant deploy'. This command cleans previous build and builds a new ejbca.ear file that is deployed (to JBoss). No re-configuration of the application server (datasource, TLS etc) is done.
+</p>
+<p>
+For easy upgrades, keeping personal configuration between versions, you should consider using the <a href="adminguide.html#Customizing%20EJBCA">ejbca-custom feature</a>. 
+</p>
+</section>
+
+<section name="Application servers">
+<p>
+EJBCA should run on any on any JEE5 compliant application server in theory. In reality it doesn't, because dofferent application servers have different tweaks for the standard.
+It is not enough to pass JEE validation in order to run onn all application servers.
+<ol>
+<li>JBoss 7.1.1.Final / JBoss EAP 6: Works well. Community and professional support available.</li>
+<li>JBoss 5.1.0.GA / JBoss EAP 5.1: Works well. Community and professional support available.</li>
+<li>Glassfish 3.1.1: Not supported yet.</li>
+<li>Glassfish 2.1.1: Works with older versions of EJBCA (before v6).</li>
+<li>WebLogic: Does not work. Used to work with earlier versions of EJBCA.</li>
+<li>WebSphere: Does not work. Has worked with one version of EJBCA in the past.</li>
+<li>Geronimo: Not supported yet.</li>
+<li>JoNaS: Not supported yet.</li>
+</ol>
+</p>
+
+<subsection name="JBoss">
+<note>JBoss 5 and 7 / EAP 6 are the official well tested platforms for EJBCA 6.x. Most of the development is done against JBoss.</note>
+
+<subsubsection name="JBoss 5 and OracleJVM bug">
+<p>
+If you are using Oracle's JDK and JBoss 5.1.x you need to copy EJBCA_HOME/lib/bc*.jar to JBOSS_HOME/server/default/lib/.
+Remember this when it's time for upgrades! This is a bug tracked by JBoss as <a href="https://issues.jboss.org/browse/JBAS-7882">JBAS-7882</a>. 
+OpenJDK works just fine though, such as the OpenJDK distributed with RedHat, Ubuntu, Debian etc.
+<p>
+The same bug is present on JBoss 6.0, but the workaround is different, the same workaround as for JBoss 5.1 does not work with JBoss 6.
+The only way to work around this with Oracle JDK and JBoss 6 is to copy ejbca/lib/bc*.jar to $JAVA_HOME/jre/lib/ext, and to remove lib/bc*.jar from the deployed ejbca.ear file.
+See the <a href="https://issues.jboss.org/browse/JBAS-7882">JBAS-7882</a> issue for more information.</p>
+</p>
+</subsubsection>
+<subsubsection name="JBoss 5.1 WS WSDL location">
+<p>
+On JBoss 5.1.x (not on JBoss 6.0.x) the WSDL location gets incorrectly generated by default. To fix this (see JBoss settings during install) edit: 
+</p> 
+<source>
+ APPSRV_HOME/server/default/deployers/jbossws.deployer/META-INF/jboss-beans.xml
+</source>
+<p> 
+and comment out the line:
+</p> 
+<source>
+&lt;property name="webServiceHost"&gt;${jboss.bind.address}&lt;/property&gt;
+</source> 
+<p>
+to force the location to be generated with info from the WSDL request. 
+If this is not done you will get "HTTP 302 Moved Temporarily" errors when running the WS client.  
+</p>
+</subsubsection>
+<subsubsection name="JBoss 5 and multiple mail configuration">
+<p>
+JBoss 5.1.x has a bug with multiple mail configurations. If you will be using mail notifications see conf/mail.properties.sample
+for configuration instructions. Tracked by JBoss as <a href="https://issues.jboss.org/browse/JBPAPP-3766">JBPAPP-3766</a>.
+This should be resolved in JBoss EAP 5.1.
+</p>
+</subsubsection>
+<subsubsection name="JBoss 5 Memory configuration">
+<p>
+The memory parameters for Java is by default configured very low, for JBoss it is set by default to allow
+a maximum memory usage of 512mb, which is sufficient for most configurations. We still recommend that you check your 
+configuration of java memory arguments to set them to
+at least '-Xms128m -Xmx512m -XX:MaxPermSize=256m'. 
+For JBoss this is done in APPSRV_HOME/bin/run.conf where the line:
+</p>
+<source>
+JAVA_OPTS="-server -Xms128m -Xmx512m -XX:MaxPermSize=256m"
+</source>
+<p>
+can be changed.
+</p>
+</subsubsection>
+<subsubsection name="JBoss 5 using Tomcat native SSL connector">
+<p>Instead of the regular Tomcat SSL connector you can configure to use the native connector, which is supposed to 
+improve performance.
+</p><p>
+See documentation in src/appserver/tomcat60jboss5, and the JBoss documentation for installing the native connector.
+</p> 
+</subsubsection>
+
+<subsubsection name="JBoss 7/EAP 6 General Notes">
+<p>
+Version JBoss AS 7.1.1.Final, EAP 6.1 and EAP 6.2 (and possibly later ones) has been tested with EJBCA, and it should work. There's a couple of caveats and notes you should be aware of:
+<ul>
+<li>Start and connect with the JBoss 7/EAP6 cli like this:
+<pre>
+./jboss-cli.sh
+connect
+</pre>
+</li>
+<li>If you're having problem with HornetQ start-up, try switching to Java NIO with the following commands in JBoss CLI administration tool:
+<pre>
+/subsystem=messaging/hornetq-server=default:write-attribute(name=journal-type,value=NIO)
+:reload
+</pre>
+</li>
+<li>You don't need to start/stop JBoss 7, deployment is done with a live system (in fact you should have the JBoss 7 running at all times).</li>
+</ul>
+</p>
+</subsubsection>
+
+<subsubsection name="JBoss 7/EAP 6 JDBC Drivers and Data Sources">
+<p>
+In JBoss 7/EAP6 it is not enough to just drop the JAR archive with a database JDBC driver into the deployments directory. Instead you will have to perform the following steps (for MySQL):
+<ol>
+<li>Create the necessary directories (relative to JBoss 7 base directory):
+<br/>
+On JBoss 7.1.1 or EAP 6.0:
+<pre>
+mkdir -p modules/com/mysql/main/
+</pre>
+On JBoss 7.2 or EAP 6.1/6.2:
+<pre>
+mkdir -p modules/system/layers/base/com/mysql/main/
+</pre>
+Or for MariaDB, mariadb-java-client-1.1.5.jar:
+<pre>
+mkdir -p modules/org/mariadb/main/
+</pre>
+On JBoss 7.2 or EAP 6.1/6.2:
+<pre>
+mkdir -p modules/system/layers/base/org/mariadb/main/
+</pre>
+</li>
+<li>Place the mysql.jar or mariadb.jar file in the directory you just created.</li>
+<li>Create, in the created directory, the JDBC module configuration file module.xml with the following contents (replace mysql.jar with the full name of your jar file for example mysql-connector-java-5.1.18-bin.jar):
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;module xmlns=&quot;urn:jboss:module:1.0&quot; name=&quot;com.mysql&quot;&gt;
+  &lt;resources&gt;
+    &lt;resource-root path=&quot;mysql.jar&quot;/&gt;
+  &lt;/resources&gt;
+  &lt;dependencies&gt;
+    &lt;module name=&quot;javax.api&quot;/&gt;
+    &lt;module name=&quot;javax.transaction.api&quot;/&gt;
+  &lt;/dependencies&gt;
+&lt;/module&gt;
+<!-- This is the original of above XML text.
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.0" name="com.mysql">
+  <resources>
+    <resource-root path="mysql.jar"/>
+  </resources>
+  <dependencies>
+    <module name="javax.api"/>
+    <module name="javax.transaction.api"/>
+  </dependencies>
+</module>
+-->
+</pre>
+Or for MariaDB, mariadb-java-client-1.1.5.jar:
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;module xmlns=&quot;urn:jboss:module:1.0&quot; name=&quot;org.mariadb&quot;&gt;
+  &lt;resources&gt;
+    &lt;resource-root path=&quot;mariadb-java-client-1.1.5.jar&quot;/&gt;
+  &lt;/resources&gt;
+  &lt;dependencies&gt;
+    &lt;module name=&quot;javax.api&quot;/&gt;
+    &lt;module name=&quot;javax.transaction.api&quot;/&gt;
+  &lt;/dependencies&gt;
+&lt;/module&gt;
+</pre>
+
+</li>
+<li>Register the driver by running the following two commands in the JBoss 7 CLI administration tool:
+<pre>
+/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)
+:reload
+</pre>
+Or for MariaDB, mariadb-java-client-1.1.5.jar:
+<pre>
+/subsystem=datasources/jdbc-driver=org.mariadb.jdbc.Driver:add(driver-name=org.mariadb.jdbc.Driver,driver-module-name=org.mariadb,driver-xa-datasource-class-name=org.mariadb.jdbc.MySQLDataSource)
+:reload
+</pre>
+</li>
+</ol>
+</p>
+<p>For PostgreSQL you would use the following values instead:
+<pre>
+mkdir -p modules/system/layers/base/org/postgresql/main/
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;module xmlns=&quot;urn:jboss:module:1.0&quot; name=&quot;org.postgresql&quot;&gt;
+  &lt;resources&gt;
+    &lt;resource-root path=&quot;postgresql-9.1-903.jdbc4.jar&quot;/&gt;
+  &lt;/resources&gt;
+  &lt;dependencies&gt;
+    &lt;module name=&quot;javax.api&quot;/&gt;
+    &lt;module name=&quot;javax.transaction.api&quot;/&gt;
+  &lt;/dependencies&gt;
+&lt;/module&gt;
+</pre>
+<pre>
+/subsystem=datasources/jdbc-driver=org.postgresql.Driver:add(driver-name=org.postgresql.Driver,driver-module-name=org.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)
+:reload
+</pre>
+</p>
+<p>Datasources are normally created automatically by EJBCA during deployment and installation. Here we describe how to create a datasource in JBoss7/EAP6 for reference.
+The examples are for installing a MariaDB datasource using the jboss-cli with the driver installed as described above. </p>
+<p>A normal datasource:</p>
+<source>
+data-source add --name=ejbcads --driver-name="org.mariadb.jdbc.Driver" --connection-url="jdbc:mysql://127.0.0.1:3306/ejbca" --jndi-name="java:/EjbcaDS" --use-ccm=true --driver-class="org.mariadb.jdbc.Driver" --user-name="ejbca" --password="ejbca" --validate-on-match=true --background-validation=false --prepared-statements-cache-size=50 --share-prepared-statements=true --min-pool-size=5 --max-pool-size=150 --pool-prefill=true --transaction-isolation=TRANSACTION_READ_COMMITTED --check-valid-connection-sql="select 1;"
+</source>
+<p>A no-tx / jta="false" datasource (OCSP publisher and Unid):</p>
+<source>
+data-source add --name=unidds --jta=false --driver-name="org.mariadb.jdbc.Driver" --connection-url="jdbc:mysql://127.0.0.1:3306/unid" --jndi-name="java:/UnidDS" --use-ccm=true --driver-class="org.mariadb.jdbc.Driver" --user-name="uniduser" --password="unidpass" --validate-on-match=true --background-validation=false --prepared-statements-cache-size=50 --share-prepared-statements=true --min-pool-size=5 --max-pool-size=150 --pool-prefill=true --transaction-isolation=TRANSACTION_READ_COMMITTED --check-valid-connection-sql="select 1;"
+</source>
+<p>(note that 'select 1' must be different for DB2 and Oracle)</p>
+</subsubsection>
+
+<subsubsection name="JBoss 7/EAP 6 PKCS11">
+<p>
+JBoss 7/EAP 6 isolates away most sun classes. That means you will not be able to send certificates through remote EJB calls, and will not be able to use the Sun PKCS#11 provider.
+These classes can be made available by editing the file
+<i>modules/sun/jdk/main/module.xml (JBoss 7.1/EAP6.0)</i> and adding the following packages to the list of system export paths:
+</p>
+<source>
+&lt;path name="sun/security/x509"/&gt;
+&lt;path name="sun/security/pkcs11"/&gt;
+&lt;path name="sun/security/pkcs11/wrapper"/&gt;
+</source>
+<p>
+This will allow an application to use these internal Sun/Oracle/OpenJDK classes.
+</p>
+<p>This is not needed in JBoss EAP 6.1/JBoss 7.2, because the two first packages are exported by default since <a href="https://issues.jboss.org/browse/JBPAPP6-1748">JBPAPP6-1748</a>.
+One package is however needed still. In JBoss EAP 6.1 the file is located in <i>modules/system/layers/base/sun/jdk/main/module.xml</i>.
+</p>
+<source>
+&lt;path name="sun/security/pkcs11/wrapper"/&gt;
+</source>
+</subsubsection>
+
+<subsubsection name="JBoss 7/EAP 6 CMP TCP">
+<p>Note that the TCP transport of the CMP protocol is deprecated in the standard draft. TCP transport may be removed in future EJBCA releases.</p>
+<p>
+JBoss 7/EAP 6 isolates away  most sun classes. This means that the CMP TCP library is not able to get system properties.
+The needed classes can be made available by editing the file
+<i>modules/sun/jdk/main/module.xml (JBoss 7.1/EAP6.0) or modules/system/layers/base/sun/jdk/main/module.xml (JBoss 7.2/EAP6.1))</i> and adding the following package to the list of system export paths:
+</p>
+<source>
+&lt;path name="sun/security/action"/&gt;
+</source>
+</subsubsection>
+
+<subsubsection name="JBoss 7 and EAP 6 logging">
+<p>
+Logging can be configured using the CLI:
+</p>
+<source>
+ /system-property=org.jboss.as.logging.per-deployment:add(value=false)
+ /subsystem=logging/logger=org.ejbca:add
+ /subsystem=logging/logger=org.ejbca:write-attribute(name=level, value=DEBUG)
+ /subsystem=logging/logger=org.cesecore:add
+ /subsystem=logging/logger=org.cesecore:write-attribute(name=level, value=DEBUG)
+</source>
+<p>The per-deployment feature was added in EAP 6.0.0 and is not present in GA 7.1.</p>
+<p>In JBoss EAP 6 you can also configure a completely custom Log4J configuration by:</p>
+<ul>
+<li>Do _not_ set 'org.jboss.as.logging.per-deployment' to false above, by default it's value is true, but you can also set it manually to true.</li>
+<li>Create a $EJBCA_HOME/conf/log4j-jbosseap6.xml, you can use log4j-jbosseap6.xml.sample as a template. Set paths to the desired log files.</li>
+<li>Redeploy with 'ant clean deployear'.</li>
+</ul>
+</subsubsection>
+
+<subsubsection name="JBoss 7/EAP 6 URI encoding and WSDL location">
+<p><i>This section is a reference section, the configurations here are done automatically in JBoss 7 by the 'ant deploy' command in EJBCA.</i></p>
+<p>The following configuration is recommended to be able to use international characters during certificate and CRL download:</p>
+<source>
+ /system-property=org.apache.catalina.connector.URI_ENCODING:add(value=UTF-8)
+ /system-property=org.apache.catalina.connector.USE_BODY_ENCODING_FOR_QUERY_STRING:add(value=true)
+</source>
+<p>
+On JBoss 7.1.x (and EAP 6.0.x) the WSDL location gets incorrectly generated by default (JBoss bind address, plain http). This will cause the WS client to not work.
+This can be corrected using the JBoss CLI (the change requires a reload of JBoss server):
+</p>
+<source>
+/subsystem=webservices:write-attribute(name=wsdl-host, value=jbossws.undefined.host)
+:reload
+</source> 
+<p>
+to force the location to be generated with info from the WSDL request. 
+If this is not done you will get SSL errors about missing client certificate, or "HTTP 302 Moved Temporarily" errors when running the WS client.  
+</p>
+</subsubsection>
+
+<subsubsection name="JBoss Mail TLS configuration">
+<p>
+There are at least two ways to use TLS for SMTP connection:
+</p>
+<ul>
+<li>SMTP STARTTLS</li>
+<li>TLS required</li>
+</ul>
+<p>The first method can be configured with the setting <i>mail.smtp.starttls.enable</i> in conf/mail.properties.
+Since mail configuration is done differently in different versions of JBoss we only provide guidance for the second version. There are two options that might be needed:
+</p>
+<ul>
+<li>mail.smtp.ssl.enable=true</li>
+<li>mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory</li>
+</ul>
+<p>For JBoss 5 these are added, commented out in src/appserver/jboss/ejbca-mail-service.xml, for JBoss 7 they should be set using the JBoss command line admin tool.</p>
+</subsubsection>
+
+<subsubsection name="JBoss Service Timer persistence">
+<p>EJBCA uses EJB timers to run services regularly (if you have services configured). By default JBoss persists timers in an internal, in memory, database. 
+If you run services very often this can under some circumstances fill up the memory causing the server to be non-operational due to out ofmemory errors.</p>
+<p>EJBCA does not need persistent timers since they are initialized during startup. Therefore it is recommended to run JBoss with non-persistent timers, something that can be configured.
+</p>
+<p>
+<u>JBoss 5 configuration</u>:
+<br/>
+<ul>
+<li>Edit jboss/server/default/deploy/ejb2-timer-service.xml</li>
+<li>Remove the commenting around the following line, so the NoopPersistencePolicy is enabled:<br/>
+<pre>
+&lt;mbean code="org.jboss.ejb.txtimer.NoopPersistencePolicy" name="jboss.ejb:service=EJBTimerService,persistencePolicy=noop"/&gt;
+</pre>
+</li>
+<li>Edit the EJBTimerService and change 'PersistencePolicy' from database to noop.
+<br/>
+<pre>
+&lt;mbean code="org.jboss.ejb.txtimer.EJBTimerServiceImpl" name="jboss.ejb:service=EJBTimerService"&gt;
+  &lt;attribute name="TimerIdGeneratorClassName">org.jboss.ejb.txtimer.UUIDTimerIdGenerator&lt;/attribute&gt;
+  &lt;attribute name="TimedObjectInvokerClassName">org.jboss.ejb.txtimer.TimedObjectInvokerImpl&lt;/attribute&gt;
+  &lt;depends optional-attribute-name="RetryPolicy">jboss.ejb:service=EJBTimerService,retryPolicy=fixedDelay&lt;/depends&gt;
+  &lt;depends optional-attribute-name="PersistencePolicy">jboss.ejb:service=EJBTimerService,persistencePolicy=noop&lt;/depends&gt;
+  &lt;depends optional-attribute-name="TransactionManagerFactory" proxy-type="org.jboss.tm.TransactionManagerFactory"&gt;
+    jboss:service=TransactionManager
+  &lt;/depends&gt;
+&lt;/mbean&gt;
+</pre>
+</li>
+</ul>
+</p>
+<p>Note that this only seems to work with JBoss EAP 5. Using JBoss 5.1.0.GA memory will continue to be consumed and you will have to implement some workaround (like restarting the appserver deleting the hypersonic database every few days).
+</p>
+<p>
+<u>JBoss 7/EAP6 configuration</u>:
+</p><p>
+JBoss 7 does not use the in memory database to persist timers, but instead stores them in <i>jboss/standalone/data/timer-service-data/ejbca.ejbca-ejb.ServiceSessionBean</i>.
+This is supposed to ensure that it will not fill up the memory as in JBoss 5.
+<br/>
+If persisted timers needs to be removed in JBoss 7 the directory <i>jboss/standalone/data/timer-service-data</i> can simply be deleted.
+</p>
+</subsubsection>
+
+<subsubsection name="XKMS">
+<p>Please do <strong>not</strong> use XKMS. It is a rather old, generally unused protocol with poor interoperability and client suppport. There are many better options, like CMP, available.</p>
+<p>EJBCA may deprecate XKMS in the future, and it is a best effort, cummunity based, support only.</p>
+<p>If you decide to use XKMS anyhow you may stumble into some issues.</p>
+<p>
+<u>JBoss 7 / EAP 6</u>:
+To run XKMS there are three conditions for running XKMS:
+<ul>
+<li>Use JBoss EAP 6.1 (at least).</li>
+<li>Use JDK 7.</li>
+<li>Export some internal sun classes by adding the below to modules/system/layers/base/sun/jdk/main/module.xml in JBoss EAP 6.</li>
+</ul>
+</p>
+<source>
+&lt;path name="com/sun/xml/internal/bind/marshaller"/&gt;
+&lt;path name="com/sun/xml/bind/marshaller"/&gt;
+&lt;path name="sun/security/action"/&gt;
+</source>
+<p>
+<u>JBoss EAP 5.1</u>:
+In JBoss EAP 5.1 it seems neccessary to use the Java parameter "-Dorg.jboss.ws.enable_doctype_decl=true" to the JBoss startup parameters, otherwise EJBCA will fail to deploy.
+Add the parameter to bin/run.sh for example.
+</p>
+
+</subsubsection>
+
+<subsubsection name="JBoss 7 and Oracle JDK BC issues">
+<p>
+In EJBCA 6.0.4 <a href="https://jira.primekey.se/browse/ECA-3371">ECA-3371</a> solved the issue of deploying with OracleJDK.
+</p>
+</subsubsection>
+
+</subsection>
+
+<subsection name="Glassfish">
+<note>EJBCA 5.x has never been officially deployed on Glassfish yet. 
+The below notes can work as hints for anyone interested working on Glassfish support.</note>
+
+<p>
+EJBCA 4.x has been tested with Glassfish v2.1.1.
+</p>
+<p>Don't forget to install 'Unlimited Strength Jurisdiction Policy Files' for Java.</p>
+
+<subsubsection name="Using Derby database (Glassfish built in)">
+<p>
+<ol>
+<li>Start JavaDB and create the database instance.
+<pre>
+  cd $APPSRV_HOME
+  bin/asadmin start-database
+  export DERBY_HOME=$APPSRV_HOME/javadb
+  javadb/bin/ij   
+  ij> connect 'jdbc:derby://localhost:1527/ejbca;create=true';
+  ij> quit;
+</pre>
+</li>
+<li>Start the application server:
+<pre>
+bin/asadmin start-domain
+</pre>
+  The default user/password for the web console is admin/adminadmin.<br/>
+  Access the Glassfish admin console at http://127.0.0.1:4848/.</li><br/>
+<li>Create a connection pool for your database. In the admin console this is done in Resources->JDBC->Connection Pools.<br/>
+    When adding a Derby Pool use values: Name=EjbcaPool, Type=javax.sql.DataSource, Vendor=JavaDB.<br/>
+    Properties: user=APP, password=APP, DatabaseName=ejbca<br/>
+    Save and use the Ping-button for the pool. If you get 'Parameter wrong for this method : off', go to Additional Properties and delete 'Ssl'.<br/>
+    Command line alternative:
+    <pre>
+    bin/asadmin create-jdbc-connection-pool --datasourceclassname org.apache.derby.jdbc.ClientDataSource --property user=APP:password=APP:DatabaseName=ejbca:ServerName=localhost:port=1527 EjbcaPool
+    </pre>
+</li>    
+<li>Create a datasource called jdbc/EjbcaDS, in the admin console this is done in Resources->JDBC->JDBC Resources. Use the connection pool you just created.<br/>
+    Command line alternative:
+    <pre>
+    bin/asadmin create-jdbc-resource --connectionpoolid EjbcaPool jdbc/EjbcaDS
+    </pre>
+    If security is enabled you have to add "--user admin --passwordfile pwd.txt" as command line parameters where pwd.txt contains 'AS_ADMIN_PASSWORD=adminadmin'.
+</li>
+</ol>
+</p>
+</subsubsection>
+
+<subsubsection name="Using MySQL database">
+<p>
+<ol>
+<li>Start the database and create the MySQL database "ejbca". Grant privileges to the "ejbca" user with password "ejbca_pwd" (don't use this password in production!)</li>
+<li>Copy the MySQL JDBC JAR to APPSRV_HOME/lib/</li>
+<li>Start the application server:
+<pre>
+asadmin start-domain
+</pre>
+</li>
+<li>Add the Connection Pool and DataSource from the Glassfish Admin Console (see "Derby") or use command line:
+<pre>
+asadmin create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jdbc2.optional.MysqlDataSource --property user=ejbca:password=ejbca_pwd:DatabaseName=ejbca:ServerName=localhost:port=3306 EjbcaPool
+asadmin create-jdbc-resource --connectionpoolid EjbcaPool jdbc/EjbcaDS
+</pre>
+</li>
+</ol>
+</p>
+</subsubsection>
+
+<subsubsection name="Configure EJBCA">
+<p>
+<ol>
+<li>Edit conf/ejbca.properties, you should at least set appserver.home</li>
+<li>Edit conf/log4j-glassfish.xml, to configure EJBCA logging.</li>
+<li>Edit conf/database.properties, you should at least set the database settings for your chosen database. Derby and MySQL has been tested with Glassfish.</li>
+<li>Edit conf/web.properties, you should set desired values and also the http/s ports (default 8080 and 8181) for your installation.</li>
+</ol>
+</p>
+</subsubsection>    
+
+<subsubsection name="Deploy and setup">
+<p>
+<ol>
+<li>If your appserver does not requires a password for deployment (asadmin deploy) you can build and deploy EJBCA with<br/>
+<pre>
+ant clean
+ant bootstrap
+</pre>
+or otherwise with an additional step.
+<pre>
+ant clean
+ant
+asadmin deploy --precompilejsp $EJBCA_HOME/dist/ejbca.ear
+</pre>
+You can check that everything was ok in APPSRV_HOME/domains/domain1/logs/server.log.</li><br/>
+<li>Install EJBCA
+<pre>
+ant install
+</pre>
+</li>
+<li>Configure SSL in Glassfish<br/>
+    Configuration->HTTP Service->HTTP Listeners->http-listener-2, SSL tab
+    <ul>
+       <li>Client Authentication: Enabled</li>
+       <li>Certificate Nickname: s1as (get alias name by running 'keytool -list -v -keystore $APPSRV_HOME/domains/domain1/config/keystore.jks', password changeit)</li>
+       <li>SSL3: Enabled</li>
+       <li>Ciphers Suite: All</li>
+    </ul>
+    Add CA certificate to cacerts file:
+    <ul>
+       <pre>
+       cd $EJBCA_HOME
+       keytool -exportcert -keystore p12/truststore.jks -file p12/managementca.der -storepass changeit -alias managementca
+       </pre>
+    </ul>
+    Install the CA certificate in the application servers truststore.<br/>
+    On Glassfish open source:
+    <ul>
+       <pre>
+       keytool -delete -keystore  $APPSRV_HOME/domains/domain1/config/cacerts.jks -alias managementca -storepass changeit
+           (will fail if this hasn't been done before)
+       keytool -importcert -keystore $APPSRV_HOME/domains/domain1/config/cacerts.jks -file p12/managementca.der -alias managementca -storepass changeit
+       </pre>
+    </ul>
+    On Glassfish Enterprise:
+    <ul>
+    <li>cd $APPSRV_HOME/domains/domain1/config</li>
+    <li>/usr/sfw/bin/certutil -A -n managementca -t "p,p,p" -i p12/managementca.der -d .</li>
+    <li>verify that managementca has been added to the store with '/usr/sfw/bin/certutil -L -d .'.</li>
+    </ul><br/>
+    <li>
+    (Optional) Replace the SSL keystore and truststore with default passwords.<br/>
+    In a production environment you probably want to change the keystore passwords, to do this you must edit both the http-listener and the IIOP-listeners.
+    <pre>
+    cd $EJBCA_HOME
+    cp p12/tomcat.jks p12/keystore.jks
+    keytool -list -keystore p12/keystore.jks -storepass serverpwd
+        Read the alias for the "PrivateKeyEntry" e.g. 'localhost'.
+    keytool -keypasswd -keystore p12/keystore.jks -alias localhost -storepass serverpwd -keypass serverpwd -new changeit
+    keytool -storepasswd -keystore p12/keystore.jks -storepass serverpwd -new changeit
+    keytool -changealias -keystore p12/keystore.jks -alias localhost -destalias s1as -keypass changeit -storepass changeit
+    cp p12/keystore.jks $APPSRV_HOME/domains/domain1/config/keystore.jks
+    </pre>
+    </li>
+    <li>Restart server
+    <pre>
+    asadmin stop-domain
+    asadmin start-domain
+    </pre>
+    </li>
+</li>
+<li>Access protected EJBCA pages<br/>
+    Import $EJBCA_HOME/p12/superadmin.p12 in your browser and go to url:<br/>
+      https://127.0.0.1:8181/ejbca/<br/>
+    You can now click "Administration" to get to the admin-GUI.</li><br/>
+<li>(Optional) Change how often an EJBCA Service can run: Configuration -> EJB Container -> EJB Timer Service -> Minimum Delivery Interval: 1000. Restart application server.<br/>
+This can also be changed using the "minimum-delivery-interval-in-millis" attribute in the domain.xml-file when the appserver isn't running.</li>
+<li>(Optional) Apply workaround to enable redeployment without application server restart: See <a href="https://jira.primekey.se/browse/ECA-1887">ECA-1887</a>.</li>
+</ol>
+</p>    
+</subsubsection>
+
+<subsubsection name="Glassfish Ubuntu package">
+<p>
+The above instructions are tested on the official release from Glassfish's homepage. 
+We had this report from a user of the glassfish package on ubuntu.
+</p>
+<p> 
+I had to modify the following to make it work with the Ubuntu 9.04
+glassfish package.
+<pre>
+1. Modify /usr/bin/asadmin
+   #GF_DOMAIN_DIR=$HOME/glassfishv2
+   GF_DOMAIN_DIR=/var/lib/glassfishv2/domains
+2. Set APPSRV_HOME to /usr/share/glassfishv2
+</pre>
+The Ubuntu package has the domains and binaries separated.  When
+following the install instructions, when you do anything with the
+domain you have to point to /var/lib/glassfishv2/[directory] instead
+of $APPSRV_HOME/[directory].
+</p>
+</subsubsection>
+</subsection>
+
+<subsection name="Weblogic">
+<note>EJBCA 5.x has never been officially deployed on Weblogic. 
+The below notes can work as hints for anyone interested in Weblogic.</note>
+<p>
+WebLogic Server 10 is JEE5 certified. EJBCA has been tested with Oracle WebLogic Server 10.3.4.0 generic distribution,
+Oracle JDK 6 and Oracle Database 10.2.0.1-1.0 XE on Ubuntu Server 10.10 i686.
+</p>
+<p>
+Email notifications are still untested and the old instructions are kept for reference.
+</p>
+
+<subsubsection name="Configure EJBCA">
+<p>
+The following must be configured for WebLogic:
+<ol>
+<li>conf/ejbca.properties: 'appserver.home' should be pointing to where weblogic is installed. (weblogic.jar is located under ${appserver.home}/wlserver_10.3/server/lib)</li>
+<li>conf/database.properties: configure accoring to the used database</li>
+<li>conf/web.properties: httpserver.pubhttp=7001</li>
+<li>conf/web.properties: httpserver.privhttps=7002</li>
+<li>conf/mail.properties: mail.jndi-name=mail/EjbcaMail</li>
+<li>conf/jndi.properties.weblogic: modify the principal and credentials according to you weblogic
+    domain's setting (same as the user name/password to login weblogic console).
+    The default in the EJBCA installation is weblogic/foobar123.
+</li>
+<li>conf/log4j-weblogic.xml: Path and log-levels for EJBCA specific logging.</li>
+</ol>
+</p>
+<p>
+If you had issued an 'ant' command before, it is now important to do 'ant clean' before building again.
+Build ejbca.ear (ejbca/dist/ejbca.ear) with 'ant'.
+</p>
+</subsubsection>
+
+<subsubsection name="Configure Weblogic">
+<p>
+<ol>
+<li>Access the Weblogic management console at: http://127.0.0.1:7001/console/</li>
+<li>Services -> DataSources:<br/>
+Create a new Generic DataSource "EjbcaDS" with JNDI name "EjbcaDS" of type "Oracle".
+(The URL for the pool should be something like "jdbc:oracle:thin:@127.0.0.1:1521:XE" for Oracle XE.)</li>
+<li>Deployments -> Install -> wlserver_10.3/common/deployable-libraries/jsf-1.2.war as a library named "jsf".</li>
+<li>Increase transaction timeout: Services -> JTA -> Timeout Seconds=300</li>
+<li>Create a new java mail session for user notification in EndEntityManagementSessionBean. In Weblogic, the JNDI name should
+ be "mail/EjbcaMail" (same as you configured in mail.properties).<br/>
+key in the properties:
+  <pre>
+  mail.store.protocol=pop3
+  mail.transport.protocol=smtp
+  mail.user=foouser
+  mail.pop3.host=pop.foo.com
+  mail.smtp.host=smtp.foo.com
+  mail.smtp.port=25
+  mail.smtp.auth=false
+  mail.smtp.starttls.enable=false
+  mail.from=foouser@foo.com
+  mail.debug=false
+  </pre>
+  Do not forget to activate the mail session in you target server.
+  </li>
+</ol>
+</p>
+</subsubsection>
+
+<subsubsection name="Deploy and setup">
+<p>
+<ol>
+<li>Deploy EJBCA: Install "$EJBCA_HOME/dist/ejbca.ear" that you built with Ant. It should deploy straight away without errors.</li>
+<li>Run 'ant install' to do the installation. Everything should work here with no errors. 
+   If you get errors these must be resolved before we can move on.<br/>
+   The command 'ant install' is only run once, when the CA is first installed. It creates lots of things in the database, and can not be run again 
+   (it will give an error if you try).</li>
+
+<li>Configure SSL in Weblogic:<br/>
+<ol>
+<li>Go to Environment -> Servers -> AdminServer -> KeyStores</li>
+<li>KeyStores: Custom Identity and Custom Trust</li>
+<li>Custom Identity Keystore: /path/ejbca/p12/tomcat.jks</li>
+<li>Custom Identity Keystore Passphrase: serverpwd (httpsserver.password in conf/web.properties)</li>
+<li>Custom Trust Keystore: /path/ejbca/p12/truststore.jks</li>
+<li>Custom Trust Keystore Passphrase: changeit (java.trustpassword in conf/web.properties)</li>
+<li>Go to Environment -> Servers -> AdminServer -> SSL</li>
+<li>Click Advanced</li>
+<li>Two Way Client Cert Behavior: Client Certs Requested But Not Enforced</li>
+<li>Private Key Alias: localhost (httpsserver.hostname in conf/web.properties)</li>
+<li>Private Key Passphrase: Same as in 'Custom Identity Keystore Passphrase' above.</li>
+<li>Go to Environment -> Servers -> AdminServer -> General</li>
+<li>Check 'SSL Listen Port Enabled'</li>
+</ol>
+</li>
+</ol>
+This should make the Admin GUI work, note to install the  Unlimited Strength Jurisdiction Policy Files from java.sun.com 
+for both sun's JDK and BEA's JDK first before installation. For Weblogic 10.3 it wa possible to skip the installation of the
+bundled JDK's and use a pre-installed Sun JDK.
+</p>
+</subsubsection>
+
+</subsection>
+
+
+<subsection name="Websphere 7 (Incomplete)">
+<note>EJBCA 5.x has never been officially deployed on Webshpere. In general deploying on Websphere requires an unreasonable amount of time and effort.
+The below notes can work as hints for anyone interested in Websphere.</note>
+<p>
+EJBCA 4.0alpha2 has been tested with WebSphere AS for Developers 7.0.0.13, DB2 9.7.2 Express-C on RHEL 5.4 i386.
+</p>
+<p>
+After following these instructions, you will be able to build, deploy, start and install EJBCA.<br/>
+You will NOT be able to use database logs, EJBCA WS, XKMS or anything that requires serialization of Certificates over RMI.
+</p>
+<p>Install the Unlimited strength crypto policy files for the IBM java shipped with Websphere. 
+You need to download these files from IBM. The IBM policy files version 1.4.2 works with IBM JDK 6.</p>
+<p>WebSphere runs with IBM's JDK 6 and EJBCA should be compiled with this compiler as well.</p>
+<subsubsection name="Configure EJBCA">
+<p>
+Configure the following for a test setup:
+<ul>
+<li>conf/ejbca.properties#appserver.home=/opt/IBM/WebSphere/AppServer</li>
+<li>conf/database.properties#database.name=db2</li>
+<li>conf/log4j-websphere.xml (use conf/log4j-websphere.xml.sample)</li>
+<li>conf/web.properties#java.trustpassword=changeit</li>
+<li>conf/web.properties#superadmin.cn=SuperAdmin</li>
+<li>conf/web.properties#superadmin.dn=CN=${superadmin.cn}</li>
+<li>conf/web.properties#superadmin.password=ejbca</li>
+<li>conf/web.properties#httpsserver.password=serverpwd</li>
+<li>conf/web.properties#httpsserver.hostname=localhost</li>
+<li>conf/web.properties#httpsserver.dn=CN=${httpsserver.hostname},O=EJBCA Sample,C=SE</li>
+<li>conf/web.properties#httpserver.pubhttp=9080</li>
+<li>conf/web.properties#httpserver.privhttps=9443</li>
+<li>conf/mail.properties#mail.jndi-name=EjbcaMail</li>
+<li>conf/xkms.properties#xkms.enabled=true</li>
+<li>conf/jndi.properties.websphere Set the currect port from Servers->Application servers->server1 (your server)->Ports->BOOTSTRAP_ADDRESS.</li>
+</ul>
+Build EJBCA with 'ant clean' and 'ant'.<br/>
+</p>
+</subsubsection>
+
+<subsubsection name="WebService API">
+<p>
+WebSphere 7 does not automatically expose @WebService annotated Sesison Beans. A tool bundled with WAS
+(endptEnabler.sh) will be invoked during the build to generate the WAR and add it to the "ejbca.ear" file.
+<br/>
+The wsdl is accessible using the url: https://127.0.0.1:9443/ejbca/ejbcaws/ejbcaws?wsdl
+</p>
+</subsubsection>
+
+<subsubsection name="Configure Websphere">
+<p>
+Configure Websphere in the admin console.
+<ol>
+<li>
+Navigate to 'Resources->Mail->Mail sessions' and create a new MailSession called 'MailSession' with jndiName same
+as mail.jndi-name configured in conf/mail.properties (EjbcaMail).</li>
+<li>Setup JDBC Provider under "Resources → JDBC → JDBC Providers":
+<ul>
+<li>Scope: node01, server1</li>
+<li>Database type: DB2</li>
+<li>Provider type: DB2 Universal JDBC Driver Provider</li>
+<li>Implementation type: Connection pool data source</li>
+<li>${DB2UNIVERSAL_JDBC_DRIVER_PATH}: /opt/IBM/WebSphere/AppServer/deploytool/itp/plugins/com.ibm.datatools.db2_2.1.102.v20091026_1945/driver</li>
+<li>${DB2UNIVERSAL_JDBC_DRIVER_NATIVEPATH} : /opt/IBM/WebSphere/AppServer/deploytool/itp/plugins/com.ibm.datatools.db2_2.1.102.v20091026_1945/driver</li>
+</ul>
+(the paths depend on where the jdbc-driver is available)
+</li> 
+<li>Setup DataSource (DB2 database running on the same machine):
+<ul>
+<li>Scope: node01, server1</li>
+<li>Data source name: EjbcaDS</li>
+<li>JNDI Name: jdbc/EjbcaDS</li>
+<li>Select an existing JDBC provider: DB2 Universal...</li>
+<li>Driver type: 4</li>
+<li>Database name: ejbca</li>
+<li>Server name: 127.0.0.1</li>
+<li>Port number: 50000</li>
+<li>Click on the EjbcaDS DataSource -> JAAS - J2C authentication data -> New</li>
+<li>Alias: &lt;database username&gt;</li>
+<li>UserId: &lt;database username&gt;</li>
+<li>Password: &lt;database password&gt;</li>
+<li>Save</li>
+<li>Go back to the DataSource and select the new authentication info for "Component-managed authentication alias". Save.</li>
+<li>Edit custom properties for the DataSource and set isolation level to 2.</li>
+</ul>
+</li> 
+</ol>
+</p>
+</subsubsection>
+
+<subsubsection name="Deploy and setup">
+<p>
+Log into the admin console of Websphere to deploy EJBCA.
+<ol>
+<li>Install new application.</li>
+<li>Select ejbca.ear and 'Fast Path' and click next.</li>
+<ul>
+<li>Precompile JavaServer Pages files</li>
+<li>Distribute app</li>
+<li>Deploy enterprise beans</li>
+<li>Deploy Web services</li>
+<li>Process embedded configuration</li>
+<li>Allow EJB reference targets to resolve automatically</li>
+</ul>
+<li>Click next until it is install. Save.</li>
+<li>Start application.</li>
+<li>Now you can run 'ant install' to install EJBCA.</li>
+</ol>
+</p>
+<p>
+Efter deployment and installation you want to configure SSL in Websphere so you can access the Admin-GUI in EJBCA. 
+The admin-GUI in EJBCA requires client certificate authentication.  
+<br/>Configure the SSL port to require client certificate in order to access the admin-GUI:
+<ol>
+  <li>Navigate to Security -> SSL certificate and key management -> NodeDefaultSSLSettings -> Quality of protection (QoP) settings: Client authentication=Supported</li>
+  <li>Navigate to Security -> SSL certificate and key management -> Key stores and certificates<br/>
+  NodeDefaultKeyStore=/usr/local/ejbca/p12/tomcat.jks<br/>
+  NodeDefaultTrustStore=/usr/local/ejbca/p12/truststore.jks<br/>
+  </li>
+</ol>
+After this you should be able to (but cannot) access the EJBCA Admin GUI after installing $EJBCA_HOME/p12/superadmin.p12 in your browser.
+</p>
+<p>
+Public web will be at: http://127.0.0.1:9080/ejbca/ and https://127.0.0.1:9443/ejbca/<br/>
+Admin web will be at: https://127.0.0.1:9443/ejbca/adminweb/
+</p>
+</subsubsection>
+</subsection>
+
+</section>
+
+<section name="Transaction timouts">
+<p>In some cases, either if you have a slow machine or very large data sets, some common operations can take a long time to complete. The default transaction timout of 
+the application servers may then not be enough.</p>
+<subsection name="JBoss 5">
+<p>In order to change the defautl transaction timeout in JBoss you can edit the file JBOSS_HOME/server/default/deploy/transaction-jboss-beans.xml. 
+There is a property you can change:</p>
+<source>
+&lt;property name="defaultTimeout"&gt;300&lt;/property&gt;
+</source>
+</subsection>
+<subsection name="Weblogic">
+<p>In weblogic you change the default transaction timeout in the admin console. <i>Services -&gt; JTA -&gt; Timeout Seconds</i></p>
+</subsection>
+</section>
+
+<section name="Deployment reference">
+<subsection name="Ant target shortlist">
+<p>
+To deploy and install EJBCA the first time (from clean database):
+<ul>
+<li>ant deploy</li>
+<li>ant install</li>
+</ul>
+</p>
+<p>
+To upgrade EJBCA, i.e. just deploy a new ejbca.ear file:
+<ul>
+<li>ant deployear</li>
+</ul>
+</p>
+<p>
+To (re)configure TLS, i.e. configure TLS ports and deploy TLS keystores:
+<ul>
+<li>ant web-configure</li>
+<li>ant deploy-keystore</li>
+</ul>
+</p>
+<p>
+To (re)configure database, i.e. deploy EjbcaDS datasource:
+<ul>
+<li>ant deploy-datasource</li>
+</ul>
+</p>
+</subsection>
+
+<subsection name="Files deployed">
+<p>
+Here we describe shortly which files/functions are copied/touched during various ant targets that are called. These targets only modifies files automatically on platforms where auto-configure is supported,
+but it will give an indication as well for other platforms what configuration steps are needed.
+</p>
+<p>Below shows (configuration) files updated for JBoss 5 platform. For JBoss 7/EAP6 there is only one unified configuration file and all configuration is done using the JBoss 7 command line interface.
+</p>
+<p>
+<strong>ant deploy</strong>
+<ul>
+<li>ant deploy-datasource</li>
+<ul>
+<li>deploy/ejbca-ds.xml</li>
+<li>deploy/ocsp-ds.xml (if OCSP datasource is configured)</li>
+</ul>
+<li>ant deploy-service</li>
+<ul>
+<li>deploy/ejbca-mail-service.xml</li>
+</ul>
+<li>ant deployear</li>
+<ul>
+<li>deploy/ejbca.ear</li>
+</ul>
+</ul>
+</p>
+
+<p>
+<strong>ant install</strong>
+<ul>
+<li>ant runinstall (creates initial Management CA and web keystores)</li>
+<li>ant web-configure</li>
+<li>ant deploy-keystore</li>
+</ul>
+</p>
+
+<p>
+    <strong>ant web-configure</strong>
+    <ul>
+    <li>deploy/jbossweb.sar/server.xml</li>
+    </ul>
+</p>
+
+<p>
+    <strong>ant deploy-keystore</strong>
+    <ul>
+    <li>conf/keystore/tomcat.jks</li>
+    <li>conf/keystore/truststore.jks</li>
+    </ul>
+</p>
+
+<p>
+    <strong>ant deploy-datasource</strong>
+    <ul>
+    <li>deploy/ejbca-ds.xml</li>
+    <li>deploy/ocsp-ds.xml</li>
+	</ul>
+</p>
+
+<p>
+    <strong>ant deploy-service</strong>
+    <ul>
+    <li>deploy/ejbca-mail-service.xml</li>
+    </ul>
+</p>
+
+</subsection>
+</section>
+
+<section name="Additional howtos">
+<note>
+These additional howtos are for advanced users. If this is the first time installing EJBCA, or you run into trouble with these guides, please go back and try the regular quick install guide.
+</note>
+<p>
+Branko Majic have a good detailed guide for setting up <a href="http://majic.rs/book/free-software-x509-cookbook/setting-up-ejbca-as-certification-authority">EJBCA with JBoss</a> in a rather thorough setup.
+</p>
+<p>
+In the directory doc/howto in the distribution there are additional howtos for some specific platforms and configurations.
+</p>
+</section>
+
+</body>
+</document>

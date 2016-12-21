@@ -1,0 +1,47 @@
+This software is OSI Certified Open Source Software.
+OSI Certified is a certification mark of the Open Source
+Initiative.
+EJBCA is licensed under the LGPL license, please see licenses/LICENSE.
+
+Documentation
+-------------
+The main documentation for EJBCA is contained in XML format in the xdocs subdirectory.
+You can build nice looking html pages from this by running 
+  ant doc
+from the ejbca home directory (EJBCA_HOME). This will produce the same site as displayed on http://www.ejbca.org/ 
+(or an earlier or later version).
+The docs will be located in EJBCA_HOME/tmp/htdocs.
+The User's Guide is in the file xdocs/manual.xml.
+
+In the subdirectories there hides some other docs:
+- xdocs contains the main xml documentation distributed with ejbca, build into html as noted above.
+- howto contains howtos for various things, such as databases, application servers, smart card login etc.
+- ldapschema contains an addition to the standard ldap schema in order to support devices with certificates.
+- licenses contains the license for EJBCA and depending projects.
+- samples contains some sample code that does not fit on the source tree
+- developer contains architecture documents and information for developers.
+
+There is also a good batch of documentation at http://wiki.ejbca.org/
+
+Installation
+------------
+Follow the installation instructions in the User's Guide, either built above, or from http://www.ejbca.org/.
+
+PDF
+---
+A good set of commands to generate a nice PDF version of the Admin and User Guide is:
+ apt-get install htmldoc
+ ant doc
+ cd tmp/htdocs/docs
+ htmldoc --no-links --footer "  /"  --toclevels 4 -t pdf14 adminguide.html -f adminguide.pdf
+ htmldoc --no-links --footer "  /"  --toclevels 4 -t pdf14 userguide.html -f userguide.pdf
+
+You can make a nice, deliverable, document by:
+- replace all <h3> with <h2> and </h3> with </h2>
+- Edit <pre> formatted text commands for line breaks by adding "\" and a space as first char on the next line.
+  These commands work very good to copy-paste into a Linux shell.
+
+Release notes and upgrade
+-------------------------
+In this directory you will find RELEASE_NOTES with some notes relating to this specific release and
+UPGRADE with information about upgrading from an earlier version of EJBCA.

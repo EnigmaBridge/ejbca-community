@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="module" module-name="ejbca-ejb" />
+    <orderEntry type="module" module-name="ejbca-webdist-war" />
+    <orderEntry type="module" module-name="clearcache-war" />
+    <orderEntry type="module" module-name="ejbca-ejb-interface" />
+    <orderEntry type="module" module-name="healthcheck-war" />
+    <orderEntry type="module" module-name="cesecore-common" />
+    <orderEntry type="module" module-name="publicweb-gui" />
+    <orderEntry type="module" module-name="admin-gui" />
+    <orderEntry type="module" module-name="ejbca_ce_6_3_1_1" />
+    <orderEntry type="module" module-name="cesecore-ejb-interface" />
+    <orderEntry type="module" module-name="clientToolBox" />
+    <orderEntry type="module" module-name="systemtests" />
+  </component>
+</module>

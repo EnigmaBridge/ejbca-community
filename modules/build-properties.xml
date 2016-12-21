@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-properties">
+    <description>
+            This file load property files and keeps track of different paths. It should not be run directly. 
+    </description>
+
+	<!-- Get the correct relative path when this file is imported. -->
+	<dirname property="build-properties.basedir" file="${ant.file.build-properties}"/>
+    <property file="${build-properties.basedir}/../src/internal.properties" />
+    <property name="ejbca.home" location="${build-properties.basedir}/.." />
+    <property environment="env" />
+
+	<import file="${build-properties.basedir}/../propertyDefaults.xml"/>
+	
+    <property name="ejbca.dist.path" location="${ejbca.home}/dist" />
+    <!-- Define the different modules -->
+    <property name="mod.path" location="${ejbca.home}/modules" />
+    <property name="mod.common.path" location="${mod.path}/common" />
+    <property name="mod.common-lib.path" location="${mod.common.path}/lib" />
+    <property name="mod.systemtests.path" location="${mod.path}/systemtests" />
+    <property name="mod.dist.path" location="${mod.path}/dist" />
+    <property name="mod.ejbca-entity.path" location="${mod.path}/ejbca-entity" />
+    <property name="mod.ejbca-entity.lib" location="${mod.dist.path}/ejbca-entity.jar" />
+    <property name="mod.ejbca-db-cli.dist" location="${ejbca.dist.path}/ejbca-db-cli" />
+    <property name="mod.ejbca-db-cli.lib" location="${mod.ejbca-db-cli.dist}/ejbca-db-cli.jar" />
+    <property name="mod.cesecore-common.path" location="${mod.path}/cesecore-common" />
+    <property name="mod.cesecore-common.lib" location="${mod.dist.path}/cesecore-common.jar" />
+    <property name="mod.cesecore-entity.path" location="${mod.path}/cesecore-entity" />
+    <property name="mod.cesecore-entity.lib" location="${mod.dist.path}/cesecore-entity.jar" />
+    <property name="mod.cesecore-ejb.path" location="${mod.path}/cesecore-ejb" />
+    <property name="mod.cesecore-ejb.lib" location="${mod.dist.path}/cesecore-ejb.jar" />
+    <property name="mod.cesecore-ejb-interface.path" location="${mod.path}/cesecore-ejb-interface" />
+    <property name="mod.cesecore-ejb-interface.lib" location="${mod.dist.path}/cesecore-ejb-interface.jar" />
+    <property name="mod.cesecore-other-entity.lib" location="${mod.dist.path}/cesecore-other-entity.jar" />
+    <property name="mod.cesecore-other-ejb.lib" location="${mod.dist.path}/cesecore-other-ejb.jar" />
+    <property name="mod.cesecore-other-ejb-interface.lib" location="${mod.dist.path}/cesecore-other-ejb-interface.jar" />
+    <property name="mod.ejbca-ejb.lib" location="${mod.dist.path}/ejbca-ejb.jar" />
+    <property name="mod.ejbca-ejb.path" location="${mod.path}/ejbca-ejb" />
+    <property name="mod.ejbca-ejb-cli.dist" location="${ejbca.dist.path}/ejbca-ejb-cli" />
+    <property name="mod.ejbca-ejb-cli.lib" location="${mod.ejbca-ejb-cli.dist}/ejbca-ejb-cli.jar" />
+    <property name="mod.ejbca-ejb-cli.path" location="${mod.path}/ejbca-ejb-cli" />
+    <property name="mod.ejbca-ejb-interface.path" location="${mod.path}/ejbca-ejb-interface" />
+	<property name="mod.ejbca-ejb-interface.lib" location="${mod.dist.path}/ejbca-interface.jar" />
+    <property name="mod.ejbca-util.lib" location="${ejbca.dist.path}/ejbca-util.jar" />
+    <property name="mod.ejbca-util-signserver.lib" location="${ejbca.dist.path}/ejbca-util-signserver.jar" />
+    <property name="mod.ejbca-common-web.lib" location="${mod.dist.path}/ejbca-common-web.jar" />
+	<property name="mod.ejbca-extensions.lib" location="${mod.dist.path}/ejbca-extensions.jar" />
+    <property name="mod.ejbca-properties.lib" location="${mod.dist.path}/ejbca-properties.jar" />
+    <property name="mod.ejbca-properties.path" location="${mod.path}/ejbca-properties" />
+    <property name="mod.ejbca-ws-cli.dist" location="${ejbca.dist.path}/ejbca-ws-cli" />
+	<property name="mod.ejbca-ws-cli.libname" value="ejbca-ws-cli.jar" />
+	<property name="mod.ejbca-ws-cli.lib" location="${mod.ejbca-ws-cli.dist}/${mod.ejbca-ws-cli.libname}" />
+    <property name="mod.ejbca-ws-cli.path" location="${mod.path}/ejbca-ws-cli" />
+   	<property name="mod.ejbca-ws-client.libname" value="ejbca-ws-client.jar" />
+   	<property name="mod.ejbca-ws-client.lib" location="${mod.dist.path}/${mod.ejbca-ws-client.libname}" />
+    <property name="mod.ejbca-ws-ejb.jar" location="${mod.dist.path}/ejbca-ws-ejb.jar" />
+    <property name="mod.ejbca-ws.path" location="${mod.path}/ejbca-ws" />
+    <property name="mod.ejbca-ws.lib" location="${mod.dist.path}/ejbca-ws.jar" />
+    <property name="mod.ejbca-ws.wsdl" location="${mod.dist.path}/EjbcaWSService.wsdl" />
+    <property name="mod.ejbca-ws.wsdl-schema" location="${mod.dist.path}/EjbcaWSService_schema1.xsd" />
+    <property name="mod.ejbca-xkms-cli.lib" location="${ejbca.dist.path}/ejbca-xkms-cli/xkmscli.jar" />
+    <property name="mod.ejbca-xkms-cli.dist" location="${ejbca.dist.path}/ejbca-xkms-cli" />
+    <property name="mod.ejbca-xkms-cli.path" location="${mod.path}/ejbca-xkms-cli" />
+    <property name="mod.ejbca-xkms.path" location="${mod.path}/ejbca-xkms" />
+    <property name="mod.ejbca-xkms-ejb.jar" location="${mod.dist.path}/ejbca-xkms-ejb.jar" />
+    <property name="mod.ejbca-xkms.lib" location="${mod.dist.path}/ejbca-xkms.jar" />
+    <property name="mod.peerconnector.path" location="${mod.path}/peerconnector"/>
+	<property name="mod.peerconnector-cli.lib" location="${mod.dist.path}/peerconnector-cli.jar" />
+    <property name="mod.peerconnector-common.lib" location="${mod.dist.path}/peerconnector-common.jar" />
+    <property name="mod.peerconnector-ejb.lib" location="${mod.dist.path}/peerconnector-ejb.jar" />
+	<property name="mod.peerconnector-interface.lib" location="${mod.dist.path}/peerconnector-interface.jar" />
+    <property name="mod.peerconnector-rar.lib" location="${mod.dist.path}/peerconnector.rar" />
+    <property name="mod.peerconnector-war.lib" location="${mod.dist.path}/peerconnector.war" />
+    <property name="mod.peerconnector-publ.lib" location="${mod.dist.path}/peerconnector-publ.jar" />
+    <property name="mod.admin-gui.path" location="${mod.path}/admin-gui" />
+    <property name="mod.admin-gui.war" location="${mod.dist.path}/adminweb.war" />
+    <property name="mod.cmp-war.path" location="${mod.path}/ejbca-cmp-war" />
+    <property name="mod.cmp-war.war" location="${mod.dist.path}/cmp.war" />
+    <property name="mod.ejbca-cmp-tcp.path" location="${mod.path}/ejbca-cmp-tcp" />
+    <property name="mod.ejbca-cmp-tcp.war" location="${mod.dist.path}/ejbca-cmp-tcp.war" />
+    <property name="mod.healthcheck-war.path" location="${mod.path}/healthcheck-war" />
+    <property name="mod.healthcheck-war.war" location="${mod.dist.path}/healthcheck.war" />
+    <property name="mod.clearcache-war.path" location="${mod.path}/clearcache-war" />
+    <property name="mod.clearcache-war.war" location="${mod.dist.path}/clearcache.war" />
+    <property name="mod.publicweb-gui.path" location="${mod.path}/publicweb-gui" />
+    <property name="mod.publicweb-gui.war" location="${mod.dist.path}/publicweb.war" />
+    <property name="mod.va.path" location="${mod.path}/va" />
+    <property name="mod.status.war" location="${mod.dist.path}/status.war" />
+    <property name="mod.certstore.war" location="${mod.dist.path}/certstore.war" />
+    <property name="mod.cerstore.path" location="${mod.path}/certificatestore" />
+    <property name="mod.crlstore.war" location="${mod.dist.path}/crlstore.war" />
+    <property name="mod.crlstore.path" location="${mod.path}/crlstore" />
+    <property name="mod.renew-war.path" location="${mod.path}/ejbca-renew-war" />
+    <property name="mod.renew-war.war" location="${mod.dist.path}/renew.war" />
+    <property name="mod.scep-war.path" location="${mod.path}/ejbca-scep-war" />
+    <property name="mod.scep-war.war" location="${mod.dist.path}/scep.war" />
+    <property name="mod.webdist-war.path" location="${mod.path}/ejbca-webdist-war" />
+    <property name="mod.webdist-war.war" location="${mod.dist.path}/webdist.war" />
+    <property name="mod.clientToolBox.dist" location="${ejbca.dist.path}/clientToolBox" />
+    <property name="mod.clientToolBox.lib" location="${mod.clientToolBox.dist}/clientToolBox.jar" />
+    <property name="mod.clientToolBox.path" location="${mod.path}/clientToolBox" />
+    <property name="mod.validationtool.dist" location="${ejbca.dist.path}/validationtool" />
+    <property name="mod.validationtool.srcdist" location="${ejbca.dist.path}/validationtool-src" />
+    <property name="mod.validationtool.lib" location="${mod.validationtool.dist}/ValidationTool.jar" />
+    <property name="mod.validationtool.path" location="${mod.path}/validationtool" />
+    <property name="mod.oldlogexport.dist" location="${ejbca.dist.path}/oldlogexport-cli" />
+    <property name="mod.oldlogexport.lib" location="${mod.oldlogexport.dist}/oldlogexport-cli.jar" />
+    <property name="mod.oldlogexport.path" location="${mod.path}/oldlogexport-cli" />
+    <property name="mod.cmpTcpProxy.dist" location="${ejbca.dist.path}/cmpTcpProxy" />
+    <property name="mod.cmpHttpProxy.dist" location="${ejbca.dist.path}/cmpHttpProxy" />
+    <property name="mod.cmpProxy.path" location="${mod.path}/cmpProxy" />
+    <property name="mod.externalra.path" location="${mod.path}/externalra" />
+    <property name="mod.externalra.lib" location="${mod.dist.path}/externalra.jar" />
+    <property name="mod.externalra-cli.path" location="${ejbca.dist.path}/externalra-cli" />
+    <property name="mod.externalra-cli.lib" location="${mod.externalra-cli.path}/externalra-cli.jar" />
+    <property name="mod.externalra-gui.path" location="${mod.path}/externalra-gui" />
+    <property name="mod.externalra-gui.dist" location="${ejbca.dist.path}/externalra-gui" />
+    <property name="mod.externalra-gui.war" location="${mod.externalra-gui.dist}/externalra-gui.war" />
+    <property name="mod.externalra-service.lib" location="${mod.dist.path}/externalra-service.jar" />
+    <property name="mod.externalra-datasources.dist" location="${ejbca.dist.path}/datasources" />
+    <property name="mod.externalra-scep.path" location="${mod.path}/externalra-scep" />
+    <property name="mod.externalra-scep.war" location="${ejbca.dist.path}/scepraserver.war" />
+    <property name="mod.batchenrollment-gui.path" location="${mod.path}/batchenrollment-gui" />
+    <property name="mod.appserver-ext.path" location="${mod.path}/appserver-ext" />
+    <property name="mod.logsigning.lib" location="${ejbca.dist.path}/ejbcalogsigning.jar" />
+    <property name="mod.jbosslog4jsafer.lib" location="${mod.dist.path}/jbosslog4jsafer.jar" />
+	<property name="mod.scep-ra.path" location="${mod.path}/scep-ra" />
+	<property name="mod.scep-ra.lib" location="${mod.dist.path}/scep-ra.jar" />
+	<property name="mod.statedump.dist" location="${ejbca.dist.path}/statedump" />
+	<property name="mod.statedump.lib" location="${mod.statedump.dist}/statedump.jar" />
+	<property name="mod.statedump.path" location="${mod.path}/statedump" />
+	<property name="mod.buildtools.path" location="${mod.path}/buildtools" />
+	<property name="mod.buildtools.build" location="${mod.buildtools.path}/build" />
+	<property name="mod.buildtools.dist" location="${ejbca.dist.path}/buildtools" />
+	<property name="mod.cli-util.dist" location="${mod.dist.path}/" />
+	<property name="mod.cli-util.lib" location="${mod.cli-util.dist}/cli-util.jar" />
+	<property name="mod.cli-util.path" location="${mod.path}/cli-util" />
+	<property name="mod.ct.path" location="${mod.path}/ct" />
+	<property name="mod.ct.lib" location="${mod.dist.path}/ct.jar" />
+	<property name="mod.certsafe.path" location="${mod.path}/certsafe"/>
+	<property name="mod.certsafe.lib" location="${mod.dist.path}/certsafe.jar"/>
+	<property name="mod.edition-specific-interface.path" location="${mod.path}/edition-specific"/>
+	<property name="mod.edition-specific-interface.lib" location="${mod.dist.path}/edition-specific-interface.jar"/>
+	<property name="mod.edition-specific-ejb.lib" location="${mod.dist.path}/edition-specific-ejb.jar"/>
+	<property name="mod.edition-specific-ee-ejb.path" location="${mod.path}/edition-specific-ee"/>
+	<property name="mod.va-publisher.lib"  location="${mod.dist.path}/va-publisher.jar"/>
+	<property name="mod.systemtest-interface.lib" location="${mod.dist.path}/systemtests-interfaces.jar" />
+	<property name="mod.systemtest-ejb.lib" location="${mod.dist.path}/systemtests-ejb.jar" />
+	
+    <!-- Variables of global interest -->
+    <property name="java.target.version" value="${java.specification.version}"/>
+	<property name="externalra.enabled" value="false"/>
+	<property name="ejbcaws.enabled" value="true" />
+	<condition property="ejbcaws.enabled.true"><istrue value="${ejbcaws.enabled}"/></condition>
+	<condition property="xkms.enabled.true"><istrue value="${xkms.enabled}"/></condition>
+	<condition property="externalra.enabled.true">
+		<and>
+			<istrue value="${externalra.enabled}"/>
+			<available file="${mod.externalra.path}/build.xml" />
+		</and>
+	</condition>
+
+	<!-- Files of global interest -->
+	<!-- Depends on load of propertyDefaults.xml...therefore put in the end
+    <property name="jndi.properties.file" location="${ejbca.home}/conf/jndi.properties.${appserver.type}" />
+    -->
+    <property name="profilemappings.properties.file" location="${ejbca.home}/src/java/profilemappings.properties" />
+    <property name="profilemappings_enterprise.properties.file" location="${ejbca.home}/src/java/profilemappings_enterprise.properties" />
+    <property name="log4j.test.file" location="${mod.common.path}/resources/log4j-test.xml" />
+    <property name="log4j.cli.file" location="${mod.common.path}/resources/log4j-cli.xml" />
+    <property name="internal.properties.file" location="${ejbca.home}/src/internal.properties" />
+    <property name="defaultvalues.properties.file" location="${ejbca.home}/src/java/defaultvalues.properties" />
+	<property name="systemtests.properties.file" location="${ejbca.home}/conf/systemtests.properties"/>
+    
+	<!-- Define class-paths of global interest -->
+	<path id="lib.cert-cvc.classpath"><fileset dir="${ejbca.home}/lib" includes="cert-cvc-1.4.1.jar"/></path>
+
+	<path id="lib.junit.classpath">
+		<fileset dir="${ejbca.home}/lib/ext">
+			<include name="junit-*.jar"/>
+			<include name="commons-httpclient-*.jar"/>	<!-- ProtocolScepHttpTest -->
+			<include name="htmlunit-*.jar"/>	<!-- ProtocolScepHttpTest -->
+			<include name="commons-io-*.jar"/>	<!-- ProtocolScepHttpTest -->
+		</fileset>
+	</path>
+	
+	<path id="lib.easymock.classpath">
+		<fileset dir="${ejbca.home}/lib/ext/easymock">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<path id="lib.log4j.classpath"><fileset dir="${ejbca.home}/lib" includes="log4j*.jar"/></path>
+	<path id="lib.commons-lang.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-lang-*.jar"/></path>
+	<path id="lib.commons-beanutils.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-beanutils-*.jar"/></path>
+	<path id="lib.commons-codec.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-codec-*.jar"/></path>
+	<path id="lib.commons-config.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-configuration-*.jar"/></path>
+	<path id="lib.commons-collections.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-collections-*.jar"/></path>
+	<path id="lib.commons-logging.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-logging*.jar"/></path>
+	<path id="lib.commons-el.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-el-*.jar"/></path>
+	<path id="lib.commons-fileupload.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-fileupload-*.jar"/></path>
+	<path id="lib.commons-httpclient.classpath"><fileset dir="${ejbca.home}/lib/ext" includes="commons-httpclient-*.jar"/></path>
+	<path id="lib.hc.classpath"><fileset dir="${ejbca.home}/lib/ct" includes="httpcore-*.jar httpclient-*.jar"/></path>
+	<path id="lib.commons-io.classpath"><fileset dir="${ejbca.home}/lib" includes="commons-io-*.jar"/></path>
+	<path id="lib.batik.classpath"><fileset dir="${ejbca.home}/lib/batik" includes="*.jar"/></path>
+	<path id="lib.mail.classpath">
+		<fileset dir="${ejbca.home}/lib/ext" includes="mailapi.jar"/>
+	</path>
+	<path id="lib.tomahawk.classpath"><fileset dir="${ejbca.home}/lib/myfaces" includes="tomahawk-*.jar"/></path>
+	<path id="lib.ldap.classpath"><fileset dir="${ejbca.home}/lib" includes="ldap.jar"/></path>
+	<path id="lib.xstream.classpath"><fileset dir="${ejbca.home}/lib/xstream" includes="*.jar"/></path>
+	<path id="lib.quickserver.classpath"><fileset dir="${ejbca.home}/lib/quickserver" includes="QuickServer.jar"/></path>
+	<path id="lib.idn.classpath"><fileset dir="${ejbca.home}/lib" includes="libidn.jar"/></path>
+	<path id="lib.jaxb-namespaceprfixmapper-interfaces.classpath"><fileset dir="${ejbca.home}/lib/ext" includes="jaxb-NamespacePrefixMapper-interfaces-2.0.0.jar"/></path>
+	<path id="lib.xml.classpath"><fileset dir="${ejbca.home}/lib/xmlsign" includes="xalan-2.7.1.jar serializer-2.7.1.jar"/></path>
+	<path id="lib.xmlsec.classpath">
+		<fileset dir="${ejbca.home}/lib/xmlsign" includes="xmlsec-1.4.3.jar"/>
+		<path refid="lib.xml.classpath"/>
+	</path>
+
+	<path id="lib.utils.classpath">
+		<fileset dir="${ejbca.home}/lib">
+			<include name="commons-*.jar"/>
+			<include name="log4j*.jar"/>
+		</fileset>
+	</path>
+
+	<path id="lib.javaxejb.classpath">
+		<fileset dir="${appserver.home}">
+			<!-- JBoss 5.1.0 -->
+	    	<include name="client/jboss-javaee.jar"/>
+	
+			<!-- JBoss 6.0.0 -->
+			<include name="client/jboss-ejb-api_3.1_spec.jar"/>
+			<include name="client/jboss-metadata-ejb.jar"/>
+
+			<!-- JBoss 7.1.1 and EAP 6.0 -->
+			<include name="modules/javax/ejb/api/main/jboss-ejb-api_3.1_spec-1.0*.jar"/>
+			<include name="modules/org/jboss/metadata/main/jboss-metadata-ejb-7.0.*.jar"/>
+			<include name="modules/javax/interceptor/api/main/jboss-interceptors-api_1.1_spec-*.jar"/>
+			
+			<!-- JBoss 7.2.0 and EAP 6.1 -->
+			<include name="modules/system/layers/base/javax/interceptor/api/main/jboss-interceptors-api_1.1_spec*.jar"/>
+			<include name="modules/system/layers/base/javax/ejb/api/main/jboss-ejb-api_3.1_spec-1.0.2.Final-redhat-2.jar"/>
+			<!-- glassfish v2.1.1 -->
+			<include name="lib/javaee.jar"/>
+			
+			<!-- Glassfish 3.1 -->
+			<include name="lib/glassfish/javaee.jar"/>
+			
+			<!-- Glassfish 4.0 -->
+			<include name="glassfish/lib/javaee.jar"/>			
+		</fileset>
+	</path>
+	
+	<path id="lib.jee.classpath">
+		<path refid="lib.javaxejb.classpath"/>
+		<fileset dir="${appserver.home}">
+			<!-- JBoss 5.0.0 -->
+			<include name="client/jbossall-client.jar" />
+			<include name="client/jnp-client.jar" />			
+			<include name="client/jboss-javaee.jar" />
+			<include name="client/jboss-logging-spi.jar" />
+			<include name="client/jboss-client.jar" />
+			<include name="client/jboss-security-spi.jar" />
+			<include name="client/jboss-serialization.jar" />
+			<include name="client/jboss-common-core.jar" />
+			<include name="client/jboss-remoting.jar" />
+			<include name="client/concurrent.jar" />
+			<include name="client/jbosssx-client.jar" />
+			<include name="client/jboss-integration.jar" />
+			<!--
+			<include name="client/xmlsec.jar" />
+			-->
+			
+			<!-- JBoss 5.1.0 for Remote EJB-->
+	    	<include name="client/jboss-ejb*.jar"/>
+	    	<include name="client/jboss-aop-client.jar"/>
+	    	<include name="client/jboss-aspect-jdk50-client.jar"/>
+
+			<!-- JBoss 6.0.0 for Remote EJB-->
+			<include name="client/jboss-logging*.jar"/>
+			<include name="client/jboss-metadata-ejb.jar"/>
+
+			<!-- JBoss 7.1.1 and EAP 6.0 for javax.peristence, transaction, remote EJB, ...-->
+			<include name="bin/client/jboss-client*.jar"/>
+			<include name="modules/javax/persistence/api/main/hibernate-jpa-2.0-api-1.0.1.*.jar"/>
+			<include name="modules/javax/transaction/api/main/jboss-transaction-api_1.1_spec-1.0.0.*.jar"/>
+			<!-- JBoss 7.1.1 and EAP 6.0 for javax.resource ...-->
+			<include name="modules/javax/resource/api/main/jboss-connector-api_1.6_spec-*.jar"/>
+			
+			<!-- JBoss 7.2.0, EAP 6.1, 6.2 and WildFly 8 for javax.peristence, transaction, remote EJB, ...-->
+			<include name="modules/system/layers/base/javax/persistence/api/main/hibernate-jpa-2.?-api*.jar"/>
+			<include name="modules/system/layers/base/javax/transaction/api/main/jboss-transaction-api_1.?_spec*.jar"/>
+			<include name="modules/system/layers/base/javax/interceptor/api/main/jboss-interceptors-api_1.2_spec*.jar"/> <!-- WildFly 8 -->
+			<include name="modules/system/layers/base/javax/resource/api/main/jboss-connector-api_1.6_spec*.jar"/>
+
+			<!-- glassfish v2.1.1 -->
+			<include name="lib/javaee.jar"/>
+			<include name="lib/appserv-rt.jar"/>
+			<include name="lib/appserv-ext.jar"/>
+			<include name="lib/appserv-deployment-client.jar"/>
+			
+			<!-- Glassfish 3.1 -->
+			<include name="lib"/>
+			<include name="lib/gf-client.jar"/>
+			<include name="lib/jndi-properties.jar"/>
+			<!-- FIXME These are supposed to be loaded automatically by gf-client. Why doens't that work? -->
+			<include name="modules/*.jar"/>
+
+			<!-- Glassfish 4.0 -->
+			<include name="glassfish/lib/gf-client.jar"/>			
+			<include name="glassfish/lib/jndi.properties.jar"/>			
+
+			<!-- Weblogic 10.3.4 (generic) -->
+			<!-- This library built with "java -jar wljarbuilder.jar" cannot be used since it also contains webservices etc..
+			<include name="wlserver_10.3/server/lib/wlfullclient.jar"/>
+			-->
+			<include name="wlserver_10.3/server/lib/wlthint3client.jar"/>
+			<include name="modules/javax.persistence_1.0.0.0_1-0-2.jar"/>
+			<!-- websphere -->
+			<include name="runtimes/com.ibm.*.jar"/>
+		</fileset>
+	</path>
+
+	<path id="lib.servlet.classpath">
+		<fileset dir="${appserver.home}">
+			<!-- JBoss 5.1.0 -->
+			<include name="common/lib/servlet-api.jar"/>
+			<!-- JBoss 6.0.0 -->
+			<include name="common/lib/jboss-servlet-api_3.0_spec.jar"/>
+			<!-- JBoss 7.1.0 and EAP 6.0 -->
+			<include name="modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.*.jar"/>
+			<!-- JBoss 7.2.0, EAP 6.1, 6.2 and WildFly 8 -->
+			<include name="modules/system/layers/base/javax/servlet/api/main/jboss-servlet-api_3.?_spec*.jar"/>
+			<!-- Glassfish 2.1.1 -->
+			<include name="lib/javaee.jar"/>
+			<!-- Glassfish 3.1 -->
+			<include name="lib/glassfish/javaee.jar"/>			
+			<!-- Glassfish 4.0 -->
+			<include name="glassfish/lib/javaee.jar"/>			
+			<!-- WebLogic 10.3.3 -->
+			<include name="modules/javax.servlet_1.0.0.0_2-5.jar"/>
+			<!-- WebSphere 7.0.0.13 -->
+			<include name="lib/j2ee.jar"/>
+		</fileset>
+		<!--fileset dir="${ejbca.home}/lib/ext" includes="servlet-*.jar"/-->
+	</path>
+
+	<fileset id="lib.jsf.classpath.files" dir="${appserver.home}">
+		<!-- JBoss 5.1.0 -->
+		<include name="server/default/deploy/jbossweb.sar/jsf-libs/jsf-api.jar"/>
+		<include name="server/default/deploy/jbossweb.sar/jsf-libs/jsf-impl.jar"/>
+		<include name="server/default/deploy/jbossweb.sar/jstl.jar"/>
+		<include name="common/lib/el-api.jar"/>
+		<!-- JBoss 6.0.0 -->
+		<include name="server/default/deployers/jsf.deployer/Mojarra-2.0/jsf-libs/*.jar"/>
+		<!-- JBoss 7.2.0, 7.1.1 and EAP 6.0 -->
+		<include name="modules/javax/faces/api/main/jboss-jsf-api_2.1_spec-2.0.*.jar"/>
+		<!-- JBoss 7.2.0 and EAP 6.1, 6.2 and WildFly 8  -->							   
+		<include name="modules/system/layers/base/javax/faces/api/main/jboss-jsf-api_2.?_spec*.jar"/>
+		<!-- Glassfish 2.1.1 -->
+		<include name="lib/jsf-impl.jar" />
+		<!-- Glassfish 3.1 -->
+		<include name="modules/jsf-impl.jar" />
+		<!-- WebLogic 10.3.4 -->
+		<include name="modules/javax.jsf_1.1.0.0_1-2.jar" />
+		<!-- websphere ? -->
+	</fileset>
+	<path id="lib.jsf.classpath">
+		<fileset refid="lib.jsf.classpath.files"/>
+	</path>
+	
+	<path id="lib.jsp.classpath">
+		<fileset dir="${appserver.home}">
+			<!-- JBoss -->
+			<include name="common/lib/jsp-api.jar" /> <!-- 5.1.0 -->
+			<include name="server/default/deploy/jbossweb.sar/jstl.jar" /> <!-- 5.1.0 -->
+			<include name="common/lib/el-api.jar" /> <!-- 5.1.0 -->
+		    <include name="modules/javax/el/api/main/jboss-el-api_2.2_spec-1.0*.jar"/> <!-- 7.1.1 / EAP6.0 -->
+			<include name="modules/system/layers/base/javax/el/api/main/jboss-el-api_*_spec*.jar"/><!-- 7.2.0 / EAP6.1, 6.2 and WildFly 8 -->
+			<!-- Glassfish -->
+			<include name="lib/appserv-jstl.jar" /> <!-- 2.1.1 -->
+			<include name="modules/javax.servlet.jsp.jstl.jar" /> <!-- 3.1 -->
+			<!-- WebLogic 10.3.4 -->
+			<!-- websphere ? -->
+		</fileset>
+	</path>
+	
+	<path id="lib.jasper.classpath">
+		<fileset dir="${appserver.home}">
+			<!-- JBoss -->
+			<include name="server/default/deploy/jbossweb.sar/jasper-jdt.jar" /> <!-- 5.1.0 -->
+			<include name="server/default/deploy/jbossweb.sar/jbossweb.jar" /> <!-- 5.1.0 -->
+			<include name="common/lib/servlet-api.jar" /> <!-- 5.1.0 -->
+			<include name="lib/jboss-logging-spi.jar" /> <!-- 5.1.0 -->
+			<!-- Glassfish -->
+			<include name="lib/appserv-rt.jar" /> <!-- 2.1.1 -->
+			<include name="lib/appserv-jstl.jar" /> <!-- 2.1.1 -->
+			<include name="lib/javaee.jar" /> <!-- 2.1.1 -->
+			<include name="modules/javax.servlet.jsp.jstl.jar" /> <!-- 3.1 -->
+			<!-- WebLogic 10.3.4 -->
+			<!-- websphere ? -->
+		</fileset>
+	</path>
+	
+	<!-- JBoss 5.1.0 -->
+	<path id="lib.jboss-log4j.classpath"><fileset dir="${appserver.home}/client" includes="jboss-logging-log4j.jar log4j.jar"/></path>
+	
+	<path id="lib.log4j.classpath"><pathelement location="${ejbca.home}/lib/log4j-1.2.16.jar"/></path>
+	
+	<path id="lib.json.classpath"><fileset dir="${ejbca.home}/lib/ct" includes="json-simple-*.jar"/></path>
+	
+	<path id="lib.ejbca-util.classpath">
+    	<pathelement location="${ejbca.home}/lib/cert-cvc-1.4.1.jar"/>
+    	<pathelement location="${mod.ejbca-util.lib}"/>
+	</path>
+
+	<path id="lib.ejbca-common-web.classpath">
+    	<path refid="lib.ejbca-util.classpath"/>
+    	<pathelement location="${mod.ejbca-ejb-interface.lib}"/>
+		<pathelement location="${mod.cesecore-common.lib}"/>
+		<pathelement location="${mod.cesecore-ejb-interface.lib}"/>
+    	<pathelement location="${mod.ejbca-common-web.lib}"/>
+	</path>
+
+	<path id="lib.bouncycastle-provonly.classpath"><fileset dir="${ejbca.home}/lib"><include name="bcprov-jdk15on-151.jar"/></fileset></path>
+	<path id="lib.bouncycastle-mailonly.classpath"><fileset dir="${ejbca.home}/lib"><include name="bcpkix-jdk15on-151.jar"/></fileset></path>
+	<path id="lib.bouncycastle.classpath">
+		<path refid="lib.bouncycastle-provonly.classpath"/>
+		<path refid="lib.bouncycastle-mailonly.classpath"/>
+	</path>
+
+	<path id="lib.jpa.classpath">
+        <fileset dir="${ejbca.home}/lib/hibernate">
+            <include name="antlr-*.jar"/>
+            <include name="dom4j-*.jar"/>
+            <include name="hibernate-commons-annotations-*.jar"/>
+            <include name="hibernate-core-*.jar"/>
+            <include name="hibernate-entitymanager-*.jar"/>
+            <include name="hibernate-jpa-*.jar"/>
+            <include name="javassist-*.jar"/>
+            <include name="jboss-logging-*.jar"/>
+            <include name="jboss-transaction-api*.jar"/>
+        </fileset>
+	</path>
+
+	<!-- When we moved to Hibernate 4.1 we also need to have older hibernate libs 
+	on the classpath in some cases, when we use detached entities as parameters/return values in remote EJB calls.
+	This is because these depends on the hibernate of the appserver, and jboss 5 and 6 uses older versions of hibernate.
+	This can be removed once we don't have to support jboss 5 and 6 any more -->
+	<path id="lib.hibernate.compatibility.classpath">
+        <fileset dir="${ejbca.home}/lib/hibernate/compatibility">
+            <include name="*.jar"/>
+        </fileset>
+	</path>
+
+	<path id="lib.clientToolBox.classpath">
+        <path location="${mod.clientToolBox.dist}/properties" />
+        <path location="${mod.clientToolBox.lib}" />
+        <path>
+			<fileset dir="${mod.clientToolBox.dist}/lib" includes="*.jar" />
+		</path>
+	</path>
+
+	<path id="lib.cmpTcpProxy.classpath">
+        <path location="${mod.cmpTcpProxy.dist}/properties" />
+        <path location="${mod.cmpTcpProxy.lib}" />
+        <path>
+			<fileset dir="${mod.cmpTcpProxy.dist}/lib" includes="*.jar" />
+		</path>
+	</path>
+	
+	<!-- Certificate Transparency -->
+	<path id="lib.ctlog.classpath">
+	    <path refid="lib.commons-codec.classpath"/>
+		<path refid="lib.json.classpath"/>
+	    <fileset dir="${ejbca.home}/lib/ct">
+	        <include name="ctlog-jdk6-*.jar"/>
+	        <include name="protobuf-*.jar"/>
+            <include name="guava-*.jar" />
+	        
+	        <!-- TODO should update the files in lib/ and use them instead -->
+            <include name="httpclient-*.jar" />
+            <include name="httpcore-*.jar" />
+        </fileset>
+    </path>
+
+    <!-- Now when everything is set up, we can load the old property defaults -->
+    <condition property="jndi.properties.file" value="${ejbca.home}/conf/jndi.properties.${appserver.subtype}">
+        <available file="${ejbca.home}/conf/jndi.properties.${appserver.subtype}"/>
+    </condition>
+    <property name="jndi.properties.file" location="${ejbca.home}/conf/jndi.properties.${appserver.type}" />
+    <!-- jboss-ejb-client.properties is only used in JBoss 7 (or higher?), but it does not hurt to simply copy it for earlier versions either -->
+    <property name="jboss-ejb-client.properties" location="${ejbca.home}/src/appserver/jboss/jboss7/jboss-ejb-client.properties" />
+	<echo message="jndi.properties.file: ${jndi.properties.file}"/>
+	
+	<!-- Is peerconnector available -->
+	<condition property="mod.peerconnector.exists">
+		<available file="${mod.peerconnector.path}/build.xml" />
+    </condition>
+	<condition property="mod.peerconnector-rar.exists">
+		<and>
+			<available file="${mod.peerconnector.path}/build.xml"/>
+			<not>
+				<istrue value="${peerconnector.rar.disabled}"/>
+			</not>
+		</and>
+    </condition>
+
+	<condition property="mod.externalra.exists">
+		<available file="${mod.externalra.path}/build.xml" />
+    </condition>
+	
+	<condition property="mod.externalra-scep.exists">
+		<available file="${mod.externalra-scep.path}/build.xml" />
+    </condition>
+	
+
+	<condition property="ejbca-db-cli.available">
+		<available file="${mod.ejbca-entity.path}/src-cli/org" type="dir"/>
+	</condition>
+
+</project>

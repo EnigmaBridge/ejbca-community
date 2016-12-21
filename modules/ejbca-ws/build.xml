@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ejbca-ws" default="build">
+    <description>
+		The EJBCA Web Services web application.
+    </description>
+
+	<dirname property="this.dir" file="${ant.file.ejbca-ws}"/>
+	<import file="${this.dir}/../build.xml"/>
+	
+	<property name="build.dir" location="${this.dir}/build"/>
+	<property name="build-lib.dir" location="${this.dir}/build-lib"/>
+	<property name="src.dir" location="${this.dir}/src"/>
+	<property name="src-gen.dir" location="${this.dir}/src-gen"/>
+
+	<path id="compile.classpath">
+		<path refid="compile-library.classpath"/>
+		<path refid="lib.ejbca-common-web.classpath"/>
+		<path refid="lib.jee.classpath"/>
+		<path refid="lib.servlet.classpath"/>
+		<path refid="lib.log4j.classpath"/>
+		<path refid="lib.commons-lang.classpath"/>
+		<path refid="lib.cert-cvc.classpath"/>
+        <path location="${mod.cesecore-entity.lib}"/>
+        <path location="${mod.cesecore-common.lib}"/>
+        <path location="${mod.cesecore-ejb-interface.lib}"/>
+		<path location="${mod.edition-specific-interface.lib}"/>
+		<path location="${mod.edition-specific-ejb.lib}"/>
+	</path>
+
+	<path id="compile-library.classpath">
+		<path refid="lib.ejbca-util.classpath"/>
+		<path refid="lib.jee.classpath"/>
+		<path refid="lib.bouncycastle.classpath"/>
+        <path location="${mod.cesecore-entity.lib}"/>
+        <path location="${mod.cesecore-common.lib}"/>
+        <path location="${mod.cesecore-ejb-interface.lib}"/>
+		<path location="${mod.edition-specific-interface.lib}"/>
+		<path location="${mod.edition-specific-ejb.lib}"/>
+	</path>
+
+	<path id="generate.classpath">
+		<path refid="lib.cert-cvc.classpath" /> 
+		<path refid="lib.jee.classpath" /> 
+		<path refid="lib.bouncycastle.classpath" /> 
+		<path refid="lib.log4j.classpath" /> 
+		<path refid="lib.commons-lang.classpath" /> 
+		<path refid="lib.servlet.classpath" />
+		<path refid="lib.ejbca-common-web.classpath"/>
+	</path>
+
+	<path id="wsdl-generate.classpath">
+		<path refid="generate.classpath" /> 
+		<pathelement location="${build.dir}" /> 
+	</path>
+
+    <target name="build" description="Build this module" depends="build-ejb-jar, build-jar"/>
+
+    <target name="build-ejb-jar" description="Build the EJB JAR that handles Web Services in EJBCA" depends="compile">
+    	<dirname file="${mod.ejbca-ws-ejb.jar}" property="mod.ejbca-ws-ejb.jar.dir"/>
+    	<mkdir dir="${mod.ejbca-ws-ejb.jar.dir}" />
+        <jar destfile="${mod.ejbca-ws-ejb.jar}" basedir="${build.dir}">
+        	<fileset dir="${this.dir}/resources" includes="**"/>
+        </jar>
+    </target>
+
+    <target name="build-jar" description="Build EJBCA WS common library" depends="compile-library">
+    	<dirname file="${mod.ejbca-ws.lib}" property="mod.ejbca-ws.lib.dir"/>
+    	<mkdir dir="${mod.ejbca-ws.lib.dir}" />
+    	<jar destfile="${mod.ejbca-ws.lib}" basedir="${build-lib.dir}"/>
+    </target>
+
+    <target name="clean" description="Clean up this module">
+		<delete dir="${build.dir}" />
+		<delete dir="${build-lib.dir}" />
+		<delete file="${mod.ejbca-ws.war}" />
+		<delete file="${mod.ejbca-ws.lib}" />
+		<delete file="${mod.ejbca-ws.wsdl}" />
+		<delete file="${mod.ejbca-ws.wsdl-schema}" />
+    </target>
+	
+    <target name="compile-external-deps" unless="external-deps-satfisfied"><antcall target="ejbca-common-web"/></target>
+    <target name="compile" depends="compile-external-deps">
+    	<mkdir dir="${build.dir}" />
+        <javac destdir="${build.dir}" debug="on" includeantruntime="no"
+        	encoding="UTF-8" target="${java.target.version}" classpathref="compile.classpath">
+        	<src path="${src.dir}"/>
+    	</javac>
+    </target>
+
+    <target name="compile-library-external-deps" unless="external-deps-satfisfied"><antcall target="ejbca-util"/></target>
+    <target name="compile-library" depends="compile-library-external-deps">
+    	<mkdir dir="${build-lib.dir}" />
+        <javac destdir="${build-lib.dir}" debug="on" includeantruntime="no"
+        	encoding="UTF-8" target="${java.target.version}" classpathref="compile-library.classpath">
+        	<src path="${src-gen.dir}"/>
+        	<src path="${src.dir}"/>
+    	    <include name="org/ejbca/core/protocol/ws/common/*.java"/>
+    	    <include name="org/ejbca/core/protocol/ws/objects/*.java"/>
+    	</javac>
+    </target>
+
+	<target name="generate-wsdl" depends="compile">
+		<pathconvert property="wsdl-generate.classpath-string" refid="wsdl-generate.classpath"/>
+		<mkdir dir="${this.dir}/temp" />
+		<!-- Generate a WSDL file that can be used for client stub generation -->
+		<exec command="${java.home}/../bin/wsgen" failonerror="true">
+			<arg line="-classpath ${wsdl-generate.classpath-string} -r ${mod.dist.path} -d ${this.dir}/temp/ -wsdl org.ejbca.core.protocol.ws.EjbcaWS"/>
+		</exec>
+		<!-- This is maybe not the optimal way of doing this since it compiles the whole thing again.. but it still
+			 better than deploying the application server first. -->
+		<delete dir="${this.dir}/temp" includeemptydirs="true"/>
+    </target>
+
+</project>

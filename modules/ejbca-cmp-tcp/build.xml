@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ejbca-cmp-tcp" default="build">
+    <description>
+            Build file for the CMP TCP component
+    </description>
+
+	<dirname property="this.dir" file="${ant.file.ejbca-cmp-tcp}"/>
+	<import file="${this.dir}/../build.xml"/>
+	
+	<property name="build.dir" location="${this.dir}/build"/>
+	<property name="src.dir" location="${this.dir}/src"/>
+	<property name="resources.dir" location="${this.dir}/resources"/>
+
+	<path id="compile.classpath">
+		<path refid="lib.ejbca-common-web.classpath"/>
+		<path refid="lib.servlet.classpath"/>
+		<path refid="lib.log4j.classpath"/>
+		<path refid="lib.bouncycastle.classpath"/>
+		<path refid="lib.commons-lang.classpath"/>
+		<path refid="lib.quickserver.classpath"/>
+                <path location="${mod.cesecore-entity.lib}"/>
+                <path location="${mod.cesecore-common.lib}"/>
+                <path location="${mod.cesecore-ejb-interface.lib}"/>
+	</path>
+	
+    <target name="clean" description="Clean up this module">
+		<delete dir="${build.dir}" />
+    	<delete file="${mod.ejbca-cmp-tcp.war}" />
+    </target>
+	
+    <target name="build" description="Build this module" depends="compile" if="cmptcpservices.enabled">
+        <war destfile="${mod.ejbca-cmp-tcp.war}" webxml="${resources.dir}/WEB-INF/web.xml" basedir="${build.dir}">
+        	<zipfileset prefix="WEB-INF/lib" dir="${ejbca.home}/lib/quickserver" includes="QuickServer.jar commons-pool.jar"/>
+        </war>
+    </target>
+
+    <target name="compile-external-deps" unless="external-deps-satfisfied"><antcall target="ejbca-util"/><antcall target="ejbca-common-web"/><antcall target="ejbca-ejb-interface"/></target>
+    <target name="compile" depends="compile-external-deps" if="cmptcpservices.enabled">
+    	<mkdir dir="${build.dir}/WEB-INF/classes" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}/WEB-INF/classes" debug="on" includeantruntime="no" encoding="UTF-8" target="${java.target.version}"
+        	classpathref="compile.classpath"/>
+    </target>
+</project>

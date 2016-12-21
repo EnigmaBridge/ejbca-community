@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*************************************************************************
+ *                                                                       *
+ *  EJBCA: The OpenSource Certificate Authority                          *
+ *                                                                       *
+ *  This software is free software; you can redistribute it and/or       *
+ *  modify it under the terms of the GNU Lesser General Public           *
+ *  License as published by the Free Software Foundation; either         *
+ *  version 2.1 of the License, or any later version.                    *
+ *                                                                       *
+ *  See terms of license at gnu.org.                                     *
+ *                                                                       *
+ *************************************************************************/
+
+ version: $Id: orm-ejbca-postgres.xml 19968 2014-10-09 13:13:58Z mikekushner $
+ -->
+<entity-mappings version="1.0"
+    xmlns="http://java.sun.com/xml/ns/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd">
+
+    <!-- 
+         This file contains mappings specific to PostgreSQL.
+
+         boolean: BOOLEAN
+         int:     INT4
+         long:    INT8
+         String:  TEXT
+         CLOB:    TEXT
+         Object:  BYTEA
+
+         Exceptions:
+         - Use of BYTEA with Hibernate JPA provider requires that <lob/> (or @Lob) isn't used. This affects:
+             - CertificateProfileData.data
+             - HardTokenData.data
+             - HardTokenIssuerData.data
+             - LogConfigurationData.logConfiguration
+             - AdminPreferencesData.data
+             - EndEntityProfileData.data
+             - GlobalConfigurationData.data
+             Otherwise errors like "ERROR: column ... is of type bytea but expression is of type bigint" will appear.
+
+         Notes:
+         - Hibernate by default maps Serializable to the "OID" data-type, instead of "BYTEA". OID is a reference to LOB on disk.
+           Deleting a row with an OID will not remove the LOB from disk, so we stick with BYTEA.
+
+         - The same goes for use of TEXT, don't use <lob/> (or @Lob), 
+             see for example http://postgresql.1045698.n5.nabble.com/Jdbc4ResultSet-getClob-and-getBlob-are-calling-getLong-internally-td2172181.html.
+    -->
+
+    <entity class="org.cesecore.certificates.certificate.CertificateData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="fingerprint"><column name="fingerprint" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="issuerDN"><column name="issuerDN" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="subjectDN"><column name="subjectDN" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="caFingerprint"><column name="cAFingerprint" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="status"><column name="status" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="type"><column name="type" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="serialNumber"><column name="serialNumber" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="expireDate"><column name="expireDate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="revocationDate"><column name="revocationDate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="revocationReason"><column name="revocationReason" column-definition="INT4" nullable="false"/></basic>
+            <!-- We need to allow this field to be null in external OCSP responder mode and it's easier if the tables look the same! -->
+            <basic fetch="EAGER" name="base64Cert"><column name="base64Cert" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="username"><column name="username" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="tag"><column name="tag" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="certificateProfileId"><column name="certificateProfileId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="updateTime"><column name="updateTime" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="subjectKeyId"><column name="subjectKeyId" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.certificates.certificate.Base64CertData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="fingerprint"><column name="fingerprint" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="base64Cert"><column name="base64Cert" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.certificates.crl.CRLData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="fingerprint"><column name="fingerprint" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="crlNumber"><column name="cRLNumber" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="issuerDN"><column name="issuerDN" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="caFingerprint"><column name="cAFingerprint" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="thisUpdate"><column name="thisUpdate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="nextUpdate"><column name="nextUpdate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="deltaCRLIndicator"><column name="deltaCRLIndicator" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="base64Crl"><column name="base64Crl" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.keys.token.CryptoTokenData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="tokenName"><column name="tokenName" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="tokenType"><column name="tokenType" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="lastUpdate"><column name="lastUpdate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="tokenProps"><column name="tokenProps" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="tokenData"><column name="tokenData" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.authorization.rules.AccessRuleData" access="PROPERTY" metadata-complete="false">
+    	<table name="AccessRulesData"/>
+        <attributes>
+            <id name="primaryKey"><column name="pK" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="accessRuleName"><column name="accessRule" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="state"><column name="rule" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="recursiveBool"><column name="isRecursive" column-definition="BOOLEAN" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+            <transient name="recursiveInt"/>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.authorization.cache.AccessTreeUpdateData" access="PROPERTY" metadata-complete="false">
+    	<table name="AuthorizationTreeUpdateData"/>
+        <attributes>
+            <id name="primaryKey"><column name="pK" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="accessTreeUpdateNumber"><column name="authorizationTreeUpdateNumber" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+ 	<entity class="org.cesecore.authorization.user.AccessUserAspectData" access="PROPERTY" metadata-complete="false">
+    	<table name="AdminEntityData"/>    
+        <attributes>
+            <id name="primaryKey"><column name="pK" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="matchWith"><column name="matchWith" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="matchType"><column name="matchType" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="matchValue"><column name="matchValue" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="caId"><column name="cAId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="tokenType"><column name="tokenType" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.roles.RoleData" access="PROPERTY" metadata-complete="false">
+    	<table name="AdminGroupData"/>
+        <attributes>
+            <id name="primaryKey"><column name="pK" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="roleName"><column name="adminGroupName" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+            <one-to-many name="accessRules" fetch="EAGER"><map-key name="primaryKey"/><join-column name="AdminGroupData_accessRules" column-definition="INT4"/><cascade><cascade-all/></cascade></one-to-many>
+            <one-to-many name="accessUsers" fetch="EAGER"><map-key name="primaryKey"/><join-column name="AdminGroupData_adminEntities" column-definition="INT4"/><cascade><cascade-all/></cascade></one-to-many>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.audit.impl.integrityprotected.AuditRecordData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="pk"><column name="pk" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="nodeId"><column name="nodeId" column-definition="TEXT" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="sequenceNumber"><column name="sequenceNumber" column-definition="INT8" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="timeStamp"><column name="timeStamp" column-definition="INT8" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="eventType"><column name="eventType" column-definition="TEXT" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="eventStatus"><column name="eventStatus" column-definition="TEXT" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="authToken"><column name="authToken" column-definition="TEXT" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="service"><column name="service" column-definition="TEXT" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="module"><column name="module" column-definition="TEXT" nullable="false" updatable="false"/></basic>
+            <basic fetch="EAGER" name="customId"><column name="customId" column-definition="TEXT" nullable="true" updatable="false"/></basic>
+            <basic fetch="EAGER" name="searchDetail1"><column name="searchDetail1" column-definition="TEXT" nullable="true" updatable="false"/></basic>
+            <basic fetch="EAGER" name="searchDetail2"><column name="searchDetail2" column-definition="TEXT" nullable="true" updatable="false"/></basic>
+            <basic fetch="EAGER" name="additionalDetails"><column name="additionalDetails" column-definition="TEXT" nullable="true" updatable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.certificates.ca.CAData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="caId"><column name="cAId" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="subjectDN"><column name="subjectDN" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="status"><column name="status" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="expireTime"><column name="expireTime" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="updateTime"><column name="updateTime" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="data"><column name="data" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.certificates.certificateprofile.CertificateProfileData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="certificateProfileName"><column name="certificateProfileName" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="dataUnsafe"><column name="data" column-definition="BYTEA" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.approval.ApprovalData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="approvalid"><column name="approvalId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="approvaltype"><column name="approvalType" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="endentityprofileid"><column name="endEntityProfileId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="caid"><column name="cAId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="reqadmincertissuerdn"><column name="reqAdminCertIssuerDn" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="reqadmincertsn"><column name="reqAdminCertSn" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="status"><column name="status" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="approvaldata"><column name="approvalData" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="requestdata"><column name="requestData" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="requestdate"><column name="requestDate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="expiredate"><column name="expireDate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="remainingapprovals"><column name="remainingApprovals" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ca.publisher.PublisherData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="updateCounter"><column name="updateCounter" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="data"><column name="data" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ca.publisher.PublisherQueueData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="pk"><column name="pk" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="timeCreated"><column name="timeCreated" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="lastUpdate"><column name="lastUpdate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="publishStatus"><column name="publishStatus" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="tryCounter"><column name="tryCounter" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="publishType"><column name="publishType" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="fingerprint"><column name="fingerprint" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="publisherId"><column name="publisherId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="volatileData"><column name="volatileData" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ca.store.CertReqHistoryData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="fingerprint"><column name="fingerprint" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="issuerDN"><column name="issuerDN" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="serialNumber"><column name="serialNumber" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="timestamp"><column name="timestamp" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="userDataVO"><column name="userDataVO" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="username"><column name="username" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.hardtoken.HardTokenCertificateMap" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="certificateFingerprint"><column name="certificateFingerprint" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="tokenSN"><column name="tokenSN" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.hardtoken.HardTokenData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="tokenSN"><column name="tokenSN" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="username"><column name="username" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="ctime"><column name="cTime" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="mtime"><column name="mTime" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="tokenType"><column name="tokenType" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="significantIssuerDN"><column name="significantIssuerDN" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="dataUnsafe"><column name="data" column-definition="BYTEA"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.hardtoken.HardTokenIssuerData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="alias"><column name="alias" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="adminGroupId"><column name="adminGroupId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="dataUnsafe"><column name="data" column-definition="BYTEA" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.hardtoken.HardTokenProfileData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="updateCounter"><column name="updateCounter" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="data"><column name="data" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.hardtoken.HardTokenPropertyData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+        	<embedded-id name="hardTokenPropertyDataPK">
+        		<attribute-override name="id"><column name="id" column-definition="TEXT"/></attribute-override>
+        		<attribute-override name="property"><column name="property" column-definition="TEXT"/></attribute-override>
+        	</embedded-id>
+            <basic fetch="EAGER" name="value"><column name="value" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <!-- See JavaDoc for notes about KeyRecoveryData.markedAsRecoverable -->
+    <entity class="org.ejbca.core.ejb.keyrecovery.KeyRecoveryData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+        	<embedded-id name="keyRecoveryDataPK">
+        		<attribute-override name="certSN"><column name="certSN" column-definition="TEXT"/></attribute-override>
+        		<attribute-override name="issuerDN"><column name="issuerDN" column-definition="TEXT"/></attribute-override>
+        	</embedded-id>
+            <basic fetch="EAGER" name="username"><column name="username" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="markedAsRecoverableBool"><column name="markedAsRecoverable" column-definition="BOOLEAN" nullable="false"/></basic>
+            <basic fetch="EAGER" name="keyData"><column name="keyData" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="cryptoTokenId"><column name="cryptoTokenId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="keyAlias"><column name="keyAlias" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="publicKeyId"><column name="publicKeyId" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+            <transient name="markedAsRecoverableInt"/>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ra.UserData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="username"><column name="username" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="subjectDN"><column name="subjectDN" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="caId"><column name="cAId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="subjectAltName"><column name="subjectAltName" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="subjectEmail"><column name="subjectEmail" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="status"><column name="status" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="type"><column name="type" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="clearPassword"><column name="clearPassword" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="passwordHash"><column name="passwordHash" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="timeCreated"><column name="timeCreated" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="timeModified"><column name="timeModified" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="endEntityProfileId"><column name="endEntityProfileId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="certificateProfileId"><column name="certificateProfileId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="tokenType"><column name="tokenType" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="hardTokenIssuerId"><column name="hardTokenIssuerId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="extendedInformationData"><column name="extendedInformationData" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="keyStorePassword"><column name="keyStorePassword" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="cardNumber"><column name="cardNumber" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ra.raadmin.AdminPreferencesData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="dataUnsafe"><column name="data" column-definition="BYTEA" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ra.raadmin.EndEntityProfileData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="profileName"><column name="profileName" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="dataUnsafe"><column name="data" column-definition="BYTEA" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.configuration.GlobalConfigurationData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="configurationId"><column name="configurationId" column-definition="TEXT"/></id>
+            <basic fetch="EAGER" name="dataUnsafe"><column name="data" column-definition="BYTEA" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.ra.userdatasource.UserDataSourceData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="updateCounter"><column name="updateCounter" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="data"><column name="data" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.core.ejb.services.ServiceData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="data"><column name="data" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="nextRunTimeStamp"><column name="nextRunTimeStamp" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="runTimeStamp"><column name="runTimeStamp" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.cesecore.keybind.InternalKeyBindingData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="status"><column name="status" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="keyBindingType"><column name="keyBindingType" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="certificateId"><column name="certificateId" column-definition="TEXT" nullable="true"/></basic>
+            <basic fetch="EAGER" name="cryptoTokenId"><column name="cryptoTokenId" column-definition="INT4" nullable="false"/></basic>
+            <basic fetch="EAGER" name="keyPairAlias"><column name="keyPairAlias" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rawData"><column name="rawData" column-definition="TEXT"/><lob/></basic>
+            <basic fetch="EAGER" name="lastUpdate"><column name="lastUpdate" column-definition="INT8" nullable="false"/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/><lob/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <entity class="org.ejbca.peerconnector.PeerData" access="PROPERTY" metadata-complete="false">
+        <attributes>
+            <id name="id"><column name="id" column-definition="INT4"/></id>
+            <basic fetch="EAGER" name="name"><column name="name" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="connectorState"><column name="connectorState" column-definition="INT4" nullable="false"/></basic>
+     	    <basic fetch="EAGER" name="url"><column name="url" column-definition="TEXT" nullable="false"/></basic>
+            <basic fetch="EAGER" name="data"><column name="data" column-definition="TEXT"/><lob/></basic>
+            <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="TEXT"/><lob/></basic>
+            <version name="rowVersion"><column name="rowVersion" column-definition="INT4" nullable="false"/></version>
+        </attributes>
+    </entity>
+    <embeddable class="org.ejbca.core.ejb.hardtoken.HardTokenPropertyDataPK">
+        <attributes>
+            <basic fetch="EAGER" name="id"><column name="id" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="property"><column name="property" column-definition="TEXT"/></basic>
+        </attributes>
+    </embeddable>
+    <embeddable class="org.ejbca.core.ejb.keyrecovery.KeyRecoveryDataPK">
+        <attributes>
+            <basic fetch="EAGER" name="certSN"><column name="certSN" column-definition="TEXT"/></basic>
+            <basic fetch="EAGER" name="issuerDN"><column name="issuerDN" column-definition="TEXT"/></basic>
+        </attributes>
+    </embeddable>
+
+</entity-mappings>

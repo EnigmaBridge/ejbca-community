@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="deprecated" basedir="." default="deprecated:check">
+    <description>
+        This build file contains deprecation checks for EJBCA. These may be
+        obsoleted properties, ant targets, or anything else the user should be
+        aware of.
+
+        The main purpose is to warn the users about the removal of those
+        features/functionalities in the following release so they can update
+        their property files or their procedures in a timely manner.
+
+        Once the item has been deprecated in one release of EJBCA, in the next
+        release it should be moved from here to the removed list (in removed.xml
+        build file), and set-up in such a way that it'll fail a build (using the
+        "fail" ant task).
+    </description>
+
+    <!--=======================-->
+    <!-- Old property mangling -->
+    <!--=======================-->
+    <!-- Use old variables as default for new variables.  Since properties are
+         included before this file, a configured property will never be
+         overridden. Set the warning messages inside of deprecated:notify
+         target. -->
+
+    <!-- The j2ee.web-noconfigure option has been replaced with the
+         web.nosslconfigure, but the same values are valid, so we just copy
+         it. -->
+    <condition property="web.nosslconfigure" value="${j2ee.web-noconfigure}">
+        <isset property="j2ee.web-noconfigure"/>
+    </condition>
+
+    <!--=======================-->
+    <!-- Deprecation utilities -->
+    <!--=======================-->
+    <!-- Display the warning messages and sleep for 10 seconds in order to draw the user's attention. -->
+    <target name="deprecated:notify" if="deprecated.detected">
+        <echo message="You're using deprecated features! Be aware that those features will be removed in the next release! Proceeding automatically in 10 seconds. You can stop the build process now by pressing Ctrl-C." />
+
+        <!-- j2ee.web-noconfigure warning message -->
+        <condition property="deprecated.j2ee.web-noconfigure.warning"
+                   value="You are still using the j2ee.web-noconfigure option in the ocsp.properties. This option is deprecated. It has been replaced by the 'web.nosslconfigure' option which can be found in the web.properties. Please review the 'web.properties.sample' file for more details." else="">
+            <isset property="j2ee.web-noconfigure"/>
+        </condition>
+    	<echo message="${deprecated.j2ee.web-noconfigure.warning}" level="warning"/>
+
+        <sleep seconds="10" />
+    </target>
+
+    <!--===================-->
+    <!-- Top-level targets -->
+    <!--===================-->
+    <!-- A top-level target that should be called from outside of this build
+         script.  It should depend on all of the deprecation checks that should
+         be performed. -->
+    <target name="deprecated:check">
+    	<condition property="deprecated.detected">
+            <or>
+                <isset property="j2ee.web-noconfigure"/>
+                <!-- isset ... -->
+            </or>
+    	</condition>
+        <!-- Notify user of any deprecations have been detected -->
+        <antcall target="deprecated:notify"/>
+    </target>
+
+    <!--=================================================================================-->
+    <!-- Deprecated ant targets should be put in here with informative failure messages. -->
+    <!--=================================================================================-->
+    <target name="bootstrap">
+        <property name="deprecated.detected" value="true" />
+        <echo message="The use of 'bootstrap' target in EJBCA is deprecated. It has been superseded by the 'deploy' target. This was part of the rewrite of the installation procedure for EJBCA. Please read the accompanying installation documentation with current release of EJBCA in order to get acquainted with the new installation procedure. This target will be removed in the next release." level="warning" />
+        <antcall target="deprecated:notify" />
+        <antcall target="deploy" />
+    </target>
+
+    <target name="ocsp-deploy">
+        <property name="deprecated.detected" value="true" />
+        <echo message="The use of 'ocsp-deploy' target in EJBCA is deprecated. It has been superseded by the 'va-deploy' target. This target will be removed in the next release." />
+        <antcall target="deprecated:notify" />
+        <antcall target="va-deploy" />
+    </target>
+    	
+    <target name="va-deploy">
+        <property name="deprecated.detected" value="true" />
+        <echo message="The use of 'va-deploy' target in EJBCA is deprecated. The VA is now deployed as a standard build. This target will be removed in the next release." />
+        <antcall target="deprecated:notify" />
+        <antcall target="deploy" />
+	</target>
+	
+	<target name="test:runocsp.setuptest">
+	        <property name="deprecated.detected" value="true" />
+	        <echo message="The use of 'runocsp.setuptest' target in EJBCA is deprecated. OCSP tests are no longer dependent on prerun setup" />
+	        <antcall target="deprecated:notify" />
+	</target>
+	
+	<target name="test:runocsp">
+		<property name="deprecated.detected" value="true" />
+		<echo message="The use of 'runocsp' target in EJBCA is deprecated. OCSP are now included the main run command" />
+		<antcall target="deprecated:notify" />
+	</target>
+</project>
+

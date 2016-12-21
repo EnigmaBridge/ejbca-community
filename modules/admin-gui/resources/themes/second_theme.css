@@ -1,0 +1,1017 @@
+/*
+ * EJBCA - Enterprise Java Bean Certificate Authority
+ *
+ * GUI   : Administration
+ * Style : CSS (Cascading Style Sheets)
+ * Media : all
+ * Theme : second
+ *
+ */
+
+
+/*--------------------------------------------------------------------------*/
+/* GLOBAL */
+
+* {
+	font-family: Verdana, Arial, Helvetica, Geneva, sans-serif;
+}
+body {
+	margin: .5em 1em .5em 2em;
+	padding: 0em;
+	background-color: #FFF;
+	color: #000;
+	font-size: 11pt;
+}
+code, code *, pre, pre * {
+	font-family: "Courier New", Courier, monospace;
+}
+a img {
+	border-width: 0px;
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* NAVIGATION */
+
+body#menu {
+	margin: 0em;
+	padding: 0em;
+	background-color: #FFF;
+	color: #000;
+}
+
+#navigation {
+	margin: 0em;
+	padding: .75em .75em .75em 1.25em;
+	font-family: Verdana, Arial, Helvetica, Geneva, sans-serif;
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+#navigation ul {
+	margin: 0em;
+	padding: 0em;
+}
+#navigation li {
+	list-style-type: none;
+}
+
+#navigation li.section {
+	margin: .5em 0em .75em 0em;
+}
+#navigation li.section strong {
+	font-size: 11pt;
+	text-shadow: .1em .1em .2em rgba(0,0,0,.2);
+	-o-text-shadow: .1em .1em .2em #BBB;
+	-moz-text-shadow: .1em .1em .2em rgba(0,0,0,.2);
+	-khtml-text-shadow: .1em .1em .2em #BBB;
+	-webkit-text-shadow: .1em .1em .2em rgba(0,0,0,.2);
+}
+#navigation li.section ul {
+	margin-top: .25em;
+}
+
+#navigation a {
+	display: block;
+/*	padding: .08em .25em .15em .25em;	/* Vertical space higher */
+	padding: .04em .25em .08em .25em;	/* More compact */
+	text-decoration: none;
+}
+#navigation ul a {
+	margin-left: -.4em;
+	padding-left: .4em;
+	border: 1px solid transparent;
+}
+#navigation ul ul a {
+	margin-left: 0em;
+	padding-left: .5em;
+	border-left-width: 1em;
+}
+
+#navigation a:link,
+#navigation a:visited {
+	background-color: transparent;
+	border-color: transparent;
+	color: #00A;
+}
+#navigation a:hover,
+#navigation a:focus,
+#navigation a:active {
+	background-color: #EEE;
+	border-color: #BBB;
+	color: #A00;
+	border-radius: 1em;
+	-o-border-radius: 1em;
+	-moz-border-radius: 1em;
+	-khtml-border-radius: 1em;
+	-webkit-border-radius: 1em;
+	box-shadow: .15em .15em .45em rgba(0,0,0,.1);
+	-o-box-shadow: .15em .15em .45em #DDD;
+	-moz-box-shadow: .15em .15em .45em rgba(0,0,0,.1);
+	-khtml-box-shadow: .15em .15em .45em #DDD;
+	-webkit-box-shadow: .15em .15em .45em rgba(0,0,0,.1);
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* HEADER & FOOTER */
+
+/* --- Header */
+body#header {
+	margin: 0em;
+	padding: 0em;
+	background-color: #FFF;
+	color: #000;
+	overflow: hidden;
+}
+#header div#banner {
+	height: 84px;
+	margin: 8px 8px;
+	padding: 0em;
+	/* For IMG ALT */
+	color: #404040;
+	font-size: 3em;
+	line-height: 1.9em;
+	white-space: nowrap;
+}
+#header div#banner img {
+	max-height: 84px;
+	margin-top: 0px;
+}
+
+/* --- Footer */
+div#footer {
+	margin-top: 1.5em;
+	text-align: center;
+}
+#footer a:link,
+#footer a:visited {
+	color: #00A;
+	text-decoration: none;
+}
+#footer a:hover,
+#footer a:focus,
+#footer a:active {
+	color: #A00;
+	text-decoration: underline;
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* CONTENT */
+
+h0 {
+	margin-top: 0em;
+ 	margin-bottom: .2em;
+ 	margin-left: .3em;
+ 	text-align: left;
+ 	font-size: 1.3em;
+ 	font-style: italic;
+ 	color: #000000;
+ 	text-shadow: .05em .05em 0em rgba(0,0,0,.1);
+ 	-o-text-shadow: .05em .05em 0em #DDD;
+ 	-moz-text-shadow: .05em .05em 0em rgba(0,0,0,.1);
+ 	-khtml-text-shadow: .05em .05em 0em #DDD;
+ 	-webkit-text-shadow: .05em .05em 0em rgba(0,0,0,.1);
+}
+
+h1 {
+	margin-top: 0em;
+	margin-bottom: .2em;
+	text-align: left;
+	font-size: 2em;
+	color: #686868;
+	text-shadow: .05em .05em 0em rgba(0,0,0,.1);
+	-o-text-shadow: .05em .05em 0em #DDD;
+	-moz-text-shadow: .05em .05em 0em rgba(0,0,0,.1);
+	-khtml-text-shadow: .05em .05em 0em #DDD;
+	-webkit-text-shadow: .05em .05em 0em rgba(0,0,0,.1);
+}
+h2 {
+	margin-top: .5em;
+	margin-bottom: .5em;
+	text-align: left;
+	font-size: 1.5em;
+	color: #686868;
+}
+h3 {
+	margin-top: .5em;
+	margin-bottom: 0em;
+	text-align: left;
+	font-size: 1.2em;
+	color: #000;
+}
+h4 {
+	margin-top: .5em;
+	margin-bottom: 0em;
+	text-align: left;
+	font-size: 1em;
+	color: #000;
+}
+a {
+	background-color: transparent;
+	text-decoration: none;
+}
+a:link,
+a:visited {
+	color: #00A;
+}
+a:hover,
+a:focus,
+a:active {
+	color: #A00;
+}
+input,
+textarea,
+select {
+	font-size: 11pt;
+}
+select option:hover,
+select option:focus,
+select option:active {
+	background-color: #FFC;
+}
+select.number {
+	text-align: right;
+}
+select.acronym {
+	text-align: center;
+}
+div.message {
+	margin-top: .5em;
+	text-align: center;
+}
+.hexa {
+	text-transform: uppercase;
+}
+
+/* --- Tables */
+table {
+	font-size: 1em;
+}
+table th,
+table td {
+	margin: 0px;
+	padding: 2px 3px;
+	border: none;
+	vertical-align: top;
+}
+table h3 {
+	margin-top: 0em;
+}
+table.grid {
+	border-collapse: collapse;
+}
+table.grid th {
+	background-color: #F4F4F4;
+	color: #284E81;
+	white-space: nowrap;
+}
+table.grid th,
+table.grid td {
+	margin: 0px;
+	padding: 2px 3px;
+	border: 1px solid #6F9AD3;
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* CONTENT > FORMS */
+
+/* --- Forms: All tables */
+form table fieldset {
+	display: inline;
+	padding: .1em .5em .2em 0em;
+	border: 1px solid #CED0D5;		/* Keep it, for old web browsers */
+	border: 1px solid rgba(0,0,0,.15);
+	border-radius: .8em;
+	-o-border-radius: .8em;
+	-moz-border-radius: .8em;
+	-khtml-border-radius: .8em;
+	-webkit-border-radius: .8em;
+	background-color: #F2F4FA;		/* Keep it, for old web browsers */
+	background-color: rgba(0,0,0,.02);
+}
+
+/* --- Forms: Help */
+table .help {
+/*	display: none;		/* Hide all in-line help */
+	line-height: 1.40em;
+	white-space: normal;
+/*	font-size: .9em;	/* Smaller font size */
+	color: #606060;		/* Keep it, for old web browsers */
+	color: rgba(0,0,0,.6);
+}
+table p.help {
+	margin: .2em .1em;
+}
+table span.help {
+}
+/* Add End-Entity */
+table#addendentity .help {
+	font-size: .8em;
+}
+
+
+/* --- Forms: List/Actions */
+table.list,
+table.actions {
+	width: 100%;
+	margin: 0em;
+	padding: 0em;
+	border: 0px;
+}
+table.list tr td,
+table.actions tr td {
+	padding-bottom: .2em;
+	line-height: 2em;
+}
+table.list tr td h3,
+table.actions tr td h3 {
+	margin-bottom: -.25em;
+}
+
+
+/* --- Forms: Edit/Action/View */
+table.view,
+table.action,
+table.edit-top,
+table.edit-bottom,
+table.edit {
+	margin: .75em -2px 0em -2px;
+	border-spacing: 3px 1px;
+}
+table.subsection,
+table.edit-bottom {
+	margin-top: -1px;
+}
+table.view tr td,
+table.action tr td,
+table.edit-top tr td,
+table.edit-bottom tr td,
+table.edit tr td {
+	padding: .25em .5em;
+	line-height: 1.60em;
+}
+/* Columns */
+.editColumn1 {
+	width: 35%;
+	text-align: right;
+}
+.editColumn2 {
+	width: 65%;
+}
+/* Titles (and Sections) */
+table tr.section td,
+table tr.title td {
+	font-size: 1.25em;
+}
+/* DN & attributes */
+table tr td .dn {
+	white-space: pre-wrap;
+}
+table tr td .attribute {
+	white-space: pre !important;
+}
+
+/* --- Form: Edit */
+/* Headers, Sections, and Footers */
+table.edit-top tr:first-child td,
+table.edit tr:first-child td,
+table.edit-bottom tr.section td,
+table.edit tr.section td {
+	background-color: #FEEECD;
+	border-top: 3px solid #FEDD9A;
+	color: #A00;
+}
+table.edit-top tr:first-child td.field,		/* For JSF */
+table.edit tr:first-child td.field {
+	text-align: right;
+}
+table.edit-bottom tr:last-child td,
+table.edit tr:last-child td {
+	background-color: #FEEECD;
+	border-bottom: 3px solid #FEDD9A;
+	color: #A00;
+}
+/* Titles */
+table.edit-top tr.title td,
+table.edit-bottom tr.title td,
+table.edit tr.title td {
+	background-color: #FEF6E6;
+	/* Color: rgba(254,238,205,1) = #FEEECD */
+	background-image: -moz-linear-gradient(top, rgba(254,238,205,1) 0%, rgba(254,238,205,0) 100%);		/* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, rgba(254,238,205,1) 0%,rgba(254,238,205,0) 100%);	/* Chrome10+,Safari5.1+ */
+	background-image: -o-linear-gradient(top, rgba(254,238,205,1) 0%,rgba(254,238,205,0) 100%);			/* Opera 11.10+ */
+	background-image: -ms-linear-gradient(top, rgba(254,238,205,1) 0%,rgba(254,238,205,0) 100%);		/* IE10+ */
+	background-image: linear-gradient(top, rgba(254,238,205,1) 0%,rgba(254,238,205,0) 100%);			/* W3C */
+	color: #600;
+}
+
+/* --- Form: Action */
+table.action tr td {
+	vertical-align: middle;
+}
+/* Headers, Sections, and Footers */
+table.action tr:first-child td,
+table.action tr.section td {
+	background-color: #D0E2F6;
+	border-top: 3px solid #A5C7EE;
+	color: #1F60A9;
+}
+table.action tr:last-child td {
+	background-color: #D0E2F6;
+	border-bottom: 3px solid #A5C7EE;
+	color: #1F60A9;
+}
+
+/* --- Form: View */
+table.view {
+	margin-top: .25em;
+}
+table.view tr td {
+	padding: .15em .5em !important;
+	line-height: 1.4em;
+}
+/* Headers, Sections, and Footers */
+table.view tr:first-child td,
+table.view tr.section td {
+	background-color: #E5E5E5;
+	border-top: 3px solid #CCCCCC;
+	color: #000;
+}
+table.view tr:last-child td {
+	background-color: #E5E5E5;
+	border-bottom: 3px solid #CCCCCC;
+	color: #000;
+}
+/* Titles */
+table.view tr.title td {
+	background-color: #F2F2F2;
+	/* Color: rgba(229,229,229,1) = #E5E5E5 */
+	background-image: -moz-linear-gradient(top, rgba(229,229,229,1) 0%, rgba(229,229,229,0) 100%);		/* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, rgba(229,229,229,1) 0%,rgba(229,229,229,0) 100%);	/* Chrome10+,Safari5.1+ */
+	background-image: -o-linear-gradient(top, rgba(229,229,229,1) 0%,rgba(229,229,229,0) 100%);			/* Opera 11.10+ */
+	background-image: -ms-linear-gradient(top, rgba(229,229,229,1) 0%,rgba(229,229,229,0) 100%);		/* IE10+ */
+	background-image: linear-gradient(top, rgba(229,229,229,1) 0%,rgba(229,229,229,0) 100%);			/* W3C */
+	color: #000;
+}
+
+/* --- Forms: Edit/Action/View */		/* KEEP IT HERE */
+table.view table,
+table.action table,
+table.edit-top table,
+table.edit-bottom table,
+table.edit table {
+	background-color: transparent;
+	border-spacing: 0px;
+}
+table.view table tr td,
+table.action table tr td,
+table.edit-top table tr td,
+table.edit-bottom table tr td,
+table.edit table tr td {
+	padding: 0em .5em .1em 0em !important;
+	background-color: transparent !important;
+	border: 0px none transparent !important;
+	color: #000 !important;
+}
+
+
+/* --- Forms: Search/Results */
+table.search tr td {
+	padding: .25em .5em .1em 0em;
+	line-height: 1.75em;
+}
+table.search tr td select option.separator {
+	border-top: 1px solid #A0A0A0;
+	border-color: rgba(0,0,0,.30);
+	background-color: #D0D0D0;		/* Keep it, for old web browsers */
+	background-color: rgba(0,0,0,.10);
+	color: #404040;					/* Keep it, for old web browsers */
+	color: rgba(0,0,0,.65);
+	font-weight: bold;
+}
+table.search tr td select.day {
+	text-align: right;
+}
+table.search tr td select.year {
+	text-align: center;
+}
+table.search tr td select.time {
+	text-align: center;
+}
+table.results {
+	min-width: 1100px;
+}
+table.results thead tr td {
+	white-space: nowrap;
+}
+table.results tbody tr:hover,
+table.results tbody tr:focus,
+table.results tbody tr:active {
+	background-color: #FFB !important;
+}
+table.results tbody tr td {
+	vertical-align: middle;
+}
+table.results tbody tr td a {
+	white-space: nowrap;
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* CONTENT > PAGES */
+
+/* --- Page: Home */
+h3#welcome {
+	color: #555;
+	text-shadow: .1em .1em .15em rgba(0,0,0,.1);
+	-o-text-shadow: .1em .1em .15em #DDD;
+	-moz-text-shadow: .1em .1em .15em rgba(0,0,0,.1);
+	-khtml-text-shadow: .1em .1em .15em #DDD;
+	-webkit-text-shadow: .1em .1em .15em rgba(0,0,0,.1);
+}
+div#information {
+	margin-top: .5em;
+}
+#information code {
+	font-size: 1.15em;
+/*	font-weight: bold;	/**/
+}
+div#home {
+	margin-top: 1.5em;
+}
+#home > table > tbody > tr > td {
+	margin: 0em;
+	padding: 0em;
+}
+div.status {
+	margin: 0em 1em 0em 0em;
+}
+div.status h4 {
+	margin: 0px;
+	padding: 3px 4px;
+	background: #DDD none;
+	border: 1px solid #6F9AD3;
+	border-bottom: 0px none;
+	border-radius: .8em .8em 0em 0em;
+	-o-border-radius: .8em .8em 0em 0em;
+	-moz-border-radius: .8em .8em 0em 0em;
+	-khtml-border-radius: .8em .8em 0em 0em;
+	-webkit-border-radius: .8em .8em 0em 0em;
+	color: #000;
+	font-size: small;
+}
+div.status h4 a:link,
+div.status h4 a:visited,
+div.status h4 a:hover,
+div.status h4 a:focus,
+div.status h4 a:active {
+	color: #000 !important;
+	text-decoration: underline;
+}
+div.status h4,
+div.status table th,
+div.status table td {
+	white-space: nowrap;
+}
+div.status table td img {
+	width: 16px;
+	height: 16px;
+	margin-top: .1em;
+}
+
+/* --- Page: CA > CryptoTokens */
+form#cryptotokens table {
+	border-collapse: collapse;
+	right: auto; /* ??? */
+	left: auto;
+}
+form#cryptotokens img.statusIcon {
+	border-width: 0;
+}
+
+/* --- Page: CA > CA Activation */
+.actTokenAndCasHeader {
+	text-align: left;
+	color: #000;
+	background-color: #FFF;
+}
+.actCasHeader {
+	padding-left: 4px;
+	padding-right: 8px;
+	text-align: left;
+	background-color: #EEE;
+	color: #284E81;
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+}
+.actCas {
+	margin-top: 0.3em;
+	margin-bottom: 1em;
+	border-collapse: collapse;
+	right: auto;
+	left: auto;
+}
+.actCas tbody tr:nth-child(2n) {
+	background-color: #F7F9FD;
+}
+.actCas tbody tr:hover,
+.actCas tbody tr:focus,
+.actCas tbody tr:active {
+	background-color: #FFB;
+}
+.actCas tbody th,
+.actCas tbody td {
+	margin: 0px;
+	padding: 2px 3px;
+	border: 1px solid #2E5A94;
+	background-color: transparent;
+	padding: 4px 3px;
+	vertical-align: middle;
+	text-align: left;
+	white-space: nowrap;
+	padding-right: 9px;
+}
+
+
+div#code {
+	margin-top: 1.5em;
+}
+div#code input {
+	margin-left: .35em;
+}
+div#code input[type="submit"] {
+	margin-left: 1em;
+}
+
+/* --- Page: CA > Certificate Profiles */
+select option.cvcoption_header {
+    background: #ffc;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+    padding: 3px;
+    color: #000;
+}
+
+/* --- Page: RA > End-Entity profile */
+table#endentityprofile.edit tr td:first-child {
+	vertical-align: middle;
+	text-align: center;
+}
+table#endentityprofile.edit tr td input[name="textfieldpassword"] {
+	margin-bottom: .1em;
+}
+
+/* --- Page: RA > Add End-Entity */
+table#addendentity tr td {
+	padding: .15em .3em;
+	vertical-align: middle;
+	white-space: nowrap;
+	font-size: 1.2em;
+}
+/* Titles (and Sections) */
+table#addendentity tr.section td,
+table#addendentity tr.title td {
+	font-size: 1.35em;
+}
+table#addendentity tr td:last-child {
+	text-align: center;
+}
+
+/* --- Page: SUP > Log configuration */
+table#logconfiguration {
+	margin-bottom: .25em;
+}
+table#logconfiguration td {
+	padding: .2em;
+	font-size: .9em;
+}
+table#logconfiguration td span {
+	display: block;
+	margin-bottom: .5em;
+}
+table#logconfiguration td h3 {
+	margin: .2em 0em;
+	text-align: center;
+}
+table#logconfiguration td.field {
+	padding-left: .4em;
+	text-align: left;
+}
+table#logconfiguration td.checkbox {
+	text-align: center;
+}
+table#logconfigbuttons td {
+	padding: .5em .25em;
+}
+table#logconfigbuttons td input[type="button"] {
+	margin-top: .3em;
+	margin-right: .5em;
+}
+table#logconfigbuttons td input[type="submit"] {
+	margin-right: 1em;
+}
+
+/* --- Page: SUP > View Log */
+#search2 input.noBorder {
+	border: 0px;
+}
+#search2 input.numberInputBig {
+	width: 6em; text-align: right;
+}
+#search2 input.numberInputSmall {
+	width: 4em; text-align: right;
+}
+#search2 td {
+	white-space: nowrap;
+}
+
+/* --- Page: SYS > Administrators Groups */
+/* Administrator entities */
+form#groupList p {
+	margin-top: 1.25em;
+}
+form#groupList p a.commandLink {
+	font-size: 1.0em;
+}
+form#groupList table {
+	border-collapse: collapse;
+}
+form#groupList table tr.listRow2 {
+	background-color: #FAFAFA;
+}
+form#groupList table tbody tr:hover,
+form#groupList table tbody tr:focus,
+form#groupList table tbody tr:active {
+	background-color: #FFB;
+}
+form#groupList table th,
+form#groupList table td {
+	white-space: nowrap;
+}
+form#groupList table th {
+	padding-bottom: .35em;
+}
+form#groupList table td {
+	padding: .35em;
+	border: 1px solid #E0E0E0;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+form#groupList table td a {
+	margin: .5em;
+	padding: .15em .3em;
+	border: 1px solid transparent;
+	font-size: inherit !important;
+}
+form#groupList table td a:hover,
+form#groupList table td a:focus,
+form#groupList table td a:active {
+	background-color: #FFF;
+	border: 1px solid #A00;
+	border-radius: .25em;
+	-o-border-radius: .25em;
+	-moz-border-radius: .25em;
+	-khtml-border-radius: .25em;
+	-webkit-border-radius: .25em;
+}
+/* Access rules */
+form#accessRulesForm table {
+	margin-top: 3px;
+}
+form#accessRulesForm table table {
+	margin: 0em;
+}
+form#accessRulesForm table table thead tr:first-child th {
+	background-color: #FEEECD !important;
+	border-top: 3px solid #FEDD9A;
+	color: #A00;
+}
+form#accessRulesForm table table thead tr th {
+	text-align: center;
+}
+form#accessRulesForm table table thead tr th:first-child {
+	text-align: left;
+}
+
+/* --- Page: SYS > Configuration */
+table#config {
+	margin-top: .25em;
+}
+table#config tr td {
+	padding: .4em .4em;
+	line-height: 1.40em;
+}
+table#config tr td:first-child {
+	vertical-align: top;
+}
+
+
+/*--------------------------------------------------------------------------*/
+/* TABLES */
+
+.Row0, #Row0 { color: black; font-size: 9pt; background-color: #F7F9FF; }
+.Row1, #Row1 { color: black; font-size: 9pt; background-color: #E5ECFF; }
+
+.label { vertical-align: top; text-align: right; }
+.field { vertical-align: top; text-align: left; }
+
+.listCaption { font-weight: bold; font-size: 1.2em; text-align: left; background-color: #5B8CCD; color: #FFF; padding-left: .25em; }
+.listHeader { color: #777; font-size: 1.1em; font-weight: bold; text-align: left; }
+
+/* --- Table: List/Actions */
+
+.listColumn1 { text-align: left; width: 40%; }
+.listColumn2 { text-align: left; width: 60%; }
+
+/* --- Table: SUP > Logs */
+
+td#InfoRow0 { color: black; font-size: 9pt; background-color: white; }
+td#InfoRow1 { color: black; font-size: 9pt; background-color: #ccffcc; }
+td#ErrorRow0 { color: black; font-size: 9pt; background-color: white; }
+td#ErrorRow1 { color: black; font-size: 9pt; background-color: #ffcccc; }
+
+tr#LogTextRow0 { color: black; font-size: 7pt; background-color: white; }
+tr#LogTextRow1 { color: black; font-size: 7pt; background-color: #E5ECFF; }
+
+/* --- Table: SYS > Administrators Groups */
+
+.caColumn { text-align: left; width: 20%; }
+.withColumn { text-align: left; width: 35%; }
+.typeColumn { text-align: left; width: 20%; }
+.valueColumn { text-align: left; width: 20%; }
+.commandColumn { text-align: left; width: 5%; }
+
+.rulesColumn1 { text-align: left; width: 70%; }
+.rulesColumn2 { text-align: center; width: 15%; }
+
+
+/*--------------------------------------------------------------------------*/
+/* POPUPS */
+
+body.popup {
+	margin: 1em;
+	padding: 0em;
+	background-color: #FFF;
+	color: #000;
+	font-size: 11pt;
+}
+.popup h2,
+.popup h3,
+.popup h4 {
+	text-align: center;
+}
+.popup h2 {
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+.popup h3 {
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+.popup h4 {
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+.popup table {
+	width: 100%;
+	border: 0px none;
+}
+.popup table tr td {
+	padding: .1em .3em;
+}
+/* Titles (and Sections) */
+.popup table tr.section td,
+.popup table tr.title td {
+	font-size: 1.2em;
+}
+.popup table tr td:first-child {
+	white-space: nowrap;
+}
+
+/* --- Popup: View End-Entity */
+.popup#viewendentity table.view {
+	margin-top: .5em;
+}
+.popup#viewendentity table.view table {
+	margin: 0em -.5em;
+}
+.popup#viewendentity table.view table tr td {
+	padding-left: .6em !important;
+}
+.popup#viewendentity table.view table tr:nth-child(2n) td {
+	background-color: #EEE !important;
+	background-color: rgba(0,0,0,.03) !important;
+}
+
+/* --- Popup: Edit End-Entity */
+.popup#editendentity table.edit {
+	margin-top: .5em;
+}
+.popup#editendentity table.edit tr td {
+	padding: .15em .3em;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+.popup#editendentity table.edit tr td:last-child {
+	text-align: center;
+}
+
+/* --- Popup: View Certificate */
+.popup#viewcertificate table.view tr.title td {			/* Set Normal size */
+	font-size: 1.0em;
+}
+.popup#viewcertificate table.view tr:first-child td {	/* Rollback Popup Title size */
+	font-size: 1.2em;
+}
+
+/* --- Popup: View History */
+.popup#viewhistory h2,
+.popup#viewhistory h3,
+.popup#viewhistory h4 {
+	text-align: left;
+}
+.popup#viewhistory table tbody tr td:first-child {
+	white-space: normal;
+}
+
+
+/*--------------------------------------------------------------------------*/
+
+.alert { color: red; font-size: 11pt; font-weight: bold; background-color: white; }
+.info { color: black; font-size: 11pt; font-weight: bold; background-color: white; }
+
+.commandLink { font-size: 9pt; font-weight: bold; text-decoration: none; text-align: right; margin-left: .5em; margin-right: .5em; }
+.commandButton { font-size: 9pt; vertical-align: bottom; margin-left: .5em; margin-right: .5em; }
+
+.commandLink.reload { color: #4B842E; }
+.commandLink.remove { color: #A21C15; }
+
+select option.lightgreen { background-color: #80FF80; }
+select option.lightyellow { background-color: #FFFFB3; }
+select option.lightred { background-color: #FFB8B8; }
+
+div.tabLinks {
+	width: inherit;
+	margin-top: 5px;
+	padding-left: 2px;
+	border-bottom: 1px solid #aaa;
+}
+a.tabLinkfalse {
+	font-size: 16px;
+	font-weight: bold;
+    text-align: left;
+    padding: 2px 7px 2px 7px;
+    margin-bottom: 2px;
+	color: #669;
+	background: #fbfbfb;
+	border-left: 1px solid #aaa;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+a.tabLinktrue {
+	font-size: 16px;
+	font-weight: bold;
+    text-align: left;
+    padding: 2px 7px 2px 7px;
+    margin-bottom: 2px;
+	color: #009;
+	background: #fff;
+	border-left: 1px solid #aaa;
+	border-top: 1px solid #aaa;
+	border-right: 1px solid #aaa;
+	border-bottom: 1px solid #fff;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+a.tabLinkfalse:hover, a.tabLinktrue:hover{
+	color: #009;
+	background: #eee;
+}
+.infoMessage {
+	font-style: italic;
+	padding: 0.5em;
+	border-radius: 0.3em;
+	background: #fcfcfc;
+	margin-bottom: 1em;
+}
+.propertyTable {
+	border: 0px;
+	right: auto;
+	left: auto;
+}
+
+/* CSS2 compatible expandable text */
+.expandOnClick { width: 25em;  height: 1em;  display: block; overflow: hidden; white-space: nowrap; }
+.expandOnClick:after { content: "..."; }
+.expandOnClick:focus { width: 100%; display: inline; overflow: auto; color:#000000; white-space: pre-wrap; cursor: pointer; }
+.expandOnClick:focus:after { content: ""; }
+
+/*--------------------------------------------------------------------------*/
+/* EOF */

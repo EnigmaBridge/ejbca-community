@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="2.5" id="web-app_1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+    http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <description><![CDATA[EJBCA Administration web]]></description>
+
+    <!-- TODO: Disable this when EJBCA 4 is fully stable. -->
+    <context-param>
+        <param-name>com.sun.faces.validateXml</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+	<!-- In JBoss AS 6 we don't want to use JSF2, because the Tomahawk library is not compatible with that. -->
+	<context-param>
+    	<param-name>org.jboss.jbossfaces.JSF_CONFIG_NAME</param-name>
+    	<param-value>Mojarra-1.2</param-value>
+ 	</context-param>
+
+    <filter>
+        <filter-name>ProxiedAuthenticationFilter</filter-name>
+        <filter-class>org.ejbca.ui.web.admin.ProxiedAuthenticationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ProxiedAuthenticationFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- Tomahawk filter for file uploads. Should be replaced by h:inputFile pattern when we can use JSF2.2. -->
+    <filter>
+        <filter-name>extensionsFilter</filter-name>
+        <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
+        <init-param>
+            <description>Maximum size of uploads</description>
+            <param-name>uploadMaxFileSize</param-name>
+            <param-value>101k</param-value>
+        </init-param>
+        <init-param>
+            <description>Maximum size of uploads before using disk</description>
+            <param-name>uploadThresholdSize</param-name>
+            <param-value>100k</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>extensionsFilter</filter-name>
+        <url-pattern>*.jsf</url-pattern>
+    </filter-mapping>
+
+    <!-- Clickjack Filter from OWASP adding X-FRAME-OPTIONS header to pages to prevent including 
+         our pages in other frames. https://www.owasp.org/index.php/Clickjacking_Protection_for_Java_EE -->
+	<filter>
+		<filter-name>ClickjackFilterDeny</filter-name>
+		<filter-class>org.owasp.filters.ClickjackFilter</filter-class>
+		<init-param>
+			<param-name>mode</param-name>
+			<param-value>DENY</param-value>
+		</init-param>
+	</filter>
+
+	<filter>
+		<filter-name>ClickjackFilterSameOrigin</filter-name>
+		<filter-class>org.owasp.filters.ClickjackFilter</filter-class>
+		<init-param>
+			<param-name>mode</param-name>
+			<param-value>SAMEORIGIN</param-value>
+		</init-param>
+	</filter>
+
+    <!--  use the Deny version to prevent anyone, including yourself, from framing the page
+          Since we are using frames in adminweb, we don't use deny.
+	<filter-mapping> 
+		<filter-name>ClickjackFilterDeny</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+    -->
+
+	<!-- use the SameOrigin version to allow your application to frame, but nobody else -->
+	<filter-mapping> 
+		<filter-name>ClickjackFilterSameOrigin</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>ContentSecurityPolicyFilter</filter-name>
+		<filter-class>org.owasp.filters.ContentSecurityPolicyFilter</filter-class>
+		<init-param>
+		    <param-name>unsafeeval</param-name>
+		    <param-value>yes</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping> 
+		<filter-name>ContentSecurityPolicyFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+   <servlet>
+      <description><![CDATA[Returns the specified CA certificate]]></description>
+      <display-name>CryptoTokenDownloadServlet</display-name>
+      <servlet-name>CryptoTokenDownloadServlet</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cryptotoken.CryptoTokenDownloadServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+      <servlet>
+      <description><![CDATA[Returns a zip file containing certificate and/or end entity profiles]]></description>
+      <display-name>ProfilesExportServlet</display-name>
+      <servlet-name>ProfilesExportServlet</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.certprof.ProfilesExportServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Returns the specified CA certificate]]></description>
+      <display-name>CACertServlet</display-name>
+      <servlet-name>CACert</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cainterface.CACertServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Used to retrieve CA certificate request and Processed CA Certificates from AdminWeb GUI]]></description>
+      <display-name>AdminCertReqServlet</display-name>
+      <servlet-name>AdminCertReq</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cainterface.AdminCertReqServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Returns the CA as a PKCS#12 file.]]></description>
+      <display-name>CAExportServlet</display-name>
+      <servlet-name>CAExport</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cainterface.CAExportServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Returns the specified end entity certificate]]></description>
+      <display-name>EndEntityCertServlet</display-name>
+      <servlet-name>EndEntityCert</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cainterface.EndEntityCertServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Used to retrive CA certificate request and Processed CA Certificates from AdminWeb GUI]]></description>
+      <display-name>CACertReqServlet</display-name>
+      <servlet-name>CACertReq</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cainterface.CACertReqServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Used to retrive CA certificate request and Processed CA Certificates from AdminWeb GUI]]></description>
+      <display-name>GetCRLServlet</display-name>
+      <servlet-name>GetCRL</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.cainterface.GetCRLServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   <servlet>
+      <description><![CDATA[Servlet used to start services by calling the ServiceSession.load()]]></description>
+      <display-name>StartServicesServlet</display-name>
+      <servlet-name>StartServices</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.configuration.StartServicesServlet</servlet-class>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+   <servlet>
+      <servlet-name>LogOutServlet</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.LogOutServlet</servlet-class>
+      <load-on-startup>99</load-on-startup>
+   </servlet>
+   
+   <servlet>
+      <servlet-name>Faces Servlet</servlet-name>
+      <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+    
+   <servlet-mapping>
+      <servlet-name>Faces Servlet</servlet-name>
+      <url-pattern>*.jsf</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>CryptoTokenDownloadServlet</servlet-name>
+      <url-pattern>/cryptoTokenDownloads</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+   	  <servlet-name>ProfilesExportServlet</servlet-name>
+   	  <url-pattern>/profilesexport</url-pattern>
+   </servlet-mapping>
+   
+   <servlet-mapping>
+      <servlet-name>CACert</servlet-name>
+      <url-pattern>/ca/cacert</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>AdminCertReq</servlet-name>
+      <url-pattern>/ca/certreq</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>CAExport</servlet-name>
+      <url-pattern>/ca/exportca</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>EndEntityCert</servlet-name>
+      <url-pattern>/ca/endentitycert</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>CACertReq</servlet-name>
+      <url-pattern>/ca/editcas/cacertreq</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>GetCRL</servlet-name>
+      <url-pattern>/ca/getcrl/getcrl</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>LogOutServlet</servlet-name>
+      <url-pattern>/logout</url-pattern>
+   </servlet-mapping>
+
+   <session-config>
+      <session-timeout>30</session-timeout>
+   </session-config>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>restricted methods</web-resource-name>
+            <url-pattern>/*</url-pattern>
+            <http-method>PUT</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>OPTIONS</http-method>
+            <http-method>TRACE</http-method>
+        </web-resource-collection>
+        <auth-constraint />
+    </security-constraint> 
+
+   <!--
+   <!ELEMENT mime-mapping (extension, mime-type)>
+   -->
+
+   <!--
+   <!ELEMENT error-page ((error-code | exception-type), location)>
+   -->
+
+	<!-- Try without a DataSource..
+   <resource-ref id="ResRef_1">
+      <res-ref-name>java:/EjbcaDS</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+   </resource-ref>
+   	-->
+
+   <!--
+   <!ELEMENT security-constraint (display-name?, web-resource-collection+, auth-constraint?, user-data-constraint?)>
+   <!ELEMENT web-resource-collection (web-resource-name, description?, url-pattern*, http-method*)>
+   <!ELEMENT web-resource-name (#PCDATA)>
+   <!ELEMENT url-pattern (#PCDATA)>
+   <!ELEMENT http-method (#PCDATA)>
+   <!ELEMENT user-data-constraint (description?, transport-guarantee)>
+   <!ELEMENT transport-guarantee (#PCDATA)>
+
+   <!ELEMENT login-config (auth-method?, realm-name?, form-login-config?)>
+   <!ELEMENT auth-method (#PCDATA)>
+   <!ELEMENT realm-name (#PCDATA)>
+   <!ELEMENT form-login-config (form-login-page, form-error-page)>
+   <!ELEMENT form-login-page (#PCDATA)>
+   <!ELEMENT form-error-page (#PCDATA)>
+   -->
+
+    <ejb-local-ref>
+        <description>An EJB that can provide references to all other SSBs to avoid this kind of declarations</description>
+        <ejb-ref-name>EjbBridgeSession</ejb-ref-name>
+        <local>org.ejbca.core.ejb.EjbBridgeSessionLocal</local>
+        <ejb-link>EjbBridgeSessionBean</ejb-link>
+    </ejb-local-ref>
+    <ejb-local-ref>
+        <description>An EJB that can provide references to all enterprise edition SSBs to avoid this kind of declarations</description>
+        <ejb-ref-name>EnterpriseEditionEjbBridgeSession</ejb-ref-name>
+        <local>org.ejbca.core.ejb.EnterpriseEditionEjbBridgeSessionLocal</local>
+        <ejb-link>EnterpriseEditionEjbBridgeSessionBean</ejb-link>
+    </ejb-local-ref>
+</web-app>
