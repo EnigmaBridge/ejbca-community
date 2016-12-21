@@ -1,5 +1,10 @@
 .idea
+.settings
 build/
 *.log
 *.jar
+*.class
+*.tpm
+*~
+*.swp
 
