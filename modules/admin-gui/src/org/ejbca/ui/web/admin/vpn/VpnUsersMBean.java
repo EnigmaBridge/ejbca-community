@@ -40,8 +40,6 @@ import java.util.*;
  * @version $Id: VpnUsersMBean.java 20320 2014-11-25 18:05:45Z mikekushner $
  */
 public class VpnUsersMBean extends BaseManagedBean implements Serializable {
-
-    private static final String CRYPTOTOKEN_LABEL_TYPE_TEXTPREFIX = "CRYPTOTOKEN_LABEL_TYPE_";
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(VpnUsersMBean.class);
 
@@ -383,7 +381,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
 
     /** Invoked when admin requests a CryptoToken creation. */
-    public void saveCurrentCryptoToken() throws AuthorizationDeniedException {
+    public void saveCurrentVpnUser() throws AuthorizationDeniedException {
         String msg = null;
         try {
             final Properties properties = new Properties();

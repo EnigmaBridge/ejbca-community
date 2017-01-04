@@ -54,16 +54,16 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:outputText id="currentCryptoTokenId" value="#{vpnUsersMBean.currentVpnUserId}" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>
 		<h:outputLabel for="currentVpnUserName" value="#{web.text.VPNUSER_NAME}:"/>
 		<h:panelGroup id="currentVpnUserName">
-	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.name}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode}">
+	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.name}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode && vpnUsersMBean.currentVpnUserId == null}">
 	    		<f:validator validatorId="legalCharsValidator"/>
 	    	</h:inputText>
-	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.name}" rendered="#{!vpnUsersMBean.currentCryptoTokenEditMode}"/>
+	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.name}" style="width: 300px" rendered="#{!vpnUsersMBean.currentCryptoTokenEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
 
 		<h:panelGroup/>
 		<h:panelGroup>
 			<h:commandButton action="#{vpnUsersMBean.cancelCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_CANCEL}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
-			<h:commandButton action="#{vpnUsersMBean.saveCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_SAVE}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode}"/>
+			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode}"/>
 		</h:panelGroup>
 	</h:panelGrid>
 	</h:form>
