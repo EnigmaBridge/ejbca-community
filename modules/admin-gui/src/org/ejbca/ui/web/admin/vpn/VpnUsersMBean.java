@@ -17,20 +17,51 @@ import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
 import org.cesecore.authorization.control.CryptoTokenRules;
+import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CaSessionLocal;
+import org.cesecore.certificates.ca.CaSessionRemote;
+import org.cesecore.certificates.certificate.IllegalKeyException;
+import org.cesecore.certificates.certificateprofile.CertificateProfileSession;
+import org.cesecore.certificates.endentity.EndEntityConstants;
+import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.certificates.util.AlgorithmConstants;
 import org.cesecore.certificates.util.AlgorithmTools;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
+import org.cesecore.keys.util.KeyPairWrapper;
+import org.cesecore.keys.util.KeyTools;
+import org.cesecore.util.CertTools;
+import org.cesecore.util.EjbRemoteHelper;
 import org.cesecore.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
+import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionRemote;
+import org.ejbca.core.ejb.ca.sign.SignSession;
+import org.ejbca.core.ejb.ca.sign.SignSessionRemote;
+import org.ejbca.core.ejb.keyrecovery.KeyRecoverySessionRemote;
+import org.ejbca.core.ejb.ra.*;
+import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
+import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
+import org.ejbca.core.model.InternalEjbcaResources;
+import org.ejbca.core.model.SecConst;
+import org.ejbca.core.model.keyrecovery.KeyRecoveryInformation;
+import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
+import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
+import org.ejbca.ui.web.admin.rainterface.UserView;
+import org.ejbca.util.keystore.P12toPEM;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
-import java.security.PrivateKey;
+import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 /**
@@ -250,11 +281,22 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private boolean currentCryptoTokenEditMode = true;  // currenVpnUserId==0 from start
 
     private final VpnUserManagementSession vpnUserManagementSession = getEjbcaWebBean().getEjb().getVpnUserManagementSession();
+    private final EndEntityProfileSessionLocal endEntityProfileSession = getEjbcaWebBean().getEjb().getEndEntityProfileSession();
+    private final CertificateProfileSession certificateProfileSession = getEjbcaWebBean().getEjb().getCertificateProfileSession();
+    private final EndEntityManagementSession endEntityManagementSession = getEjbcaWebBean().getEjb().getEndEntityManagementSession();
+    private final EndEntityAccessSession endEntityAccessSession = getEjbcaWebBean().getEjb().getEndEntityAccessSession();
+    private final EndEntityAuthenticationSession endEntityAuthenticationSession = getEjbcaWebBean().getEjb().getEndEntityAuthenticationSession();
+    private final SignSession signSession = getEjbcaWebBean().getEjb().getSignSession();
 
     private final AccessControlSessionLocal accessControlSession = getEjbcaWebBean().getEjb().getAccessControlSession();
     private final AuthenticationToken authenticationToken = getAdmin();
     private final CaSessionLocal caSession = getEjbcaWebBean().getEjb().getCaSession();
     private final InternalKeyBindingMgmtSessionLocal internalKeyBindingMgmtSession = getEjbcaWebBean().getEjb().getInternalKeyBindingMgmtSession();
+
+    /**
+     * @deprecated
+     */
+    private RAInterfaceBean raif;
 
     /** Workaround to cache the items used to render the page long enough for actions to be able to use them, but reload on every page view. */
     public boolean isPageLoadResetTrigger() {
@@ -272,6 +314,19 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private void flushCurrent() {
         keyPairGuiList = null;
         currentVpnUser = null;
+    }
+
+    /**
+     * @deprecated
+     * @return
+     */
+    private RAInterfaceBean getRaif() {
+        if (raif == null) {
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            HttpSession session = (HttpSession) ctx.getExternalContext().getSession(true);
+            raif = (org.ejbca.ui.web.admin.rainterface.RAInterfaceBean) session.getAttribute("rabean");
+        }
+        return raif;
     }
 
     /** Build a list sorted by name from the authorized cryptoTokens that can be presented to the user */
@@ -336,6 +391,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     /** Invoked when admin requests a CryptoToken deletion. */
     public void deleteVpnUser() throws AuthorizationDeniedException {
         if (vpnUserGuiList !=null) {
+            // TODO: revoke certificate.
             final VpnUserGuiInfo rowData = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
             vpnUserManagementSession.deleteVpnUser(authenticationToken, rowData.getUser());
             flushCaches();
@@ -386,16 +442,76 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         try {
             final Properties properties = new Properties();
             final String name = getCurrentVpnUser().getName();
+            final VpnUser vpnUser = fromGuiUser(getCurrentVpnUser());
+
             if (getCurrentVpnUserId() == null) {
+                // End profile
+                final EndEntityProfile endProfile = endEntityProfileSession.getEndEntityProfile("VPN");
+                final int endProfileId = endEntityProfileSession.getEndEntityProfileId("VPN");
 
-                final VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken,
-                        fromGuiUser(getCurrentVpnUser()));
+                // Certificate profile
+                final int certProfileId = certificateProfileSession.getCertificateProfileId("ENDUSER");
 
+                // Get CA
+                final CA vpnCA = caSession.getCA(authenticationToken, "VPN2");
+
+                // Create new end entity.
+                UserView uview = new UserView();
+                uview.setCAId(vpnCA.getCAId());
+                uview.setEndEntityProfileId(endProfileId);
+                uview.setCertificateProfileId(certProfileId);
+
+                uview.setEmail(name);
+                uview.setUsername(name);
+                uview.setTimeCreated(new Date());
+                uview.setTimeModified(new Date());
+                uview.setSubjectDN("CN="+name); // TODO: sanitize
+                uview.setClearTextPassword(false);
+                uview.setPassword(null); // TODO: random password
+                uview.setTokenType(SecConst.TOKEN_SOFT_P12);
+
+                //raif.addUser(uview);
+                EndEntityInformation uservo = new EndEntityInformation(uview.getUsername(), uview.getSubjectDN(),
+                        uview.getCAId(), uview.getSubjectAltName(),
+                        uview.getEmail(), EndEntityConstants.STATUS_NEW, uview.getType(),
+                        uview.getEndEntityProfileId(), uview.getCertificateProfileId(),
+                        null,null, uview.getTokenType(),
+                        uview.getHardTokenIssuerId(), null);
+
+                uservo.setPassword(uview.getPassword());
+                uservo.setExtendedinformation(uview.getExtendedInformation());
+                uservo.setCardNumber(uview.getCardNumber());
+                endEntityManagementSession.addUser(authenticationToken, uservo, uview.getClearTextPassword());
+
+                // Create certificate
+                try {
+                    doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
+                } catch (Exception e) {
+                    // If things went wrong set status to FAILED
+                    final String newStatusString;
+                    endEntityManagementSession.setUserStatus(authenticationToken, uservo.getUsername(),
+                            EndEntityConstants.STATUS_FAILED);
+                    newStatusString = "FAILED";
+
+                    if (e instanceof IllegalKeyException) {
+                        final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorbatchfaileduser", uservo.getUsername());
+                        log.error(errMsg + " " + e.getMessage());
+                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorsetstatus", newStatusString));
+                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorcheckconfig"));
+                    } else {
+                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorsetstatus", newStatusString), e);
+                        final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorbatchfaileduser", uservo.getUsername());
+                        throw new Exception(errMsg);
+                    }
+                }
+
+                // Create user itself
+                final VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
                 currenVpnUserId = newVpnUser.getUsername();
                 msg = "VpnUser created successfully.";
 
             } else {
-                vpnUserManagementSession.saveVpnUser(authenticationToken, fromGuiUser(getCurrentVpnUser()));
+                vpnUserManagementSession.saveVpnUser(authenticationToken, vpnUser);
                 msg = "VpnUser saved successfully.";
             }
 
@@ -414,6 +530,241 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         if (msg != null) {
             log.info("Message displayed to user: " + msg);
             super.addNonTranslatedErrorMessage(msg);
+        }
+    }
+
+    private boolean doCreateKeys(EndEntityInformation data, int status) throws Exception {
+        boolean ret = false;
+        // get users Token Type.
+        int tokentype = data.getTokenType();
+        boolean createJKS = (tokentype == SecConst.TOKEN_SOFT_JKS);
+        boolean createPEM = (tokentype == SecConst.TOKEN_SOFT_PEM);
+        boolean createP12 = (tokentype == SecConst.TOKEN_SOFT_P12);
+        // Only generate supported tokens
+        if (createP12 || createPEM || createJKS) {
+//            if (status == EndEntityConstants.STATUS_KEYRECOVERY) {
+//                String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.retrieveingkeys", data.getUsername());
+//                log.info(iMsg);
+//            } else {
+//                String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.generatingkeys", getProps().getKeyAlg(),
+//                        getProps().getKeySpec(), data.getUsername());
+//                log.info(iMsg);
+//            }
+
+            processUser(data, createJKS, createPEM, (status == EndEntityConstants.STATUS_KEYRECOVERY));
+            // If all was OK, users status is set to GENERATED by the
+            // signsession when the user certificate is created.
+            // If status is still NEW, FAILED or KEYRECOVER though, it means we
+            // should set it back to what it was before, probably it had a
+            // request counter
+            // meaning that we should not reset the clear text password yet.
+            EndEntityInformation vo = endEntityAccessSession.findUser(authenticationToken, data.getUsername());
+
+            if ((vo.getStatus() == EndEntityConstants.STATUS_NEW) || (vo.getStatus() == EndEntityConstants.STATUS_FAILED)
+                    || (vo.getStatus() == EndEntityConstants.STATUS_KEYRECOVERY)) {
+                endEntityManagementSession.setClearTextPassword(authenticationToken, data.getUsername(), data.getPassword());
+            } else {
+                // Delete clear text password, if we are not letting status be
+                // the same as originally
+                endEntityManagementSession.setClearTextPassword(authenticationToken, data.getUsername(), null);
+            }
+            ret = true;
+            String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.generateduser", data.getUsername());
+            log.info(iMsg);
+        } else {
+            log.error("Cannot batchmake browser generated token for user (wrong tokentype)- " + data.getUsername());
+        }
+        return ret;
+    }
+
+    /**
+     * Recovers or generates new keys for the user and generates keystore
+     * Frm BatchMakeP12Command.java
+     *
+     * @param data
+     *            user data for user
+     * @param createJKS
+     *            if a jks should be created
+     * @param createPEM
+     *            if pem files should be created
+     * @param keyrecoverflag
+     *            if we should try to revoer already existing keys
+     * @throws Exception
+     *             If something goes wrong...
+     */
+    private void processUser(EndEntityInformation data, boolean createJKS, boolean createPEM, boolean keyrecoverflag) throws Exception {
+        KeyPair rsaKeys = null;
+        X509Certificate orgCert = null;
+        rsaKeys = KeyTools.genKeys("2048", AlgorithmConstants.KEYALGORITHM_RSA);
+
+        // Get certificate for user and create keystore
+        if (rsaKeys != null) {
+            createKeysForUser(data.getUsername(), data.getPassword(), data.getCAId(), rsaKeys, createJKS, createPEM,
+                    !keyrecoverflag && data.getKeyRecoverable(), orgCert);
+        }
+    }
+
+    /**
+     * Creates files for a user, sends request to CA, receives reply and creates
+     * P12.
+     *
+     * @param username
+     *            username
+     * @param password
+     *            user's password
+     * @param caid
+     *            of CA used to issue the keystore certificates
+     * @param rsaKeys
+     *            a previously generated RSA keypair
+     * @param createJKS
+     *            if a jks should be created
+     * @param createPEM
+     *            if pem files should be created
+     * @param savekeys
+     *            if generated keys should be saved in db (key recovery)
+     * @param orgCert
+     *            if an original key recovered cert should be reused, null
+     *            indicates generate new cert.
+     * @throws Exception
+     *             if the certificate is not an X509 certificate
+     * @throws Exception
+     *             if the CA-certificate is corrupt
+     * @throws Exception
+     *             if verification of certificate or CA-cert fails
+     * @throws Exception
+     *             if keyfile (generated by ourselves) is corrupt
+     */
+
+    private void createKeysForUser(String username, String password, int caid, KeyPair rsaKeys, boolean createJKS,
+                                   boolean createPEM, boolean savekeys, X509Certificate orgCert) throws Exception {
+        if (log.isTraceEnabled()) {
+            log.trace(">createKeysForUser: username=" + username);
+        }
+
+        X509Certificate cert = null;
+
+        if (orgCert != null) {
+            cert = orgCert;
+            boolean finishUser = caSession.getCAInfo(authenticationToken, caid).getFinishUser();
+            if (finishUser) {
+                EndEntityInformation userdata = endEntityAccessSession.findUser(authenticationToken, username);
+                endEntityAuthenticationSession.finishUser(userdata);
+            }
+
+        } else {
+            String sigAlg = AlgorithmConstants.SIGALG_SHA1_WITH_RSA;
+            X509Certificate selfcert = CertTools.genSelfCert("CN=selfsigned", 1, null, rsaKeys.getPrivate(), rsaKeys.getPublic(), sigAlg, false);
+            cert = (X509Certificate) signSession.createCertificate(authenticationToken, username, password, selfcert);
+        }
+
+        // Make a certificate chain from the certificate and the CA-certificate
+        Certificate[] cachain = signSession.getCertificateChain(authenticationToken, caid).toArray(new Certificate[0]);
+        // Verify CA-certificate
+        if (CertTools.isSelfSigned((X509Certificate) cachain[cachain.length - 1])) {
+            try {
+                // Make sure we have BC certs, otherwise SHA256WithRSAAndMGF1
+                // will not verify (at least not as of jdk6)
+                Certificate cacert = CertTools.getCertfromByteArray(cachain[cachain.length - 1].getEncoded());
+                cacert.verify(cacert.getPublicKey());
+
+            } catch (GeneralSecurityException se) {
+                String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorrootnotverify");
+                throw new Exception(errMsg);
+            }
+        } else {
+            String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorrootnotselfsigned");
+            throw new Exception(errMsg);
+        }
+
+        // Verify that the user-certificate is signed by our CA
+        try {
+            // Make sure we have BC certs, otherwise SHA256WithRSAAndMGF1 will
+            // not verify (at least not as of jdk6)
+            Certificate cacert = CertTools.getCertfromByteArray(cachain[0].getEncoded());
+            Certificate usercert = CertTools.getCertfromByteArray(cert.getEncoded());
+            usercert.verify(cacert.getPublicKey());
+        } catch (GeneralSecurityException se) {
+            String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorgennotverify");
+            throw new Exception(errMsg);
+        }
+
+        // Use CN if as alias in the keystore, if CN is not present use username
+        String alias = CertTools.getPartFromDN(CertTools.getSubjectDN(cert), "CN");
+        if (alias == null) {
+            alias = username;
+        }
+
+        // Store keys and certificates in keystore.
+        KeyStore ks = null;
+
+        if (createJKS) {
+            ks = KeyTools.createJKS(alias, rsaKeys.getPrivate(), password, cert, cachain);
+        } else {
+            ks = KeyTools.createP12(alias, rsaKeys.getPrivate(), cert, cachain);
+        }
+
+        storeKeyStore(ks, username, password, createJKS, createPEM);
+        String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.createkeystore", username);
+        log.info(iMsg);
+        if (log.isTraceEnabled()) {
+            log.trace("<createUser: username=" + username);
+        }
+    }
+
+    /**
+     * Stores keystore.
+     *
+     * @param ks
+     *            KeyStore
+     * @param username
+     *            username, the owner of the keystore
+     * @param kspassword
+     *            the password used to protect the peystore
+     * @param createJKS
+     *            if a jks should be created
+     * @param createPEM
+     *            if pem files should be created
+     * @throws IOException
+     *             if directory to store keystore cannot be created
+     */
+    private void storeKeyStore(KeyStore ks, String username, String kspassword, boolean createJKS, boolean createPEM) throws IOException,
+            KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchProviderException, CertificateException {
+        if (log.isTraceEnabled()) {
+            log.trace(">storeKeyStore: ks=" + ks.toString() + ", username=" + username);
+        }
+
+//        // Where to store it?
+//        if (mainStoreDir == null) {
+//            throw new IOException("Can't find directory to store keystore in.");
+//        }
+//
+//        if (!new File(mainStoreDir).exists()) {
+//            new File(mainStoreDir).mkdir();
+//            log.info("Directory '" + mainStoreDir + "' did not exist and was created.");
+//        }
+//
+//        String keyStoreFilename = mainStoreDir + "/" + username;
+//
+//        if (createJKS) {
+//            keyStoreFilename += ".jks";
+//        } else {
+//            keyStoreFilename += ".p12";
+//        }
+//
+//        // If we should also create PEM-files, do that
+//        if (createPEM) {
+//            String PEMfilename = mainStoreDir + "/pem";
+//            P12toPEM p12topem = new P12toPEM(ks, kspassword, true);
+//            p12topem.setExportPath(PEMfilename);
+//            p12topem.createPEM();
+//        } else {
+//            FileOutputStream os = new FileOutputStream(keyStoreFilename);
+//            ks.store(os, kspassword.toCharArray());
+//        }
+//
+//        log.debug("Keystore stored in " + keyStoreFilename);
+        if (log.isTraceEnabled()) {
+            log.trace("<storeKeyStore: ks=" + ks.toString() + ", username=" + username);
         }
     }
 
