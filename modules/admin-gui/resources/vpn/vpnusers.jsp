@@ -50,7 +50,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 <body>
 	<h:outputText value="" rendered="#{cryptoTokenMBean.pageLoadResetTrigger}"/>
 	<h1>
-		<h:outputText value="#{web.text.MANAGECRYPTOTOKENS}"/>
+		<h:outputText value="#{web.text.MANAGEVPNUSERS}"/>
 		<%= ejbcawebbean.getHelpReference("/userguide.html#Managing%20Crypto%20Tokens") %>
 	</h1>
 	<div class="message"><h:messages layout="table" errorClass="alert"/></div>
