@@ -16,6 +16,8 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <%@ page pageEncoding="UTF-8"%>
 <% response.setContentType("text/html; charset="+org.ejbca.config.WebConfiguration.getWebContentEncoding()); %>
 <%@ page errorPage="/errorpage.jsp" import="
@@ -24,8 +26,25 @@ org.ejbca.config.GlobalConfiguration,
 org.ejbca.core.model.authorization.AccessRulesConstants,
 org.cesecore.authorization.control.CryptoTokenRules
 "%>
+<%@ page import="org.cesecore.certificates.endentity.EndEntityConstants" %>
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
-<% GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource()); %>
+<%!
+	static final String USER_PARAMETER           = "username";
+	static final String HIDDEN_USERNAME          = "hiddenusername";
+	static final String HIDDEN_RECORDNUMBER      = "hiddenrecordnumber";
+	static final String SELECT_REVOKE_REASON     = "selectrevokereason";
+%>
+
+<%
+	// TODO: fix resource for ACL
+	GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource());
+	final String VIEWCERT_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "viewcertificate.jsp";
+	final String VIEWUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewendentity.jsp";
+	final String EDITUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/editendentity.jsp";
+	final String VIEWHISTORY_LINK         = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewhistory.jsp";
+	final String VIEWTOKEN_LINK           = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "hardtoken/viewtoken.jsp";
+
+%>
 <html>
 <f:view>
 <head>
@@ -44,6 +63,49 @@ org.cesecore.authorization.control.CryptoTokenRules
 			o.nextSibling.click();
 		}
 	}
+
+    function viewcert(username){
+        var link = "<%= VIEWCERT_LINK %>?<%= USER_PARAMETER %>="+username;
+        link = encodeURI(link);
+        win_popup = window.open(link, 'view_cert','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
+        win_popup.focus();
+        return true;
+    }
+
+    function viewtoken(row){
+        var hiddenusernamefield = eval("document.form.<%= HIDDEN_USERNAME %>" + row);
+        var username = hiddenusernamefield.value;
+        var link = "<%= VIEWTOKEN_LINK %>?<%= USER_PARAMETER %>="+username;
+        link = encodeURI(link);
+        win_popup = window.open(link, 'view_token','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
+        win_popup.focus();
+    }
+
+    function confirmdelete(){
+        var returnval;
+        returnval = confirm("<%= ejbcawebbean.getText("AREYOUSUREDELETE",true) %>");
+        returnval = returnval && confirm("<%= ejbcawebbean.getText("HAVEYOUREVOKEDTHEENDENTITIES",true) %>");
+
+        return returnval;
+    }
+
+    function confirmdeleterevoke(){
+        var returnval;
+        returnval = confirm("<%= ejbcawebbean.getText("AREYOUSUREDELETEREVOKE",true) %>");
+
+        return returnval;
+    }
+
+    function confirmrevocation(){
+        var returnval = false;
+        if(document.form.<%= SELECT_REVOKE_REASON %>.options.selectedIndex == -1){
+            alert("<%= ejbcawebbean.getText("AREVOKEATIONREASON", true) %>");
+            returnval = false;
+        }else{
+            returnval = confirm("<%= ejbcawebbean.getText("AREYOUSUREREVOKE",true) %>");
+        }
+        return returnval;
+    }
   </script>
    
 </head>
@@ -56,7 +118,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<div class="message"><h:messages layout="table" errorClass="alert"/></div>
 	<h:form id="vpnusers">
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
-		<h:column rendered="false">
+		<%--<input type="hidden" name='<%= HIDDEN_USERNAME + i %>' value='<c:out value="<%= java.net.URLEncoder.encode(users[i].getUsername(),\"UTF-8\") %>"/>' >--%>
+		<h:column>
 			<h:selectBooleanCheckbox value="#{vpnUserGuiInfo.selected}"/>
 		</h:column>
 		<h:column>
@@ -97,6 +160,11 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_REFD}" rendered="#{cryptoTokenGuiInfo.referenced}"/>--%>
 		<%--</h:column>--%>
 		<h:column>
+			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_STATUS}"/></f:facet>
+			<h:outputText value="#{vpnUserGuiInfo.statusText}" rendered="#{vpnUserGuiInfo.userview != null}"/>
+		</h:column>
+
+		<h:column>
    			<%--<f:facet name="header">--%>
 			<%--<h:panelGroup>--%>
    				<%--<h:outputText value="#{web.text.CRYPTOTOKEN_ACTION}"/>--%>
@@ -111,6 +179,11 @@ org.cesecore.authorization.control.CryptoTokenRules
 				<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_DEACTIVATE}" action="#{cryptoTokenMBean.deactivateCryptoToken}" rendered="#{!cryptoTokenGuiInfo.autoActivation}"/>--%>
 				<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_REACTIVATE}" action="#{cryptoTokenMBean.deactivateCryptoToken}" rendered="#{cryptoTokenGuiInfo.autoActivation}"/>--%>
 			<%--</h:panelGroup>--%>
+
+			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}">
+				<h:commandButton value="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
+								 onclick="return viewcert('#{vpnUserGuiInfo.user}')"/>
+			</h:panelGroup>
 
 
 			<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUser}"

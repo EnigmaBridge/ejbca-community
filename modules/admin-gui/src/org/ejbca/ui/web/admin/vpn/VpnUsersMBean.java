@@ -85,6 +85,10 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private PrivateKey key;
         private boolean selected = false;
 
+        // End entity view
+        private UserView userview;
+        private String statusText;
+
         public VpnUserGuiInfo() {
         }
 
@@ -160,6 +164,22 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         public void setSelected(boolean selected) {
             this.selected = selected;
         }
+
+        public UserView getUserview() {
+            return userview;
+        }
+
+        public void setUserview(UserView userview) {
+            this.userview = userview;
+        }
+
+        public String getStatusText() {
+            return statusText;
+        }
+
+        public void setStatusText(String statusText) {
+            this.statusText = statusText;
+        }
     }
 
     /** GUI edit/view representation of a VpnUser that can be interacted with. */
@@ -176,6 +196,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private String certificate;
         private String key;
         private String config;
+
+        // End entity view
+        private UserView userview;
 
         private CurrentVpnUserGuiInfo() {}
 
@@ -266,6 +289,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         public void setConfig(String config) {
             this.config = config;
         }
+
+        public UserView getUserview() {
+            return userview;
+        }
+
+        public void setUserview(UserView userview) {
+            this.userview = userview;
+        }
     }
 
     private List<VpnUserGuiInfo> vpnUserGuiInfos = new ArrayList<VpnUserGuiInfo>();
@@ -329,15 +360,50 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return raif;
     }
 
+    public String getStatusText(int status){
+        switch(status) {
+            case EndEntityConstants.STATUS_NEW:
+                return (getEjbcaWebBean().getText("STATUSNEW"));
+            case EndEntityConstants.STATUS_FAILED:
+                return (getEjbcaWebBean().getText("STATUSFAILED"));
+            case EndEntityConstants.STATUS_INITIALIZED:
+                return (getEjbcaWebBean().getText("STATUSINITIALIZED"));
+            case EndEntityConstants.STATUS_INPROCESS:
+                return (getEjbcaWebBean().getText("STATUSINPROCESS"));
+            case EndEntityConstants.STATUS_GENERATED:
+                return (getEjbcaWebBean().getText("STATUSGENERATED"));
+            case EndEntityConstants.STATUS_REVOKED:
+                return (getEjbcaWebBean().getText("STATUSREVOKED"));
+            case EndEntityConstants.STATUS_HISTORICAL:
+                return (getEjbcaWebBean().getText("STATUSHISTORICAL"));
+            case EndEntityConstants.STATUS_KEYRECOVERY:
+                return (getEjbcaWebBean().getText("STATUSKEYRECOVERY"));
+            default:
+                return null;
+        }
+    }
+
     /** Build a list sorted by name from the authorized cryptoTokens that can be presented to the user */
     @SuppressWarnings({ "rawtypes", "unchecked" }) //JDK6 does not support typing for ListDataModel
     public ListDataModel getVpnUserGuiList() throws AuthorizationDeniedException {
         if (vpnUserGuiList ==null) {
             final List<String> vpnUserIds = vpnUserManagementSession.geVpnUsersIds(authenticationToken);
             final List<VpnUserGuiInfo> users = new ArrayList<>(vpnUserIds.size());
+            final HashMap<Integer, String> caIdToNameMap = caSession.getCAIdToNameMap();
+
             for(String userId : vpnUserIds){
                 final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, userId);
-                users.add(toGuiUser(vpnUser));
+                final VpnUserGuiInfo guiUser = toGuiUser(vpnUser);
+
+                // Load corresponding end entity
+                EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, userId);
+                if (endEntity != null) {
+                    UserView userview = new UserView(endEntity, caIdToNameMap);
+                    guiUser.setUserview(userview);
+                    guiUser.setStatusText(getStatusText(userview.getStatus()));
+                }
+
+                users.add(guiUser);
             }
 
             Collections.sort(users, new Comparator<VpnUserGuiInfo>() {
