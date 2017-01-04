@@ -60,6 +60,11 @@
     	<managed-bean-scope>session</managed-bean-scope>
   </managed-bean>
   <managed-bean>
+    	<managed-bean-name>vpnUsersMBean</managed-bean-name>
+    	<managed-bean-class>org.ejbca.ui.web.admin.vpn.VpnUsersMBean</managed-bean-class>
+    	<managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+  <managed-bean>
     	<managed-bean-name>certProfilesBean</managed-bean-name>
     	<managed-bean-class>org.ejbca.ui.web.admin.certprof.CertProfilesBean</managed-bean-class>
     	<managed-bean-scope>session</managed-bean-scope>

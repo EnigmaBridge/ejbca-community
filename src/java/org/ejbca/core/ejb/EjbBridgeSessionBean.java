@@ -34,6 +34,7 @@ import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.keys.token.CryptoTokenManagementSessionLocal;
 import org.cesecore.roles.access.RoleAccessSessionLocal;
 import org.cesecore.roles.management.RoleManagementSessionLocal;
+import org.cesecore.vpn.VpnUserManagementSession;
 import org.ejbca.core.ejb.approval.ApprovalExecutionSessionLocal;
 import org.ejbca.core.ejb.approval.ApprovalSessionLocal;
 import org.ejbca.core.ejb.audit.EjbcaAuditorSessionLocal;
@@ -112,6 +113,7 @@ public class EjbBridgeSessionBean implements EjbBridgeSessionLocal {
 	@EJB AccessUserAspectManagerSessionLocal accessUserAspectSession;
 	@EJB CryptoTokenManagementSessionLocal cryptoTokenManagementSession;
 	@EJB PublishingCrlSessionLocal publishingCrlSessionLocal;
+	@EJB VpnUserManagementSession vpnUserManagementSessionLocal;
 
 	@Override public ApprovalExecutionSessionLocal getApprovalExecutionSession() { return approvalExecutionSession; }
 	@Override public ApprovalSessionLocal getApprovalSession() { return approvalSession; }
@@ -152,4 +154,5 @@ public class EjbBridgeSessionBean implements EjbBridgeSessionLocal {
 	@Override public EndEntityAccessSessionLocal getEndEntityAccessSession() { return endEntityAccessSession; }
     @Override public CryptoTokenManagementSessionLocal getCryptoTokenManagementSession() { return cryptoTokenManagementSession; }
     @Override public PublishingCrlSessionLocal getPublishingCrlSession() { return publishingCrlSessionLocal; }
+	@Override public VpnUserManagementSession getVpnUserManagementSession() { return vpnUserManagementSessionLocal; }
 }

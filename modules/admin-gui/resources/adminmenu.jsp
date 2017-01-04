@@ -61,6 +61,9 @@ org.cesecore.keybind.InternalKeyBindingRules
     
     final String ADMINISTRATORPRIV_LINK   =  ejbcawebbean.getBaseUrl() + globalconfiguration.getAuthorizationPath() 
                                                     + "/administratorprivileges.jsf";
+
+    final String VPN_LINK   =  ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath()
+                                                    + "/vpn/vpnusers.jsf";
     
     final String SCEPCONFIGURATION_LINK   =  ejbcawebbean.getBaseUrl() + globalconfiguration.getConfigPath() 
             										+ "/scepconfiguration.jsf";
@@ -351,6 +354,20 @@ org.cesecore.keybind.InternalKeyBindingRules
      if(ejbcawebbean.isAuthorizedNoLog(ADMINPRIVILEGES_RESOURCE)){
        if(!systemheaderprinted){
          out.write("<li id=\"cat7\" class=\"section\"><strong>" + ejbcawebbean.getText("NAV_SYSTEMFUNCTIONS")+"</strong><ul>"); 
+         systemheaderprinted=true;
+         }  %>
+				<li><a href="<%= VPN_LINK %>" target="<%=GlobalConfiguration.MAINFRAME %>"><%=ejbcawebbean.getText("NAV_VPN") %></a></li>
+<%   }
+  }catch(AuthorizationDeniedException e){}
+%>
+
+
+<%
+   // If authorized to edit authorizations then display related links.
+   try{
+     if(ejbcawebbean.isAuthorizedNoLog(ADMINPRIVILEGES_RESOURCE)){
+       if(!systemheaderprinted){
+         out.write("<li id=\"cat7\" class=\"section\"><strong>" + ejbcawebbean.getText("NAV_SYSTEMFUNCTIONS")+"</strong><ul>");
          systemheaderprinted=true;
          }  %>
 				<li><a href="<%= ADMINISTRATORPRIV_LINK %>" target="<%=GlobalConfiguration.MAINFRAME %>"><%=ejbcawebbean.getText("NAV_ROLES") %></a></li>
