@@ -64,12 +64,20 @@ org.cesecore.authorization.control.CryptoTokenRules
 		}
 	}
 
+    function viewuser(username){
+        var link = "<%= VIEWUSER_LINK %>?<%= USER_PARAMETER %>="+username;
+        link = encodeURI(link);
+        win_popup = window.open(link, 'view_user','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
+        win_popup.focus();
+        return false;
+    }
+
     function viewcert(username){
         var link = "<%= VIEWCERT_LINK %>?<%= USER_PARAMETER %>="+username;
         link = encodeURI(link);
         win_popup = window.open(link, 'view_cert','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
         win_popup.focus();
-        return true;
+        return false;
     }
 
     function viewtoken(row){
@@ -183,6 +191,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}">
 				<h:commandButton value="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
 								 onclick="return viewcert('#{vpnUserGuiInfo.user}')"/>
+				<h:commandButton value="#{web.text.VPNUSER_VIEW_USER}"
+								 onclick="return viewuser('#{vpnUserGuiInfo.user}')"/>
 			</h:panelGroup>
 
 
