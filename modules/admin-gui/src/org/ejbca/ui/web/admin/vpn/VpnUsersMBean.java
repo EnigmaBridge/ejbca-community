@@ -21,6 +21,7 @@ import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CaSessionLocal;
 import org.cesecore.certificates.ca.CaSessionRemote;
 import org.cesecore.certificates.certificate.IllegalKeyException;
+import org.cesecore.certificates.certificateprofile.CertificateProfileConstants;
 import org.cesecore.certificates.certificateprofile.CertificateProfileSession;
 import org.cesecore.certificates.endentity.EndEntityConstants;
 import org.cesecore.certificates.endentity.EndEntityInformation;
@@ -54,6 +55,7 @@ import org.ejbca.util.keystore.P12toPEM;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -515,7 +517,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 final int endProfileId = endEntityProfileSession.getEndEntityProfileId("VPN");
 
                 // Certificate profile
-                final int certProfileId = certificateProfileSession.getCertificateProfileId("ENDUSER");
+                final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
 
                 // Get CA
                 final CA vpnCA = caSession.getCA(authenticationToken, "VPN2");
