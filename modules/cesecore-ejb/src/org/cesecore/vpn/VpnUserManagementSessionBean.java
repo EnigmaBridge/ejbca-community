@@ -13,9 +13,6 @@
 package org.cesecore.vpn;
 
 import org.apache.log4j.Logger;
-import org.cesecore.audit.enums.EventStatus;
-import org.cesecore.audit.enums.EventTypes;
-import org.cesecore.audit.enums.ModuleTypes;
 import org.cesecore.audit.log.SecurityEventsLoggerSessionLocal;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
@@ -24,7 +21,6 @@ import org.cesecore.authorization.control.CryptoTokenRules;
 import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.keys.token.*;
-import org.cesecore.keys.token.p11.exception.NoSuchSlotException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -54,11 +50,11 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     private VpnUserSession vpnUserSession;
 
     @Override
-    public List<String> geVpnUsersIds(AuthenticationToken authenticationToken) {
+    public List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken) {
         // TODO: auth
-        final List<String> allVpnUsersIds = vpnUserSession.getVpnUserIds();
-        final List<String> auhtorizedVpnUserIds = new ArrayList<String>();
-        for (final String current : allVpnUsersIds) {
+        final List<Integer> allVpnUsersIds = vpnUserSession.getVpnUserIds();
+        final List<Integer> auhtorizedVpnUserIds = new ArrayList<Integer>();
+        for (final Integer current : allVpnUsersIds) {
             //if (accessControlSessionSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.VIEW.resource() + "/" + current.toString())) {
                 auhtorizedVpnUserIds.add(current);
             //}
@@ -67,13 +63,18 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     }
 
     @Override
-    public void deleteVpnUser(AuthenticationToken authenticationToken, String vpnUserId) throws AuthorizationDeniedException {
+    public String getUserName(VpnUser user){
+        return user.getEmail() + "/" + user.getDevice();
+    }
+
+    @Override
+    public void deleteVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         // TODO: auth
         vpnUserSession.removeVpnUser(vpnUserId);
     }
 
     @Override
-    public VpnUser getVpnUser(AuthenticationToken authenticationToken, String vpnUserId) throws AuthorizationDeniedException {
+    public VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         // TODO: auth
         return vpnUserSession.getVpnUser(vpnUserId);
     }
@@ -83,7 +84,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             throws AuthorizationDeniedException, VpnUserNameInUseException
     {
         if (log.isTraceEnabled()) {
-            log.trace(">createVpnUser: " + user.getUsername());
+            log.trace(">createVpnUser: " + user.getEmail());
         }
         // TODO: auth
         // TODO: audit logging
@@ -91,7 +92,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         user = vpnUserSession.mergeVpnUser(user);
 
         if (log.isTraceEnabled()) {
-            log.trace("<createVpnUser: " + user.getUsername());
+            log.trace("<createVpnUser: " + user.getEmail());
         }
 
         return user;
@@ -115,14 +116,14 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     public VpnUser saveVpnUser(AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException {
         if (log.isTraceEnabled()) {
-            log.trace(">saveVpnUser: " + user.getUsername());
+            log.trace(">saveVpnUser: " + user.getEmail());
         }
         // TODO: auth
         // TODO: audit logging
 
-        final VpnUser currentVpnUser = vpnUserSession.getVpnUser(user.getUsername());
+        final VpnUser currentVpnUser = vpnUserSession.getVpnUser(user.getEmail(), user.getDevice());
         if(currentVpnUser == null){
-            throw new NullPointerException(String.format("User %s does not exist", user.getUsername()));
+            throw new NullPointerException(String.format("User %s does not exist", user.getEmail()));
         }
 
         // TODO: Merge somehow...
@@ -130,7 +131,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         user = vpnUserSession.mergeVpnUser(user);
 
         if (log.isTraceEnabled()) {
-            log.trace("<saveVpnUser: " + user.getUsername());
+            log.trace("<saveVpnUser: " + user.getEmail());
         }
 
         return user;

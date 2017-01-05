@@ -19,7 +19,6 @@ import org.cesecore.authorization.control.AccessControlSessionLocal;
 import org.cesecore.authorization.control.CryptoTokenRules;
 import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CaSessionLocal;
-import org.cesecore.certificates.ca.CaSessionRemote;
 import org.cesecore.certificates.certificate.IllegalKeyException;
 import org.cesecore.certificates.certificateprofile.CertificateProfileConstants;
 import org.cesecore.certificates.certificateprofile.CertificateProfileSession;
@@ -28,37 +27,24 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.certificates.util.AlgorithmConstants;
 import org.cesecore.certificates.util.AlgorithmTools;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
-import org.cesecore.keys.util.KeyPairWrapper;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
-import org.cesecore.util.EjbRemoteHelper;
 import org.cesecore.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
-import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionRemote;
 import org.ejbca.core.ejb.ca.sign.SignSession;
-import org.ejbca.core.ejb.ca.sign.SignSessionRemote;
-import org.ejbca.core.ejb.keyrecovery.KeyRecoverySessionRemote;
 import org.ejbca.core.ejb.ra.*;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
-import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.core.model.SecConst;
-import org.ejbca.core.model.keyrecovery.KeyRecoveryInformation;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
-import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
-import org.ejbca.util.keystore.P12toPEM;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
@@ -80,7 +66,11 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     /** GUI table representation of a VPN user that can be interacted with. */
     public class VpnUserGuiInfo {
         private Integer id;
-        private String user;
+
+        private String userDesc;
+        private String email;
+        private String device;
+
         private Date dateCreated;
         private Date dateModified;
         private boolean revoked;
@@ -95,13 +85,19 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         public VpnUserGuiInfo() {
         }
 
-        public VpnUserGuiInfo(Integer id, String user, Date dateCreated, Date dateModified, boolean revoked, Certificate certificate) {
+        public VpnUserGuiInfo(Integer id, String email, String device, Date dateCreated, Date dateModified, boolean revoked, Certificate certificate) {
             this.id = id;
-            this.user = user;
+            this.email = email;
+            this.device = device;
             this.dateCreated = dateCreated;
             this.dateModified = dateModified;
             this.revoked = revoked;
             this.certificate = certificate;
+            regenerateId();
+        }
+
+        public final void regenerateId(){
+            userDesc = email + "/" + device; // TODO: Unify the generation
         }
 
         public Integer getId() {
@@ -112,12 +108,26 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             this.id = id;
         }
 
-        public String getUser() {
-            return user;
+        public String getEmail() {
+            return email;
         }
 
-        public void setUser(String user) {
-            this.user = user;
+        public void setEmail(String email) {
+            this.email = email;
+            regenerateId();
+        }
+
+        public String getUserDesc() {
+            return userDesc;
+        }
+
+        public String getDevice() {
+            return device;
+        }
+
+        public void setDevice(String device) {
+            this.device = device;
+            regenerateId();
         }
 
         public Date getDateCreated() {
@@ -187,7 +197,10 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
     /** GUI edit/view representation of a VpnUser that can be interacted with. */
     public class CurrentVpnUserGuiInfo {
+        private Integer id;
         private String name = "";
+        private String email = "";
+        private String device = "";
         private boolean active = false;
         private boolean referenced = false;
 
@@ -205,12 +218,44 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         private CurrentVpnUserGuiInfo() {}
 
+        public CurrentVpnUserGuiInfo(String email, String device) {
+            this.email = email;
+            this.device = device;
+            this.regenerateId();
+        }
+
+        public final void regenerateId(){
+            name = email + "/" + device; // TODO: Unify the generation
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
         public String getName() {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+            regenerateId();
+        }
+
+        public String getDevice() {
+            return device;
+        }
+
+        public void setDevice(String device) {
+            this.device = device;
+            regenerateId();
         }
 
         public boolean isActive() {
@@ -310,7 +355,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     @SuppressWarnings("rawtypes") //JDK6 does not support typing for ListDataModel
     private ListDataModel keyPairGuiList = null;
     private String keyPairGuiListError = null;
-    private String currenVpnUserId = null;
+    private Integer currenVpnUserId = null;
     private CurrentVpnUserGuiInfo currentVpnUser = null;
     private boolean currentCryptoTokenEditMode = true;  // currenVpnUserId==0 from start
 
@@ -384,20 +429,25 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
     }
 
+    public String getEndEntityId(VpnUser usr){
+        return vpnUserManagementSession.getUserName(usr);
+    }
+
     /** Build a list sorted by name from the authorized cryptoTokens that can be presented to the user */
     @SuppressWarnings({ "rawtypes", "unchecked" }) //JDK6 does not support typing for ListDataModel
     public ListDataModel getVpnUserGuiList() throws AuthorizationDeniedException {
         if (vpnUserGuiList ==null) {
-            final List<String> vpnUserIds = vpnUserManagementSession.geVpnUsersIds(authenticationToken);
+            final List<Integer> vpnUserIds = vpnUserManagementSession.geVpnUsersIds(authenticationToken);
             final List<VpnUserGuiInfo> users = new ArrayList<>(vpnUserIds.size());
             final HashMap<Integer, String> caIdToNameMap = caSession.getCAIdToNameMap();
 
-            for(String userId : vpnUserIds){
+            for(Integer userId : vpnUserIds){
                 final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, userId);
                 final VpnUserGuiInfo guiUser = toGuiUser(vpnUser);
+                final String endEntityId = getEndEntityId(vpnUser);
 
                 // Load corresponding end entity
-                EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, userId);
+                EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, endEntityId);
                 if (endEntity != null) {
                     UserView userview = new UserView(endEntity, caIdToNameMap);
                     guiUser.setUserview(userview);
@@ -410,7 +460,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             Collections.sort(users, new Comparator<VpnUserGuiInfo>() {
                 @Override
                 public int compare(VpnUserGuiInfo a, VpnUserGuiInfo b) {
-                    return a.getUser().compareTo(b.getUser());
+                    final int cmpEmail = a.getEmail().compareTo(b.getEmail());
+                    if (cmpEmail != 0){
+                        return cmpEmail;
+                    }
+
+                    return a.getDevice().compareTo(b.getDevice());
                 }
             });
 
@@ -460,7 +515,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         if (vpnUserGuiList !=null) {
             // TODO: revoke certificate.
             final VpnUserGuiInfo rowData = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
-            vpnUserManagementSession.deleteVpnUser(authenticationToken, rowData.getUser());
+            vpnUserManagementSession.deleteVpnUser(authenticationToken, rowData.getId());
             flushCaches();
         }
     }
@@ -480,7 +535,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private VpnUser fromGuiUser(CurrentVpnUserGuiInfo guiUser){
         final VpnUser user = new VpnUser();
 
-        user.setUsername(guiUser.getName());
+        user.setId(guiUser.getId());
+        user.setEmail(guiUser.getName());
+        user.setDevice(guiUser.getDevice());
         user.setDateModified(guiUser.getDateModified());
         user.setRevokedStatus(guiUser.getRevokedStatus());
         user.setOtpDownload(guiUser.getOtpDownload());
@@ -495,7 +552,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private VpnUserGuiInfo toGuiUser(VpnUser vpnUser){
         final VpnUserGuiInfo user = new VpnUserGuiInfo();
 
-        user.setUser(vpnUser.getUsername());
+        user.setId(vpnUser.getId());
+        user.setEmail(vpnUser.getEmail());
+        user.setDevice(vpnUser.getDevice());
         user.setDateCreated(new Date(vpnUser.getDateCreated()));
         user.setDateModified(new Date(vpnUser.getDateModified()));
         user.setRevoked(vpnUser.getRevokedStatus() > 0);
@@ -574,7 +633,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Create user itself
                 final VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
-                currenVpnUserId = newVpnUser.getUsername();
+                currenVpnUserId = newVpnUser.getId();
                 msg = "VpnUser created successfully.";
 
             } else {
@@ -610,11 +669,11 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         // Only generate supported tokens
         if (createP12 || createPEM || createJKS) {
 //            if (status == EndEntityConstants.STATUS_KEYRECOVERY) {
-//                String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.retrieveingkeys", data.getUsername());
+//                String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.retrieveingkeys", data.getEmail());
 //                log.info(iMsg);
 //            } else {
 //                String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.generatingkeys", getProps().getKeyAlg(),
-//                        getProps().getKeySpec(), data.getUsername());
+//                        getProps().getKeySpec(), data.getEmail());
 //                log.info(iMsg);
 //            }
 
@@ -851,29 +910,32 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
     
     /** @return the id of the CryptoToken that is subject to view or edit */
-    public String getCurrentVpnUserId() {
+    public Integer getCurrentVpnUserId() {
         // Get the HTTP GET/POST parameter named "cryptoTokenId"
         String vpnUserIdString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("vpnUserId");
-        if (vpnUserIdString!=null) {
-            if (vpnUserIdString.isEmpty()){
-                vpnUserIdString = null;
-            }
 
-            // If there is a query parameter present and the id is different we flush the cache!
-            if (vpnUserIdString != this.currenVpnUserId) {
-                flushCaches();
-                this.currenVpnUserId = vpnUserIdString;
+        if (vpnUserIdString!=null && vpnUserIdString.length()>0) {
+            try {
+                int vpnUserId = Integer.parseInt(vpnUserIdString);
+                // If there is a query parameter present and the id is different we flush the cache!
+                if (vpnUserId != this.currenVpnUserId) {
+                    flushCaches();
+                    this.currenVpnUserId = vpnUserId;
+                }
+                // Always switch to edit mode for new ones and view mode for all others
+                setCurrentCryptoTokenEditMode(vpnUserId == 0);
+            } catch (NumberFormatException e) {
+                log.info("Bad 'cryptoTokenId' parameter value.. set, but not a number..");
             }
-            // Always switch to edit mode for new ones and view mode for all others
-            setCurrentCryptoTokenEditMode(vpnUserIdString == null);
         }
+
         return currenVpnUserId;
     }
 
     /** @return cached or populate a new CryptoToken GUI representation for view or edit */
     public CurrentVpnUserGuiInfo getCurrentVpnUser() throws AuthorizationDeniedException {
         if (this.currentVpnUser == null) {
-            final String vpnUserId = getCurrentVpnUserId();
+            final Integer vpnUserId = getCurrentVpnUserId();
             final CurrentVpnUserGuiInfo currentVpnUser = new CurrentVpnUserGuiInfo();
             // If the id is non-zero we try to load an existing token
             if (vpnUserId!=null) {
@@ -881,7 +943,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 if (vpnUser == null) {
                     throw new RuntimeException("Could not load VpnUser with vpnUserId " + vpnUserId);
                 } else {
-                    currentVpnUser.setName(vpnUser.getUsername());
+                    currentVpnUser.setId(vpnUser.getId());
+                    currentVpnUser.setEmail(vpnUser.getEmail());
+                    currentVpnUser.setDevice(vpnUser.getDevice());
                     currentVpnUser.setDateCreated(vpnUser.getDateCreated());
                     currentVpnUser.setDateModified(vpnUser.getDateModified());
                     currentVpnUser.setRevokedStatus(vpnUser.getRevokedStatus());
@@ -901,10 +965,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     
     public void selectCryptoTokenType() {
         // NOOP: Only for page reload
-    }
-    public void selectCryptoTokenLabelType() {
-        // Clear slot reference when we change type
-//        currentVpnUser.setP11Slot("");
     }
 
     public boolean isCurrentCryptoTokenEditMode() {

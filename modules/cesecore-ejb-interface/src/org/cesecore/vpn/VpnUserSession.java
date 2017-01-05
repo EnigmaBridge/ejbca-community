@@ -20,12 +20,27 @@ import java.util.List;
  */
 public interface VpnUserSession {
 
-    /** @return true if the specified name is already in use by another CryptoToken (checks the database, not the cache) */
-    boolean isVpnUserNameUsed(String userName);
+    /** @return true if the specified name is already in use by another VpnUser (checks the database, not the cache) */
+    boolean isVpnUserNameUsed(String email);
 
     /** @return the specified CryptoToken or null if it does not exis.
-     * Throws RuntimeException if allow.nonexisting.slot=false (default) and a PKCS#11 slot does not exist. */
-    VpnUser getVpnUser(String vpnUserId);
+     * @throws RuntimeException  */
+    VpnUser getVpnUser(int vpnUserId);
+
+    /**
+     * Returns all vpn user records for the given user email
+     * @param email
+     * @return
+     */
+    List<VpnUser> getVpnUser(final String email);
+
+    /**
+     * Returns single user record for (email, device) ID.
+     * @param email
+     * @param device
+     * @return
+     */
+    VpnUser getVpnUser(String email, String device);
 
     /** Add the specified CryptoToken to the database and return the id used to store it */
     VpnUser mergeVpnUser(VpnUser vpnUser) throws VpnUserNameInUseException;
@@ -34,14 +49,14 @@ public interface VpnUserSession {
      * @param vpnUserId the id of the crypto token that should be removed
      * @return true if crypto token exists and is deleted, false if crypto token with given id does not exist
      */
-    boolean removeVpnUser(final String vpnUserId);
+    boolean removeVpnUser(final int vpnUserId);
 
     /** @return a list of all CryptoToken identifiers in the database. */
-    List<String> getVpnUserIds();
+    List<Integer> getVpnUserIds();
 
     /** Clears the CryptoToken cache. */
     void flushCache();
 
     /** Clears the CryptoToken cache except for the cache entries specified in excludeIDs */
-    void flushExcludingIDs(List<String> excludeIDs);
+    void flushExcludingIDs(List<Integer> excludeIDs);
 }

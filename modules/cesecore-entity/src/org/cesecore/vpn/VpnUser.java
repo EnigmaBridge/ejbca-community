@@ -16,10 +16,11 @@ public class VpnUser implements Serializable {
     private int rowVersion = 0;
     private String rowProtection;
 
-//    private int id;
-
     @Id
-    private String username;
+    private Integer id;
+
+    private String email;
+    private String device;
 
     private long dateCreated;
     private long dateModified;
@@ -33,12 +34,29 @@ public class VpnUser implements Serializable {
     public VpnUser() {
     }
 
-    public VpnUser(String username) {
-        this.username = username;
+    public VpnUser(String email) {
+        this.email = email;
     }
 
-    public VpnUser(String username, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String key, String config) {
-        this.username = username;
+    public VpnUser(String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String key, String config) {
+        this.email = email;
+        this.device = device;
+        this.dateCreated = dateCreated;
+        this.dateModified = dateModified;
+        this.revokedStatus = revokedStatus;
+        this.otpDownload = otpDownload;
+        this.certificateId = certificateId;
+        this.certificate = certificate;
+        this.key = key;
+        this.config = config;
+    }
+
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String key, String config) {
+        this.rowVersion = rowVersion;
+        this.rowProtection = rowProtection;
+        this.id = id;
+        this.email = email;
+        this.device = device;
         this.dateCreated = dateCreated;
         this.dateModified = dateModified;
         this.revokedStatus = revokedStatus;
@@ -65,20 +83,28 @@ public class VpnUser implements Serializable {
         this.rowProtection = rowProtection;
     }
 
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
-
-    public String getUsername() {
-        return username;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUsername(String email) {
-        this.username = email;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
     }
 
     public long getDateCreated() {
