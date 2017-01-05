@@ -414,8 +414,8 @@
             <basic fetch="EAGER" name="otpDownload"><column name="otpDownload" column-definition="VARCHAR(256)"/></basic>
             <basic fetch="EAGER" name="certificateId"><column name="certificateId" column-definition="VARCHAR(256)"/></basic>
             <basic fetch="EAGER" name="certificate"><column name="certificate" column-definition="VARCHAR"/></basic>
-            <basic fetch="EAGER" name="key"><column name="key" column-definition="VARCHAR"/></basic>
-            <basic fetch="EAGER" name="config"><column name="config" column-definition="VARCHAR"/></basic>
+            <basic fetch="EAGER" name="privKey"><column name="privKey" column-definition="LONGTEXT"/></basic>
+            <basic fetch="EAGER" name="vpnConfig"><column name="vpnConfig" column-definition="LONGTEXT"/></basic>
             <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="VARCHAR"/><lob/></basic>
             <version name="rowVersion"><column name="rowVersion" column-definition="INTEGER" nullable="false"/></version>
         </attributes>

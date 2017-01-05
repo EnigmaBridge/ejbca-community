@@ -28,8 +28,8 @@ public class VpnUser implements Serializable {
     private String otpDownload;
     private String certificateId;
     private String certificate;
-    private String key;
-    private String config;
+    private String privKey;
+    private String vpnConfig;
 
     public VpnUser() {
     }
@@ -38,7 +38,7 @@ public class VpnUser implements Serializable {
         this.email = email;
     }
 
-    public VpnUser(String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String key, String config) {
+    public VpnUser(String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String privKey, String vpnConfig) {
         this.email = email;
         this.device = device;
         this.dateCreated = dateCreated;
@@ -47,11 +47,11 @@ public class VpnUser implements Serializable {
         this.otpDownload = otpDownload;
         this.certificateId = certificateId;
         this.certificate = certificate;
-        this.key = key;
-        this.config = config;
+        this.privKey = privKey;
+        this.vpnConfig = vpnConfig;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String key, String config) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String privKey, String vpnConfig) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -63,8 +63,8 @@ public class VpnUser implements Serializable {
         this.otpDownload = otpDownload;
         this.certificateId = certificateId;
         this.certificate = certificate;
-        this.key = key;
-        this.config = config;
+        this.privKey = privKey;
+        this.vpnConfig = vpnConfig;
     }
 
     public int getRowVersion() {
@@ -155,19 +155,19 @@ public class VpnUser implements Serializable {
         this.certificate = certificate;
     }
 
-    public String getKey() {
-        return key;
+    public String getPrivKey() {
+        return privKey;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setPrivKey(String key) {
+        this.privKey = key;
     }
 
-    public String getConfig() {
-        return config;
+    public String getVpnConfig() {
+        return vpnConfig;
     }
 
-    public void setConfig(String config) {
-        this.config = config;
+    public void setVpnConfig(String config) {
+        this.vpnConfig = config;
     }
 }
