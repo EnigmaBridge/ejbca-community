@@ -160,6 +160,13 @@
       <servlet-class>org.ejbca.ui.web.admin.configuration.StartServicesServlet</servlet-class>
       <load-on-startup>1</load-on-startup>
    </servlet>
+    <servlet>
+      <description><![CDATA[Servlet used to download VPN related artifacts, e.g. VPN configuration files]]></description>
+      <display-name>VpnDownloadServlet</display-name>
+      <servlet-name>VpnDownload</servlet-name>
+      <servlet-class>org.ejbca.ui.web.admin.vpn.VpnDownloadServlet</servlet-class>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
    <servlet>
       <servlet-name>LogOutServlet</servlet-name>
       <servlet-class>org.ejbca.ui.web.admin.LogOutServlet</servlet-class>
@@ -208,6 +215,10 @@
    <servlet-mapping>
       <servlet-name>GetCRL</servlet-name>
       <url-pattern>/ca/getcrl/getcrl</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>VpnDownload</servlet-name>
+      <url-pattern>/ca/vpn/getvpn</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>LogOutServlet</servlet-name>
