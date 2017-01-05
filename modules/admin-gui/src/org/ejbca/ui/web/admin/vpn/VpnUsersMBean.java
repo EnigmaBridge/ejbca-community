@@ -46,6 +46,7 @@ import org.ejbca.core.model.SecConst;
 import org.ejbca.core.model.keyrecovery.KeyRecoveryInformation;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
+import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
 import org.ejbca.util.keystore.P12toPEM;
@@ -325,7 +326,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private final InternalKeyBindingMgmtSessionLocal internalKeyBindingMgmtSession = getEjbcaWebBean().getEjb().getInternalKeyBindingMgmtSession();
 
     /**
-     * @deprecated
+     * Registration Authority bean
      */
     private RAInterfaceBean raif;
 
@@ -348,14 +349,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
 
     /**
-     * @deprecated
+     * Gets RA bean.
      * @return
      */
-    private RAInterfaceBean getRaif() {
+    private RAInterfaceBean getRaif() throws IOException, ClassNotFoundException {
         if (raif == null) {
-            FacesContext ctx = FacesContext.getCurrentInstance();
-            HttpSession session = (HttpSession) ctx.getExternalContext().getSession(true);
-            raif = (org.ejbca.ui.web.admin.rainterface.RAInterfaceBean) session.getAttribute("rabean");
+           raif = VpnUtils.getRaBean();
         }
         return raif;
     }

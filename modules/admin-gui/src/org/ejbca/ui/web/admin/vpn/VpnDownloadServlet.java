@@ -22,6 +22,9 @@ import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
+import org.ejbca.ui.web.admin.cainterface.CAInterfaceBean;
+import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
+import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -29,6 +32,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.beans.Beans;
 import java.io.IOException;
 import java.security.PublicKey;
 
