@@ -178,13 +178,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final java.security.cert.Certificate caCert = ca.getCACertificate();
             final String caCertDN = CertTools.getSubjectDN(caCert);
             final String hostname = CertTools.getPartFromDN(caCertDN, "CN");
-
-            final String caCertPem = new String(CertTools.getPemFromCertificateChain(Collections.singletonList(caCert)),
-                    "UTF-8");
+            final String caCertPem = VpnUtils.certificateToPem(caCert);
 
             final Certificate cert = ks.getCertificate(endEntity.getUsername());
-            final String certPem = new String(CertTools.getPemFromCertificateChain(Collections.singletonList(cert)),
-                    "UTF-8");
+            final String certPem = VpnUtils.certificateToPem(cert);
 
             final Key key = ks.getKey(endEntity.getUsername(), null);
             final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key);
@@ -214,6 +211,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             return String.format(ovpnTemplate, hostname, caCertPem, certPem, keyPem);
 
+            // TODO: exception handling
         } catch (CertificateEncodingException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {

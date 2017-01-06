@@ -1,5 +1,6 @@
 package org.cesecore.vpn;
 
+import org.bouncycastle.openssl.MiscPEMGenerator;
 import org.bouncycastle.openssl.PKCS8Generator;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
@@ -10,6 +11,7 @@ import org.bouncycastle.util.io.pem.PemWriter;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.security.PrivateKey;
+import java.security.cert.Certificate;
 
 /**
  * Misc VPN utils.
@@ -36,6 +38,17 @@ public class VpnUtils {
     public static String privateKeyToPem(PrivateKey key) throws IOException {
         final CharArrayWriter charWriter = new CharArrayWriter();
         final JcaPKCS8Generator generator = new JcaPKCS8Generator(key, null);
+
+        PemWriter writer = new PemWriter(charWriter);
+        writer.writeObject(generator);
+        writer.close();
+
+        return charWriter.toString();
+    }
+
+    public static String certificateToPem(Certificate certificate) throws IOException {
+        final CharArrayWriter charWriter = new CharArrayWriter();
+        final MiscPEMGenerator generator = new MiscPEMGenerator(certificate, null);
 
         PemWriter writer = new PemWriter(charWriter);
         writer.writeObject(generator);
