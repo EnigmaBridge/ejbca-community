@@ -38,11 +38,17 @@ import org.ejbca.core.ejb.ra.*;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.core.model.SecConst;
+import org.ejbca.core.model.approval.ApprovalException;
+import org.ejbca.core.model.approval.WaitingForApprovalException;
+import org.ejbca.core.model.ra.AlreadyRevokedException;
+import org.ejbca.core.model.ra.NotFoundException;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
 
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
@@ -502,23 +508,66 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
     }
 
-    /** Invoked when admin requests a CryptoToken deactivation. */
+    /** Invoked when admin requests a VpnUser certificate revocation. */
     public void revokeVpnUser() throws AuthorizationDeniedException {
-        // TODO: implement
-        if (vpnUserGuiList !=null) {
+        if (vpnUserGuiList == null) {
+            return;
+        }
+
+        String msg = null;
+        try {
             final VpnUserGuiInfo rowData = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
-//            vpnUserManagementSession.deactivate(authenticationToken, rowData.getCryptoTokenId());
+
+            // Revocation first. TODO: revocation reason parametrisation
+            endEntityManagementSession.revokeUser(authenticationToken, rowData.getUserDesc(), 0);
+
             flushCaches();
+        } catch (ApprovalException e) {
+            msg = e.getMessage();
+        } catch (WaitingForApprovalException e) {
+            msg = e.getMessage();
+        } catch (FinderException e) {
+            msg = e.getMessage();
+        } catch (AlreadyRevokedException e) {
+            msg = e.getMessage();
+        }
+
+        if (msg != null) {
+            log.info("Message displayed to user: " + msg);
+            super.addNonTranslatedErrorMessage(msg);
         }
     }
     
     /** Invoked when admin requests a CryptoToken deletion. */
     public void deleteVpnUser() throws AuthorizationDeniedException {
-        if (vpnUserGuiList !=null) {
-            // TODO: revoke certificate.
+        if (vpnUserGuiList == null) {
+            return;
+        }
+
+        String msg = null;
+        try {
             final VpnUserGuiInfo rowData = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
+
+            // Revocation first. TODO: revocation reason parametrisation
+            endEntityManagementSession.revokeAndDeleteUser(authenticationToken, rowData.getUserDesc(), 0);
+
+            // Delete VpnUser record itself
             vpnUserManagementSession.deleteVpnUser(authenticationToken, rowData.getId());
             flushCaches();
+
+        } catch (ApprovalException e) {
+            msg = e.getMessage();
+        } catch (WaitingForApprovalException e) {
+            msg = e.getMessage();
+        } catch (RemoveException e) {
+            msg = e.getMessage();
+        } catch (NotFoundException e) {
+            msg = e.getMessage();
+        }
+
+        if (msg != null) {
+            log.info("Message displayed to user: " + msg);
+            super.addNonTranslatedErrorMessage(msg);
         }
     }
 
