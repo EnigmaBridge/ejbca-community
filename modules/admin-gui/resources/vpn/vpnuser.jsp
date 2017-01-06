@@ -67,10 +67,10 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:"/>
 		<h:panelGroup id="currentVpnUserDevice">
-	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
+	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
 	    		<f:validator validatorId="legalCharsValidator"/>
 	    	</h:inputText>
-	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.device}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.device}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
 
 		<h:panelGroup/>
