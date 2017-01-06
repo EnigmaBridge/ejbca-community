@@ -46,6 +46,12 @@ public class VpnUtils {
         return charWriter.toString();
     }
 
+    /**
+     * Converts certificate to PEM string
+     * @param certificate certificate to convert to PEM
+     * @return PEM as a string
+     * @throws IOException
+     */
     public static String certificateToPem(Certificate certificate) throws IOException {
         final CharArrayWriter charWriter = new CharArrayWriter();
         final MiscPEMGenerator generator = new MiscPEMGenerator(certificate, null);
