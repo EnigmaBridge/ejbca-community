@@ -848,7 +848,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             ks = KeyTools.createP12(alias, rsaKeys.getPrivate(), cert, cachain);
         }
 
-        storeKeyStore(ks, username, password, createJKS, createPEM);
+        //storeKeyStore(ks, username, password, createJKS, createPEM);
         String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.createkeystore", username);
         log.info(iMsg);
         if (log.isTraceEnabled()) {
@@ -856,63 +856,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
 
         return ks;
-    }
-
-    /**
-     * Stores keystore.
-     *
-     * @param ks
-     *            KeyStore
-     * @param username
-     *            username, the owner of the keystore
-     * @param kspassword
-     *            the password used to protect the peystore
-     * @param createJKS
-     *            if a jks should be created
-     * @param createPEM
-     *            if pem files should be created
-     * @throws IOException
-     *             if directory to store keystore cannot be created
-     */
-    private void storeKeyStore(KeyStore ks, String username, String kspassword, boolean createJKS, boolean createPEM) throws IOException,
-            KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchProviderException, CertificateException {
-        if (log.isTraceEnabled()) {
-            log.trace(">storeKeyStore: ks=" + ks.toString() + ", username=" + username);
-        }
-
-//        // Where to store it?
-//        if (mainStoreDir == null) {
-//            throw new IOException("Can't find directory to store keystore in.");
-//        }
-//
-//        if (!new File(mainStoreDir).exists()) {
-//            new File(mainStoreDir).mkdir();
-//            log.info("Directory '" + mainStoreDir + "' did not exist and was created.");
-//        }
-//
-//        String keyStoreFilename = mainStoreDir + "/" + username;
-//
-//        if (createJKS) {
-//            keyStoreFilename += ".jks";
-//        } else {
-//            keyStoreFilename += ".p12";
-//        }
-//
-//        // If we should also create PEM-files, do that
-//        if (createPEM) {
-//            String PEMfilename = mainStoreDir + "/pem";
-//            P12toPEM p12topem = new P12toPEM(ks, kspassword, true);
-//            p12topem.setExportPath(PEMfilename);
-//            p12topem.createPEM();
-//        } else {
-//            FileOutputStream os = new FileOutputStream(keyStoreFilename);
-//            ks.store(os, kspassword.toCharArray());
-//        }
-//
-//        log.debug("Keystore stored in " + keyStoreFilename);
-        if (log.isTraceEnabled()) {
-            log.trace("<storeKeyStore: ks=" + ks.toString() + ", username=" + username);
-        }
     }
 
     /** Invoked when admin cancels a CryptoToken create or edit. */
