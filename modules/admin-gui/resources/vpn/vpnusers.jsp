@@ -134,19 +134,19 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:column>
    			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_NAME}"/></f:facet>
 			<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=#{vpnUserGuiInfo.id}&ref=default">
-				<h:outputText value="#{vpnUserGuiInfo.email}" title="#{web.text.VPNUSER_VIEWWITH} #{vpnUserGuiInfo.userDesc}"/>
+				<h:outputText value="#{vpnUserGuiInfo.userDesc}" title="#{web.text.VPNUSER_VIEWWITH} #{vpnUserGuiInfo.userDesc}"/>
 			</h:outputLink>
 		</h:column>
 
-		<h:column>
-   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_EMAIL}"/></f:facet>
-			<h:outputText value="#{vpnUserGuiInfo.email}"/>
-		</h:column>
+		<%--<h:column>--%>
+   			<%--<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_EMAIL}"/></f:facet>--%>
+			<%--<h:outputText value="#{vpnUserGuiInfo.email}"/>--%>
+		<%--</h:column>--%>
 
-		<h:column>
-   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_DEVICE}"/></f:facet>
-			<h:outputText value="#{vpnUserGuiInfo.device}"/>
-		</h:column>
+		<%--<h:column>--%>
+   			<%--<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_DEVICE}"/></f:facet>--%>
+			<%--<h:outputText value="#{vpnUserGuiInfo.device}"/>--%>
+		<%--</h:column>--%>
 
 		<%--<h:column>--%>
    			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_TYPE}"/></f:facet>--%>
@@ -201,9 +201,9 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}">
 				<h:commandButton value="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
-								 onclick="return viewcert('#{vpnUserGuiInfo.email}')"/>
+								 onclick="return viewcert('#{vpnUserGuiInfo.userDesc}')"/>
 				<h:commandButton value="#{web.text.VPNUSER_VIEW_USER}"
-								 onclick="return viewuser('#{vpnUserGuiInfo.email}')"/>
+								 onclick="return viewuser('#{vpnUserGuiInfo.userDesc}')"/>
 			</h:panelGroup>
 
 
