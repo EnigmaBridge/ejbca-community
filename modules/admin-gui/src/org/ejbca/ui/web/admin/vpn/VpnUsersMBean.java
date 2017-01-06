@@ -543,7 +543,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setOtpDownload(guiUser.getOtpDownload());
         user.setCertificateId(guiUser.getCertificateId());
         user.setCertificate(guiUser.getCertificate());
-        user.setPrivKey(guiUser.getKey());
+        user.setKeyStore(guiUser.getKey());
         user.setVpnConfig(guiUser.getConfig());
 
         return user;
@@ -922,7 +922,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     currentVpnUser.setOtpDownload(vpnUser.getOtpDownload());
                     currentVpnUser.setCertificateId(vpnUser.getCertificateId());
                     currentVpnUser.setCertificate(vpnUser.getCertificate());
-                    currentVpnUser.setKey(vpnUser.getPrivKey());
+                    currentVpnUser.setKey(vpnUser.getKeyStore());
                     currentVpnUser.setConfig(vpnUser.getVpnConfig());
                     currentVpnUser.setActive(true);
                     currentVpnUser.setReferenced(true);
