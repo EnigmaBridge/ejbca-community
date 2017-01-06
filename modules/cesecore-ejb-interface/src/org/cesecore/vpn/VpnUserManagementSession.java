@@ -38,6 +38,12 @@ public interface VpnUserManagementSession {
      */
     String getUserName(VpnUser user);
 
+    /**
+     * Deletes only the VPN user record, preserves certificate and end entity record.
+     * @param authenticationToken
+     * @param vpnUserId
+     * @throws AuthorizationDeniedException
+     */
     void deleteVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
     VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
