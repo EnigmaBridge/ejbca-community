@@ -536,7 +536,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         final VpnUser user = new VpnUser();
 
         user.setId(guiUser.getId());
-        user.setEmail(guiUser.getName());
+        user.setEmail(guiUser.getEmail());
         user.setDevice(guiUser.getDevice());
         user.setDateModified(guiUser.getDateModified());
         user.setRevokedStatus(guiUser.getRevokedStatus());
