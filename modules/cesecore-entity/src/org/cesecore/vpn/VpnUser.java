@@ -38,6 +38,11 @@ public class VpnUser implements Serializable {
         this.email = email;
     }
 
+    public VpnUser(String email, String device) {
+        this.email = email;
+        this.device = device;
+    }
+
     public VpnUser(String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String privKey, String vpnConfig) {
         this.email = email;
         this.device = device;

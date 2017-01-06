@@ -200,7 +200,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private Integer id;
         private String name = "";
         private String email = "";
-        private String device = "";
+        private String device = "default";
         private boolean active = false;
         private boolean referenced = false;
 
@@ -355,9 +355,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     @SuppressWarnings("rawtypes") //JDK6 does not support typing for ListDataModel
     private ListDataModel keyPairGuiList = null;
     private String keyPairGuiListError = null;
-    private Integer currenVpnUserId = null;
+    private Integer currentVpnUserId = null;
     private CurrentVpnUserGuiInfo currentVpnUser = null;
-    private boolean currentCryptoTokenEditMode = true;  // currenVpnUserId==0 from start
+    private boolean currentVpnUserEditMode = true;  // currentVpnUserId==0 from start
 
     private final VpnUserManagementSession vpnUserManagementSession = getEjbcaWebBean().getEjb().getVpnUserManagementSession();
     private final EndEntityProfileSessionLocal endEntityProfileSession = getEjbcaWebBean().getEjb().getEndEntityProfileSession();
@@ -474,7 +474,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
         // If show the list, then we are on the main page and want to flush the two caches
         flushCurrent();
-        setCurrentCryptoTokenEditMode(false);
+        setCurrentVpnUserEditMode(false);
         return vpnUserGuiList;
     }
 
@@ -568,18 +568,20 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         try {
             final Properties properties = new Properties();
             final String name = getCurrentVpnUser().getName();
+            final String email = getCurrentVpnUser().getEmail();
+            final String device = getCurrentVpnUser().getDevice();
             final VpnUser vpnUser = fromGuiUser(getCurrentVpnUser());
 
             if (getCurrentVpnUserId() == null) {
                 // End profile
-                final EndEntityProfile endProfile = endEntityProfileSession.getEndEntityProfile("VPN");
-                final int endProfileId = endEntityProfileSession.getEndEntityProfileId("VPN");
+                final EndEntityProfile endProfile = endEntityProfileSession.getEndEntityProfile("VPN"); // TODO: to config
+                final int endProfileId = endEntityProfileSession.getEndEntityProfileId("VPN"); // TODO: to config
 
                 // Certificate profile
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
 
-                // Get CA
-                final CA vpnCA = caSession.getCA(authenticationToken, "VPN2");
+                // Get CA that works with VPN.
+                final CA vpnCA = caSession.getCA(authenticationToken, "VPN"); // TODO: to config
 
                 // Create new end entity.
                 UserView uview = new UserView();
@@ -587,12 +589,16 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 uview.setEndEntityProfileId(endProfileId);
                 uview.setCertificateProfileId(certProfileId);
 
-                uview.setEmail(name);
+                uview.setEmail(email);
                 uview.setUsername(name);
                 uview.setTimeCreated(new Date());
                 uview.setTimeModified(new Date());
+
                 uview.setSubjectDN("CN="+name); // TODO: sanitize
                 uview.setClearTextPassword(false);
+
+                // If auto-generated password is used in end entity profile, this password has to be null.
+                // Password will be generated automatically and sent via email to the end entity.
                 uview.setPassword(null); // TODO: random password
                 uview.setTokenType(SecConst.TOKEN_SOFT_P12);
 
@@ -612,6 +618,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Create certificate
                 try {
                     doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
+
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
                     final String newStatusString;
@@ -633,7 +640,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Create user itself
                 final VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
-                currenVpnUserId = newVpnUser.getId();
+                currentVpnUserId = newVpnUser.getId();
                 msg = "VpnUser created successfully.";
 
             } else {
@@ -642,7 +649,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             }
 
             flushCaches();
-            setCurrentCryptoTokenEditMode(false);
+            setCurrentVpnUserEditMode(false);
 
         } catch (AuthorizationDeniedException e) {
             msg = e.getMessage();
@@ -659,8 +666,16 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
     }
 
-    private boolean doCreateKeys(EndEntityInformation data, int status) throws Exception {
-        boolean ret = false;
+    /**
+     * Generates a new RSA keys & certificate for the end entity.
+     * @param data EndEntityInformation
+     * @param status entity status to determine a) generate new key b) recover stored key
+     * @return
+     * @throws Exception
+     */
+    private KeyStore doCreateKeys(EndEntityInformation data, int status) throws Exception {
+        KeyStore ret = null;
+
         // get users Token Type.
         int tokentype = data.getTokenType();
         boolean createJKS = (tokentype == SecConst.TOKEN_SOFT_JKS);
@@ -677,7 +692,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 //                log.info(iMsg);
 //            }
 
-            processUser(data, createJKS, createPEM, (status == EndEntityConstants.STATUS_KEYRECOVERY));
+            KeyStore ks = processUser(data, createJKS, createPEM, (status == EndEntityConstants.STATUS_KEYRECOVERY));
+
             // If all was OK, users status is set to GENERATED by the
             // signsession when the user certificate is created.
             // If status is still NEW, FAILED or KEYRECOVER though, it means we
@@ -694,7 +710,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // the same as originally
                 endEntityManagementSession.setClearTextPassword(authenticationToken, data.getUsername(), null);
             }
-            ret = true;
+            ret = ks;
             String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.generateduser", data.getUsername());
             log.info(iMsg);
         } else {
@@ -705,7 +721,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
     /**
      * Recovers or generates new keys for the user and generates keystore
-     * Frm BatchMakeP12Command.java
+     * From: BatchMakeP12Command.java
      *
      * @param data
      *            user data for user
@@ -718,16 +734,19 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
      * @throws Exception
      *             If something goes wrong...
      */
-    private void processUser(EndEntityInformation data, boolean createJKS, boolean createPEM, boolean keyrecoverflag) throws Exception {
-        KeyPair rsaKeys = null;
+    private KeyStore processUser(EndEntityInformation data, boolean createJKS, boolean createPEM, boolean keyrecoverflag)
+            throws Exception {
+
         X509Certificate orgCert = null;
-        rsaKeys = KeyTools.genKeys("2048", AlgorithmConstants.KEYALGORITHM_RSA);
+        KeyPair rsaKeys = KeyTools.genKeys("2048", AlgorithmConstants.KEYALGORITHM_RSA);
 
         // Get certificate for user and create keystore
         if (rsaKeys != null) {
-            createKeysForUser(data.getUsername(), data.getPassword(), data.getCAId(), rsaKeys, createJKS, createPEM,
+            return createKeysForUser(data.getUsername(), data.getPassword(), data.getCAId(), rsaKeys, createJKS, createPEM,
                     !keyrecoverflag && data.getKeyRecoverable(), orgCert);
         }
+
+        return null;
     }
 
     /**
@@ -761,7 +780,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
      *             if keyfile (generated by ourselves) is corrupt
      */
 
-    private void createKeysForUser(String username, String password, int caid, KeyPair rsaKeys, boolean createJKS,
+    private KeyStore createKeysForUser(String username, String password, int caid, KeyPair rsaKeys, boolean createJKS,
                                    boolean createPEM, boolean savekeys, X509Certificate orgCert) throws Exception {
         if (log.isTraceEnabled()) {
             log.trace(">createKeysForUser: username=" + username);
@@ -835,6 +854,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         if (log.isTraceEnabled()) {
             log.trace("<createUser: username=" + username);
         }
+
+        return ks;
     }
 
     /**
@@ -896,7 +917,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
     /** Invoked when admin cancels a CryptoToken create or edit. */
     public void cancelCurrentCryptoToken() {
-        setCurrentCryptoTokenEditMode(false);
+        setCurrentVpnUserEditMode(false);
         flushCaches();
     }
 
@@ -909,27 +930,33 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return reference;
     }
     
-    /** @return the id of the CryptoToken that is subject to view or edit */
+    /** @return the id of the VPNUser that is subject to view or edit */
     public Integer getCurrentVpnUserId() {
-        // Get the HTTP GET/POST parameter named "cryptoTokenId"
+        // Get the HTTP GET/POST parameter named "vpnUserId"
         String vpnUserIdString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("vpnUserId");
 
-        if (vpnUserIdString!=null && vpnUserIdString.length()>0) {
-            try {
-                int vpnUserId = Integer.parseInt(vpnUserIdString);
-                // If there is a query parameter present and the id is different we flush the cache!
-                if (vpnUserId != this.currenVpnUserId) {
-                    flushCaches();
-                    this.currenVpnUserId = vpnUserId;
+        if (vpnUserIdString!=null) {
+            if (vpnUserIdString.isEmpty()){
+                this.currentVpnUserId = null;
+            } else {
+                try {
+                    int vpnUserId = Integer.parseInt(vpnUserIdString);
+                    // If there is a query parameter present and the id is different we flush the cache!
+                    if (this.currentVpnUserId == null || vpnUserId != this.currentVpnUserId) {
+                        flushCaches();
+                        this.currentVpnUserId = vpnUserId;
+                    }
+
+                } catch (NumberFormatException e) {
+                    log.info("Bad 'cryptoTokenId' parameter value.. set, but not a number..");
                 }
-                // Always switch to edit mode for new ones and view mode for all others
-                setCurrentCryptoTokenEditMode(vpnUserId == 0);
-            } catch (NumberFormatException e) {
-                log.info("Bad 'cryptoTokenId' parameter value.. set, but not a number..");
             }
+
+            // Always switch to edit mode for new ones and view mode for all others
+            setCurrentVpnUserEditMode(this.currentVpnUserId == null);
         }
 
-        return currenVpnUserId;
+        return currentVpnUserId;
     }
 
     /** @return cached or populate a new CryptoToken GUI representation for view or edit */
@@ -967,16 +994,16 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         // NOOP: Only for page reload
     }
 
-    public boolean isCurrentCryptoTokenEditMode() {
-        return currentCryptoTokenEditMode;
+    public boolean isCurrentVpnUserEditMode() {
+        return currentVpnUserEditMode;
     }
 
-    public void setCurrentCryptoTokenEditMode(boolean currentCryptoTokenEditMode) {
-        this.currentCryptoTokenEditMode = currentCryptoTokenEditMode;
+    public void setCurrentVpnUserEditMode(boolean currentVpnUserEditMode) {
+        this.currentVpnUserEditMode = currentVpnUserEditMode;
     }
 
     public void toggleCurrentCryptoTokenEditMode() {
-        currentCryptoTokenEditMode ^= true;
+        currentVpnUserEditMode ^= true;
     }
     
     //

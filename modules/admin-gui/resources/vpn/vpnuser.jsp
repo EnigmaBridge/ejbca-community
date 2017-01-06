@@ -48,27 +48,40 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<h:outputLink rendered="#{vpnUsersMBean.paramRef eq 'default'}" value="adminweb/vpn/vpnusers.jsf"><h:outputText value="#{web.text.VPNUSER_NAV_BACK}"/></h:outputLink>
 			<h:outputLink rendered="#{vpnUsersMBean.paramRef eq 'caactivation'}" value="adminweb/ca/caactivation.jsf"><h:outputText value="#{web.text.CRYPTOTOKEN_NAV_BACK_ACT}"/></h:outputLink>
 		</h:panelGroup>
-		<h:commandButton action="#{vpnUsersMBean.toggleCurrentCryptoTokenEditMode}" value="#{web.text.VPNUSER_NAV_EDIT}" rendered="#{!vpnUsersMBean.currentCryptoTokenEditMode && vpnUsersMBean.allowedToModify}"/>
-		<h:panelGroup id="placeholder1" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode || !vpnUsersMBean.allowedToModify}"/>
-		<h:outputLabel for="currentCryptoTokenId" value="#{web.text.CRYPTOTOKEN_ID}:" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>
-		<h:outputText id="currentCryptoTokenId" value="#{vpnUsersMBean.currentVpnUserId}" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>
-		<h:outputLabel for="currentVpnUserName" value="#{web.text.VPNUSER_NAME}:"/>
-		<h:panelGroup id="currentVpnUserName">
-	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.name}" style="width: 300px" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode && vpnUsersMBean.currentVpnUserId == null}">
+		<h:commandButton action="#{vpnUsersMBean.toggleCurrentCryptoTokenEditMode}" value="#{web.text.VPNUSER_NAV_EDIT}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.allowedToModify}"/>
+		<h:panelGroup id="placeholder1" rendered="#{vpnUsersMBean.currentVpnUserEditMode || !vpnUsersMBean.allowedToModify}"/>
+
+		<h:outputLabel for="currentVpnUserId" value="#{web.text.CRYPTOTOKEN_ID}:" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>
+		<h:outputText id="currentVpnUserId" value="#{vpnUsersMBean.currentVpnUserId}" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>
+
+		<h:outputLabel for="currentVpnUserName" value="#{web.text.VPNUSER_NAME}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="currentVpnUserName" value="#{vpnUsersMBean.currentVpnUser.name}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+
+		<h:outputLabel for="currentVpnUserEmail" value="#{web.text.VPNUSER_EMAIL}:"/>
+		<h:panelGroup id="currentVpnUserEmail">
+	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.email}" style="width: 300px" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
 	    		<f:validator validatorId="legalCharsValidator"/>
 	    	</h:inputText>
-	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.name}" rendered="#{!vpnUsersMBean.currentCryptoTokenEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
+	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.email}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
+		</h:panelGroup>
+
+		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:"/>
+		<h:panelGroup id="currentVpnUserDevice">
+	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
+	    		<f:validator validatorId="legalCharsValidator"/>
+	    	</h:inputText>
+	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.device}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		</h:panelGroup>
 
 		<h:panelGroup/>
 		<h:panelGroup>
-			<h:commandButton action="#{vpnUsersMBean.cancelCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_CANCEL}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
-			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}" rendered="#{vpnUsersMBean.currentCryptoTokenEditMode}"/>
+			<h:commandButton action="#{vpnUsersMBean.cancelCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_CANCEL}" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
+			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}" rendered="#{vpnUsersMBean.currentVpnUserEditMode}"/>
 		</h:panelGroup>
 	</h:panelGrid>
 	</h:form>
 
-	<%--<h:outputText value="#{web.text.CRYPTOTOKEN_KPM_NA}" rendered="#{!vpnUsersMBean.currentVpnUser.active && vpnUsersMBean.currentVpnUserId!=0}"/>--%>
+	<%--<h:outputText value="#{web.text.CRYPTOTOKEN_KPM_NA}" rendered="#{!vpnUsersMBean.currentVpnUser.active && vpnUsersMBean.currentVpnUserId!=null}"/>--%>
 	<%--<h:form rendered="#{vpnUsersMBean.currentVpnUser.active}">--%>
 	<%--<h:dataTable value="#{vpnUsersMBean.keyPairGuiList}" var="keyPairGuiInfo" rendered="#{!vpnUsersMBean.keyPairGuiListEmpty}"--%>
 		<%--styleClass="grid" style="border-collapse: collapse; right: auto; left: auto">--%>

@@ -126,15 +126,26 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<div class="message"><h:messages layout="table" errorClass="alert"/></div>
 	<h:form id="vpnusers">
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
-		<%--<input type="hidden" name='<%= HIDDEN_USERNAME + i %>' value='<c:out value="<%= java.net.URLEncoder.encode(users[i].getUsername(),\"UTF-8\") %>"/>' >--%>
+		<%--<input type="hidden" name='<%= HIDDEN_USERNAME + i %>' value='<c:out value="<%= java.net.URLEncoder.encode(users[i].getEmail(),\"UTF-8\") %>"/>' >--%>
 		<h:column>
 			<h:selectBooleanCheckbox value="#{vpnUserGuiInfo.selected}"/>
 		</h:column>
+
 		<h:column>
-   			<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_NAME}"/></f:facet>
-			<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=#{vpnUserGuiInfo.user}&ref=default">
-				<h:outputText value="#{vpnUserGuiInfo.user}" title="#{web.text.CRYPTOTOKEN_VIEWWITH} #{vpnUserGuiInfo.user}"/>
+   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_NAME}"/></f:facet>
+			<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=#{vpnUserGuiInfo.id}&ref=default">
+				<h:outputText value="#{vpnUserGuiInfo.email}" title="#{web.text.VPNUSER_VIEWWITH} #{vpnUserGuiInfo.userDesc}"/>
 			</h:outputLink>
+		</h:column>
+
+		<h:column>
+   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_EMAIL}"/></f:facet>
+			<h:outputText value="#{vpnUserGuiInfo.email}"/>
+		</h:column>
+
+		<h:column>
+   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_DEVICE}"/></f:facet>
+			<h:outputText value="#{vpnUserGuiInfo.device}"/>
 		</h:column>
 
 		<%--<h:column>--%>
@@ -190,9 +201,9 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}">
 				<h:commandButton value="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
-								 onclick="return viewcert('#{vpnUserGuiInfo.user}')"/>
+								 onclick="return viewcert('#{vpnUserGuiInfo.email}')"/>
 				<h:commandButton value="#{web.text.VPNUSER_VIEW_USER}"
-								 onclick="return viewuser('#{vpnUserGuiInfo.user}')"/>
+								 onclick="return viewuser('#{vpnUserGuiInfo.email}')"/>
 			</h:panelGroup>
 
 
