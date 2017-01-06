@@ -199,7 +199,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
                     "verb 3\n" +
                     "<ca>\n" +
                     "%s" +
-                    "\n" +
                     "</ca>\n" +
                     "<cert>\n" +
                     "%s" +
