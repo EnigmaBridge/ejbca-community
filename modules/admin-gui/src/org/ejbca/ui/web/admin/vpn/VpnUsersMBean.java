@@ -28,6 +28,7 @@ import org.cesecore.certificates.util.AlgorithmConstants;
 import org.cesecore.certificates.util.AlgorithmTools;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.keys.util.KeyTools;
+import org.cesecore.util.Base64;
 import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
@@ -45,6 +46,7 @@ import org.ejbca.ui.web.admin.rainterface.UserView;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
@@ -566,7 +568,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     public void saveCurrentVpnUser() throws AuthorizationDeniedException {
         String msg = null;
         try {
-            final Properties properties = new Properties();
             final String name = getCurrentVpnUser().getName();
             final String email = getCurrentVpnUser().getEmail();
             final String device = getCurrentVpnUser().getDevice();
@@ -617,7 +618,22 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Create certificate
                 try {
-                    doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
+                    final KeyStore ks = doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
+
+                    // Store KS to the database
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ks.store(bos, "enigma".toCharArray()); // TODO: export key password
+                    vpnUser.setKeyStore(new String(Base64.encode(bos.toByteArray()), "UTF-8"));
+
+                    // Extract certificate & fingerprint
+                    final Certificate cert = ks.getCertificate(name);
+                    final String certFprint = CertTools.getFingerprintAsString(cert);
+                    vpnUser.setCertificateId(certFprint);
+                    vpnUser.setCertificate(new String(Base64.encode(cert.getEncoded())));
+
+                    // Generate VPN configuration
+                    final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
+                    vpnUser.setVpnConfig(vpnConfig);
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
@@ -808,7 +824,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         if (CertTools.isSelfSigned((X509Certificate) cachain[cachain.length - 1])) {
             try {
                 // Make sure we have BC certs, otherwise SHA256WithRSAAndMGF1
-                // will not verify (at least not as of jdk6)
+                // will not verify (at least not as of jdk6).
                 Certificate cacert = CertTools.getCertfromByteArray(cachain[cachain.length - 1].getEncoded());
                 cacert.verify(cacert.getPublicKey());
 

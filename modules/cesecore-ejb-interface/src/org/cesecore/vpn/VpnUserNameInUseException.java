@@ -16,17 +16,17 @@ import org.cesecore.CesecoreException;
 import org.cesecore.ErrorCode;
 
 /**
- * An exception thrown when someone tries to create a CryptoToken with an existing name.
+ * An exception thrown when someone tries to create a VpnUser with an existing name.
  *
  * TODO: fix name
- * @version $Id: CryptoTokenNameInUseException.java 17625 2013-09-20 07:12:06Z netmackan $
+ * @version $Id: VpnUserNameInUseException.java 17625 2013-09-20 07:12:06Z netmackan $
  */
 public class VpnUserNameInUseException extends CesecoreException {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates a new instance of <code>CryptoTokenNameInUseException</code> without detail message.
+     * Creates a new instance of <code>VpnUserNameInUseException</code> without detail message.
      */
     public VpnUserNameInUseException() {
         super();
@@ -34,7 +34,7 @@ public class VpnUserNameInUseException extends CesecoreException {
     }
 
     /**
-     * Constructs an instance of <code>CryptoTokenNameInUseException</code> with the specified detail message.
+     * Constructs an instance of <code>VpnUserNameInUseException</code> with the specified detail message.
      * @param msg the detail message.
      */
     public VpnUserNameInUseException(String msg) {
@@ -42,7 +42,7 @@ public class VpnUserNameInUseException extends CesecoreException {
     }
 
     /**
-     * Constructs an instance of <code>CryptoTokenNameInUseException</code> with the specified detail message.
+     * Constructs an instance of <code>VpnUserNameInUseException</code> with the specified detail message.
      * @param exception the exception that caused this
      */
     public VpnUserNameInUseException(Exception exception) {
@@ -50,9 +50,9 @@ public class VpnUserNameInUseException extends CesecoreException {
     }
 
     /**
-     * Constructs an instance of <code>CryptoTokenNameInUseException</code> with the specified detail message.
+     * Constructs an instance of <code>VpnUserNameInUseException</code> with the specified detail message.
      * @param msg the detail message.
-     * @param exception the exception that caused this
+     * @param e the exception that caused this
      */
     public VpnUserNameInUseException(String msg, Exception e) {
         super(ErrorCode.CRYPTOTOKEN_NAME_IN_USE, msg, e);

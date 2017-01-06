@@ -18,15 +18,24 @@ import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
 import org.cesecore.authorization.control.CryptoTokenRules;
+import org.cesecore.certificates.ca.CA;
+import org.cesecore.certificates.ca.CADoesntExistsException;
+import org.cesecore.certificates.ca.CaSessionLocal;
+import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.keys.token.*;
+import org.cesecore.util.CertTools;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.*;
+import java.security.cert.*;
+import java.security.cert.Certificate;
 import java.util.*;
 
 /**
@@ -38,6 +47,7 @@ import java.util.*;
 public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
     private static final Logger log = Logger.getLogger(VpnUserManagementSessionBean.class);
+
     /** Internal localization of logs and errors */
     private static final InternalResources INTRES = InternalResources.getInstance();
     private static final Random rnd = new SecureRandom();
@@ -48,6 +58,8 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     private SecurityEventsLoggerSessionLocal securityEventsLoggerSession;
     @EJB
     private VpnUserSession vpnUserSession;
+    @EJB
+    private CaSessionLocal caSession;
 
     @Override
     public List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken) {
@@ -64,7 +76,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
     @Override
     public String getUserName(VpnUser user){
-        return user.getEmail() + "/" + user.getDevice();
+        return VpnUtils.getUserName(user);
     }
 
     @Override
@@ -86,9 +98,27 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         if (log.isTraceEnabled()) {
             log.trace(">createVpnUser: " + user.getEmail());
         }
+
         // TODO: auth
         // TODO: audit logging
         //assertAuthorizedToModifyCryptoTokens(authenticationToken);
+
+        final Set<Integer> allVpnUsers = new HashSet<>(vpnUserSession.getVpnUserIds());
+
+        // Allocate new user ID
+        Integer vpnUserId = null;
+        for (int i = 0; i < 100; i++) {
+            final int current = rnd.nextInt();
+            if (!allVpnUsers.contains(current)) {
+                vpnUserId = current;
+                break;
+            }
+        }
+        if (vpnUserId == null) {
+            throw new RuntimeException("Failed to allocate a new vpnUserId.");
+        }
+
+        user.setId(vpnUserId);
         user = vpnUserSession.mergeVpnUser(user);
 
         if (log.isTraceEnabled()) {
@@ -137,9 +167,71 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         return user;
     }
 
+    @Override
+    public String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation endEntity, KeyStore ks)
+            throws AuthorizationDeniedException, CADoesntExistsException {
 
+        try {
+            // TODO: auth, logging
 
-//    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+            final CA ca = caSession.getCA(authenticationToken, endEntity.getCAId());
+            final java.security.cert.Certificate caCert = ca.getCACertificate();
+            final String caCertDN = CertTools.getSubjectDN(caCert);
+            final String hostname = CertTools.getPartFromDN(caCertDN, "CN");
+
+            final String caCertPem = new String(CertTools.getPemFromCertificateChain(Collections.singletonList(caCert)),
+                    "UTF-8");
+
+            final Certificate cert = ks.getCertificate(endEntity.getUsername());
+            final String certPem = new String(CertTools.getPemFromCertificateChain(Collections.singletonList(cert)),
+                    "UTF-8");
+
+            final Key key = ks.getKey(endEntity.getUsername(), null);
+            final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key);
+
+            // TODO: refactor to templates / settings / configuration builder
+            final String ovpnTemplate="client\n" +
+                    "dev tun\n" +
+                    "proto udp\n" +
+                    "remote %s 1194\n" +
+                    "resolv-retry infinite\n" +
+                    "nobind\n" +
+                    "persist-key\n" +
+                    "persist-tun\n" +
+                    "comp-lzo\n" +
+                    "verb 3\n" +
+                    "<ca>\n" +
+                    "%s" +
+                    "\n" +
+                    "</ca>\n" +
+                    "<cert>\n" +
+                    "%s" +
+                    "</cert>\n" +
+                    "<key>\n" +
+                    "%s" +
+                    "</key>\n" +
+                    "\n";
+
+            return String.format(ovpnTemplate, hostname, caCertPem, certPem, keyPem);
+
+        } catch (CertificateEncodingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    //    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 //    @Override
 //    public List<Integer> geVpnUsersIds(final AuthenticationToken authenticationToken) {
 //        final List<Integer> allCryptoTokenIds = cryptoTokenSession.getCryptoTokenIds();

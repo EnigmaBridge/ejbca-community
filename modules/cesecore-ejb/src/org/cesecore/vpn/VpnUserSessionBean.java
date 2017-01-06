@@ -102,29 +102,46 @@ public class VpnUserSessionBean implements VpnUserSession {
 
     @Override
     public VpnUser mergeVpnUser(final VpnUser vpnUser) throws VpnUserNameInUseException {
+        final String vpnUserName = VpnUtils.getUserName(vpnUser);
+        final String vpnUserEmail = vpnUser.getEmail();
+        final String vpnUserDevice = vpnUser.getDevice();
+        final Integer vpnUserId = vpnUser.getId();
+
         if (log.isTraceEnabled()) {
-            log.trace(">addVpnUser " + vpnUser.getEmail() + " " + vpnUser.getClass().getName());
+            log.trace(">addVpnUser " + vpnUserId + " name: " + vpnUserName + " " + vpnUser.getClass().getName());
         }
 
-        final String vpnUserId = vpnUser.getEmail();
         final long lastUpdate = System.currentTimeMillis();
 
         VpnUser vpnUserObj = entityManager.find(VpnUser.class, vpnUserId);
         if (vpnUserObj == null) {
             // The vpnUser does not exist in the database, before we add it we want to check that the name is not in use
-            if (isVpnUserNameUsed(vpnUserId)) {
+            if (isVpnUserNameUsed(vpnUserEmail, vpnUserDevice)) {
                 throw new VpnUserNameInUseException(intres.getLocalizedMessage("token.nameisinuse", vpnUserId));
             }
 
-            vpnUserObj = new VpnUser(vpnUserId);
+            vpnUserObj = new VpnUser(vpnUserEmail, vpnUserDevice);
+            vpnUserObj.setId(vpnUser.getId());
             vpnUserObj.setDateCreated(lastUpdate);
             vpnUserObj.setDateModified(lastUpdate);
             vpnUserObj.setRevokedStatus(0);
+            vpnUserObj.setCertificateId(vpnUser.getCertificateId());
+            vpnUserObj.setCertificate(vpnUser.getCertificate());
+            vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
+            vpnUserObj.setKeyStore(vpnUser.getKeyStore());
+            vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
         } else {
-            // It might be the case that the calling transaction has already loaded a reference to this token
+            // It might be the case that the calling transaction has already loaded a reference to this vpn user
             // and hence we need to get the same one and perform updates on this object instead of trying to
             // merge a new object.
             vpnUserObj.setDateModified(lastUpdate);
+            vpnUserObj.setDateModified(lastUpdate);
+            vpnUserObj.setRevokedStatus(vpnUser.getRevokedStatus());
+            vpnUserObj.setCertificateId(vpnUser.getCertificateId());
+            vpnUserObj.setCertificate(vpnUser.getCertificate());
+            vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
+            vpnUserObj.setKeyStore(vpnUser.getKeyStore());
+            vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
         }
 
         vpnUserObj = createOrUpdateVpnUser(vpnUserObj);
@@ -154,6 +171,14 @@ public class VpnUserSessionBean implements VpnUserSession {
     public boolean isVpnUserNameUsed(final String email) {
         final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE a.email=:email");
         query.setParameter("email", email);
+        return !query.getResultList().isEmpty();
+    }
+    @Override
+
+    public boolean isVpnUserNameUsed(final String email, final String device) {
+        final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE a.email=:email AND a.device=:device");
+        query.setParameter("email", email);
+        query.setParameter("device", device);
         return !query.getResultList().isEmpty();
     }
 

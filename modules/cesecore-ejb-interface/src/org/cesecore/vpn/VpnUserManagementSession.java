@@ -14,8 +14,11 @@ package org.cesecore.vpn;
 
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
+import org.cesecore.certificates.ca.CADoesntExistsException;
+import org.cesecore.certificates.endentity.EndEntityInformation;
 
 import javax.ejb.Local;
+import java.security.KeyStore;
 import java.util.List;
 
 /**
@@ -44,4 +47,7 @@ public interface VpnUserManagementSession {
 
     VpnUser saveVpnUser(AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;
+
+    String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation user, KeyStore ks)
+            throws AuthorizationDeniedException, CADoesntExistsException;
 }

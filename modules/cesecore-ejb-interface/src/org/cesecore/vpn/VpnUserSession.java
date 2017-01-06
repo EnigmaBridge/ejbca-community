@@ -22,6 +22,7 @@ public interface VpnUserSession {
 
     /** @return true if the specified name is already in use by another VpnUser (checks the database, not the cache) */
     boolean isVpnUserNameUsed(String email);
+    boolean isVpnUserNameUsed(String email, String device);
 
     /** @return the specified CryptoToken or null if it does not exis.
      * @throws RuntimeException  */
