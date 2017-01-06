@@ -212,8 +212,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             return String.format(ovpnTemplate, hostname, caCertPem, certPem, keyPem);
 
             // TODO: exception handling
-        } catch (CertificateEncodingException e) {
-            e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (KeyStoreException e) {
