@@ -51,7 +51,8 @@ org.cesecore.authorization.control.CryptoTokenRules
   <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
-  <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
+	<script src="<%= globalconfiguration.getAdminWebPath() %>jquery-1.12.4.min.js"></script>
+	<script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
   <script>
 	/** Prevent form submission if enter is pressed in form and instead clicks on the button right of the inputText instead..) */
 	function preventSubmitOnEnter(o, e) {
@@ -114,6 +115,17 @@ org.cesecore.authorization.control.CryptoTokenRules
         }
         return returnval;
     }
+
+    /**
+	 * Select all
+     */
+    $(window).load(function () {
+        $(document).delegate('.checkAll', 'click', function(event) {
+            var isChecked = this.checked;
+            $('.checkAnchor').prop('checked', isChecked);
+            //$(this).closest("table").find(':checkbox').attr('checked', isChecked);
+        });
+    });
   </script>
    
 </head>
@@ -128,7 +140,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
 		<%--<input type="hidden" name='<%= HIDDEN_USERNAME + i %>' value='<c:out value="<%= java.net.URLEncoder.encode(users[i].getEmail(),\"UTF-8\") %>"/>' >--%>
 		<h:column>
-			<h:selectBooleanCheckbox value="#{vpnUserGuiInfo.selected}"/>
+			<f:facet name="header"><h:selectBooleanCheckbox styleClass="checkAll"/></f:facet>
+			<h:selectBooleanCheckbox value="#{vpnUserGuiInfo.selected}" styleClass="checkAnchor"/>
 		</h:column>
 
 		<h:column>
