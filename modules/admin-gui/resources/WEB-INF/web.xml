@@ -218,7 +218,7 @@
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>VpnDownload</servlet-name>
-      <url-pattern>/ca/vpn/getvpn</url-pattern>
+      <url-pattern>/vpn/getvpn</url-pattern>
    </servlet-mapping>
    <servlet-mapping>
       <servlet-name>LogOutServlet</servlet-name>
