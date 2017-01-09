@@ -32,6 +32,7 @@ import org.cesecore.util.Base64;
 import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
+import org.cesecore.vpn.VpnUserNameInUseException;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
 import org.ejbca.core.ejb.ca.sign.SignSession;
 import org.ejbca.core.ejb.ra.*;
@@ -46,6 +47,8 @@ import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
+import org.ejbca.util.passgen.IPasswordGenerator;
+import org.ejbca.util.passgen.PasswordGeneratorFactory;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -422,6 +425,16 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
 
     /**
+     * Generated a random OTP password
+     *
+     * @return a randomly generated password
+     */
+    private String genRandomPwd() {
+        final IPasswordGenerator pwdgen = PasswordGeneratorFactory.getInstance(PasswordGeneratorFactory.PASSWORDTYPE_NOSOUNDALIKEENLD);
+        return pwdgen.getNewPassword(16, 16);
+    }
+
+    /**
      * Gets RA bean.
      * @return
      */
@@ -505,24 +518,72 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
 
     /** Invoked when admin requests a new VpnUser credentials, revoking the old ones. */
-    public void regenerateVpnUser() throws AuthorizationDeniedException {
-        // TODO: implement
-        if (vpnUserGuiList !=null) {
-//            final VpnUserGuiInfo current = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
-//            try {
-//                vpnUserManagementSession.activate(authenticationToken, current.getCryptoTokenId(), current.getAuthenticationCode().toCharArray());
-//            } catch (CryptoTokenOfflineException e) {
-//                final String msg = "Activation of CryptoToken '" + current.getTokenName() + "' (" + current.getCryptoTokenId() +
-//                        ") by administrator " + authenticationToken.toString() + " failed. Device was unavailable.";
-//                super.addNonTranslatedErrorMessage(msg);
-//                log.info(msg);
-//            } catch (CryptoTokenAuthenticationFailedException e) {
-//                final String msg = "Activation of CryptoToken '" + current.getTokenName() + "' (" + current.getCryptoTokenId() +
-//                        ") by administrator " + authenticationToken.toString() + " failed. Authentication code was not correct.";
-//                super.addNonTranslatedErrorMessage(msg);
-//                log.info(msg);
-//            }
-            flushCaches();
+    public void regenerateVpnUsers() throws AuthorizationDeniedException {
+        if (vpnUserGuiList == null) {
+            return;
+        }
+
+        String msg = null;
+        try {
+            for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
+                if (!vpnUserGuiInfo.isSelected()) {
+                    continue;
+                }
+
+                // Revocation first - if there is some certificate already.
+                endEntityManagementSession.revokeUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 4);
+                // Delete VPN related crypto info
+                vpnUserManagementSession.revokeVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+
+                // Load fresh VPN user view
+                final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+                final String endEntityId = getEndEntityId(vpnUser);
+
+                endEntityManagementSession.setUserStatus(authenticationToken, vpnUserGuiInfo.getUserDesc(),
+                        EndEntityConstants.STATUS_NEW);
+
+                final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, endEntityId);
+
+                // Regenerate certificate
+                try {
+                    final KeyStore ks = doCreateKeys(endEntity, EndEntityConstants.STATUS_NEW);
+                    VpnUtils.addKeyStoreToUser(vpnUser, ks, vpnUserGuiInfo.getUserDesc(), "enigma".toCharArray()); // TODO: export pass
+
+                    // Generate VPN configuration
+                    final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
+                    vpnUser.setVpnConfig(vpnConfig);
+                    vpnUser.setOtpDownload(genRandomPwd());
+
+                } catch (Exception e) {
+                    // If things went wrong set status to FAILED
+                    final String newStatusString;
+                    endEntityManagementSession.setUserStatus(authenticationToken, endEntity.getUsername(),
+                            EndEntityConstants.STATUS_FAILED);
+                    newStatusString = "FAILED";
+
+                    log.error(InternalEjbcaResources.getInstance().getLocalizedMessage(
+                            "batch.errorsetstatus", newStatusString), e);
+                    final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage(
+                            "batch.errorbatchfaileduser", endEntity.getUsername());
+                    throw new RuntimeException(errMsg);
+                }
+
+                // Create user itself
+                final VpnUser newVpnUser = vpnUserManagementSession.saveVpnUser(authenticationToken, vpnUser);
+                currentVpnUserId = newVpnUser.getId();
+                msg = "VpnUser regenerated successfully.";
+
+                flushCaches();
+            }
+        } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
+            msg = e.getMessage();
+        } catch (VpnUserNameInUseException e) {
+            e.printStackTrace();
+        }
+
+        if (msg != null) {
+            log.info("Message displayed to user: " + msg);
+            super.addNonTranslatedErrorMessage(msg);
         }
     }
 
@@ -684,21 +745,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Create certificate
                 try {
                     final KeyStore ks = doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
-
-                    // Store KS to the database
-                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                    ks.store(bos, "enigma".toCharArray()); // TODO: export key password
-                    vpnUser.setKeyStore(new String(Base64.encode(bos.toByteArray()), "UTF-8"));
-
-                    // Extract certificate & fingerprint
-                    final Certificate cert = ks.getCertificate(name);
-                    final String certFprint = CertTools.getFingerprintAsString(cert);
-                    vpnUser.setCertificateId(certFprint);
-                    vpnUser.setCertificate(new String(Base64.encode(cert.getEncoded())));
+                    VpnUtils.addKeyStoreToUser(vpnUser, ks, name, "enigma".toCharArray()); // TODO: export pass
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
                     vpnUser.setVpnConfig(vpnConfig);
+                    vpnUser.setOtpDownload(genRandomPwd());
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED

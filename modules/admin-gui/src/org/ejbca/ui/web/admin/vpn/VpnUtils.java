@@ -1,5 +1,8 @@
 package org.ejbca.ui.web.admin.vpn;
 
+import org.cesecore.util.Base64;
+import org.cesecore.util.CertTools;
+import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.model.authorization.AccessRulesConstants;
 import org.ejbca.ui.web.admin.cainterface.CAInterfaceBean;
 import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
@@ -10,7 +13,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.beans.Beans;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 
 /**
  * Simple utilities for VPN beans.
@@ -138,6 +147,23 @@ public class VpnUtils {
             session.setAttribute("cabean", cabean);
         }
         return cabean;
+    }
+
+    public static VpnUser addKeyStoreToUser(VpnUser vpnUser, KeyStore ks, String name, char[] password) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        // Store KS to the database
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ks.store(bos, password);
+        vpnUser.setKeyStore(new String(Base64.encode(bos.toByteArray()), "UTF-8"));
+
+        // Extract certificate & fingerprint
+        final Certificate cert = ks.getCertificate(name);
+        final String certFprint = CertTools.getFingerprintAsString(cert);
+        vpnUser.setCertificateId(certFprint);
+        vpnUser.setCertificate(new String(Base64.encode(cert.getEncoded())));
+        vpnUser.setDateModified(System.currentTimeMillis());
+        vpnUser.setRevokedStatus(0);
+
+        return vpnUser;
     }
 
 }

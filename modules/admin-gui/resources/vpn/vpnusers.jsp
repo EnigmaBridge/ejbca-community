@@ -223,11 +223,16 @@ org.cesecore.authorization.control.CryptoTokenRules
 	</h:dataTable>
 	<br/>
 
-	<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
-					 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_DELETE}')"/>
-	<h:commandButton value="#{web.text.VPNUSER_REVOKE}" action="#{vpnUsersMBean.revokeVpnUsers}"
-		rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_REVOKE}')"/>
+	<h:panelGroup>
+		<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
+						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_DELETE}')"/>
 
+		<h:commandButton value="#{web.text.VPNUSER_REVOKE}" action="#{vpnUsersMBean.revokeVpnUsers}"
+						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_REVOKE}')"/>
+
+		<h:commandButton value="#{web.text.VPNUSER_REGENERATE}" action="#{vpnUsersMBean.regenerateVpnUsers}"
+						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_REGENERATE}')"/>
+	</h:panelGroup>
 	<br/>
 
 
