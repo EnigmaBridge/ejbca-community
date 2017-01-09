@@ -70,19 +70,22 @@ public class VpnDownloadServlet extends HttpServlet {
     /** Handles HTTP GET */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace(">doGet()");
-        final String otp = request.getParameter("otp");
-        final String vpnUserIdTxt = request.getParameter("id");
-        final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
         try {
+            final String otp = request.getParameter("otp");
+            final String vpnUserIdTxt = request.getParameter("id");
+            final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
+
             final Properties properties = new Properties();
             final String xFwded = request.getHeader("X-Forwarded-For");
             final String sourceAddr = request.getRemoteAddr() + ";" + xFwded;
+            final String ua = request.getHeader("User-Agent");
             properties.setProperty("ip", sourceAddr);
-            properties.setProperty("ua", request.getHeader("User-Agent"));
+            properties.setProperty("ua", ua);
 
             final VpnUser vpnUser = vpnUserManagementSession.downloadOtp(alwaysAllowAuthenticationToken, vpnUserId, otp, properties);
             if (vpnUser == null){
                 // TODO: redirect to some nice looking page explaining what happened.
+                log.info(String.format("OTP auth failed with ID: %d, OTP[%s], src: %s, ua: %s", vpnUserId, otp, sourceAddr, ua));
                 response.setStatus(404);
 
             } else {
