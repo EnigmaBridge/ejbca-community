@@ -124,6 +124,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
             details.put("otpToken", otpToken);
             details.put("ip", properties.getProperty("ip"));
+            details.put("fwded", properties.getProperty("fwded"));
             details.put("UA", properties.getProperty("ua"));
             securityEventsLoggerSession.log(EventTypes.VPN_OTP_DOWNLOADED, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                     authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);

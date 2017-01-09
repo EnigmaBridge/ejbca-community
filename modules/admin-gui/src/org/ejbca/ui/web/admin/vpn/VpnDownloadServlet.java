@@ -79,7 +79,8 @@ public class VpnDownloadServlet extends HttpServlet {
             final String xFwded = request.getHeader("X-Forwarded-For");
             final String sourceAddr = request.getRemoteAddr() + ";" + xFwded;
             final String ua = request.getHeader("User-Agent");
-            properties.setProperty("ip", sourceAddr);
+            properties.setProperty("ip", request.getRemoteAddr());
+            properties.setProperty("fwded", xFwded);
             properties.setProperty("ua", ua);
 
             final VpnUser vpnUser = vpnUserManagementSession.downloadOtp(alwaysAllowAuthenticationToken, vpnUserId, otp, properties);
