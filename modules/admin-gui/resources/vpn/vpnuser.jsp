@@ -114,7 +114,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:outputText id="dateModified" value="#{vpnUsersMBean.currentVpnUser.dateModifiedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 
 		<h:outputLabel for="certificateId" value="#{web.text.VPNUSER_CERTIFICATE_ID}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
-		<h:outputLink id="certificateId" onclick="return viewcert(#{vpnUsersMBean.currentVpnUser.name})" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
+		<h:outputLink value="" id="certificateId" onclick="return viewcert('#{vpnUsersMBean.currentVpnUser.name}')" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
 			<h:outputText value="#{vpnUsersMBean.currentVpnUser.certificateId}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		</h:outputLink>
 
