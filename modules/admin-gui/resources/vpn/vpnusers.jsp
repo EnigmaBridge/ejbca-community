@@ -192,20 +192,12 @@ org.cesecore.authorization.control.CryptoTokenRules
 		</h:column>
 
 		<h:column>
-   			<%--<f:facet name="header">--%>
-			<%--<h:panelGroup>--%>
-   				<%--<h:outputText value="#{web.text.CRYPTOTOKEN_ACTION}"/>--%>
-   				<%--<%= ejbcawebbean.getHelpReference("/userguide.html#Activation%20and%20deactivation") %>--%>
-			<%--</h:panelGroup>--%>
-   			<%--</f:facet>--%>
-			<%--<h:panelGroup rendered="#{!cryptoTokenGuiInfo.active && cryptoTokenGuiInfo.allowedActivation}">--%>
-				<%--<h:inputSecret size="16" title="#{web.text.CRYPTOTOKEN_PIN}" value="#{cryptoTokenGuiInfo.authenticationCode}" onkeypress="preventSubmitOnEnter(this,event)"/>--%>
-				<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_ACTIVATE}" action="#{cryptoTokenMBean.activateCryptoToken}"/>--%>
-			<%--</h:panelGroup>--%>
-			<%--<h:panelGroup rendered="#{cryptoTokenGuiInfo.active && cryptoTokenGuiInfo.allowedDeactivation}">--%>
-				<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_DEACTIVATE}" action="#{cryptoTokenMBean.deactivateCryptoToken}" rendered="#{!cryptoTokenGuiInfo.autoActivation}"/>--%>
-				<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_REACTIVATE}" action="#{cryptoTokenMBean.deactivateCryptoToken}" rendered="#{cryptoTokenGuiInfo.autoActivation}"/>--%>
-			<%--</h:panelGroup>--%>
+   			<f:facet name="header">
+			<h:panelGroup>
+   				<h:outputText value="#{web.text.VPNUSER_ACTION}"/>
+   				<%= ejbcawebbean.getHelpReference("/userguide.html#VPNUser%20action") %>
+			</h:panelGroup>
+   			</f:facet>
 
 			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}">
 				<h:commandButton value="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
