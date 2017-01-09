@@ -139,6 +139,13 @@ public enum EventTypes implements EventType {
     INTERNALKEYBINDING_EDIT,
     /** Removal of an existing Internal Key Binding. */
     INTERNALKEYBINDING_DELETE,
+    /** VPN events */
+    VPN_USER_CREATE,
+    VPN_USER_CHANGE,
+    VPN_USER_REVOKE,
+    VPN_USER_DELETE,
+    VPN_USER_REGENERATE,
+    VPN_OTP_DOWNLOADED,
     ;
 
     @Override

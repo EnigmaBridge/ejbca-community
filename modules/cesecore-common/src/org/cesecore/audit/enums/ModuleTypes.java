@@ -49,7 +49,9 @@ public enum ModuleTypes implements ModuleType {
     /** Internal Key Binding module. */
 	INTERNALKEYBINDING,
     /** Module for system settings stored in the database. */
-    GLOBALCONF;
+    GLOBALCONF,
+	/** VPN module */
+	VPN;
 
     @Override
     public boolean equals(ModuleType value) {
