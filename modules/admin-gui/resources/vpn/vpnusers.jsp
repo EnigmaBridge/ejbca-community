@@ -158,6 +158,20 @@ org.cesecore.authorization.control.CryptoTokenRules
 			</h:outputText>
 		</h:column>
 
+		<h:column>
+   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_OTP_READY}"/></f:facet>
+			<h:outputText value="#{web.text.VPNUSER_YES}" rendered="#{vpnUserGuiInfo.otpDownload != null}"/>
+			<h:outputText value="#{web.text.VPNUSER_NO}" rendered="#{vpnUserGuiInfo.otpDownload == null}"/>
+		</h:column>
+
+		<h:column>
+   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_OTP_USED}"/></f:facet>
+			<h:outputText value="#{web.text.VPNUSER_DASH}" rendered="#{vpnUserGuiInfo.otpUsed == null}"/>
+			<h:outputText id="otpUsed" value="#{vpnUserGuiInfo.otpUsed}" rendered="#{vpnUserGuiInfo.otpUsed != null}">
+				<f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+			</h:outputText>
+		</h:column>
+
 		<%--<h:column>--%>
    			<%--<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_EMAIL}"/></f:facet>--%>
 			<%--<h:outputText value="#{vpnUserGuiInfo.email}"/>--%>
