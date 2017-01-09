@@ -509,26 +509,27 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
 
     /** Invoked when admin requests a VpnUser certificate revocation. */
-    public void revokeVpnUser() throws AuthorizationDeniedException {
+    public void revokeVpnUsers() throws AuthorizationDeniedException {
         if (vpnUserGuiList == null) {
             return;
         }
 
         String msg = null;
         try {
-            final VpnUserGuiInfo rowData = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
+            for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
+                if (!vpnUserGuiInfo.isSelected()) {
+                    continue;
+                }
 
-            // Revocation first. TODO: revocation reason parametrisation
-            endEntityManagementSession.revokeUser(authenticationToken, rowData.getUserDesc(), 0);
+                // Revocation first. TODO: revocation reason parametrisation
+                endEntityManagementSession.revokeUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 0);
 
-            flushCaches();
-        } catch (ApprovalException e) {
-            msg = e.getMessage();
-        } catch (WaitingForApprovalException e) {
-            msg = e.getMessage();
-        } catch (FinderException e) {
-            msg = e.getMessage();
-        } catch (AlreadyRevokedException e) {
+                // Delete VPN related crypto info
+                vpnUserManagementSession.revokeVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+
+                flushCaches();
+            }
+        } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
         }
 
@@ -537,31 +538,28 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             super.addNonTranslatedErrorMessage(msg);
         }
     }
-    
-    /** Invoked when admin requests a CryptoToken deletion. */
-    public void deleteVpnUser() throws AuthorizationDeniedException {
+
+    /** Invoked when admin requests a VpnUsers deletion. */
+    public void deleteVpnUsers() throws AuthorizationDeniedException {
         if (vpnUserGuiList == null) {
             return;
         }
 
         String msg = null;
         try {
-            final VpnUserGuiInfo rowData = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
+            for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
+                if (!vpnUserGuiInfo.isSelected()){
+                    continue;
+                }
 
-            // Revocation first. TODO: revocation reason parametrisation
-            endEntityManagementSession.revokeAndDeleteUser(authenticationToken, rowData.getUserDesc(), 0);
+                // Revocation first. TODO: revocation reason parametrisation
+                endEntityManagementSession.revokeAndDeleteUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 0);
 
-            // Delete VpnUser record itself
-            vpnUserManagementSession.deleteVpnUser(authenticationToken, rowData.getId());
-            flushCaches();
-
-        } catch (ApprovalException e) {
-            msg = e.getMessage();
-        } catch (WaitingForApprovalException e) {
-            msg = e.getMessage();
-        } catch (RemoveException e) {
-            msg = e.getMessage();
-        } catch (NotFoundException e) {
+                // Delete VpnUser record itself
+                vpnUserManagementSession.deleteVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+                flushCaches();
+            }
+        } catch (ApprovalException | WaitingForApprovalException | RemoveException | NotFoundException e) {
             msg = e.getMessage();
         }
 

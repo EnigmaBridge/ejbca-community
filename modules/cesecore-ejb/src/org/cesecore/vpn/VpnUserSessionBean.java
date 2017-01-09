@@ -161,6 +161,21 @@ public class VpnUserSessionBean implements VpnUserSession {
 //        VpnUserCache.INSTANCE.updateWith(cryptoTokenId, 0, null, null);
         return ret;
     }
+
+    @Override
+    public boolean revokeVpnUser(final int vpnUserId) {
+        final VpnUser vpnUser = readVpnUser(vpnUserId);
+        vpnUser.setVpnConfig(null);
+        vpnUser.setOtpDownload(null);
+        vpnUser.setCertificate(null);
+        vpnUser.setCertificateId(null);
+        vpnUser.setKeyStore(null);
+        vpnUser.setRevokedStatus(1);
+        createOrUpdateVpnUser(vpnUser);
+
+//        VpnUserCache.INSTANCE.updateWith(cryptoTokenId, 0, null, null);
+        return true;
+    }
     
 //    @Override
 //    public Map<String,Integer> getCachedNameToIdMap() {

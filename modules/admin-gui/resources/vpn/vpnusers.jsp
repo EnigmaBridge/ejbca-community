@@ -219,12 +219,19 @@ org.cesecore.authorization.control.CryptoTokenRules
 								 onclick="return viewuser('#{vpnUserGuiInfo.userDesc}')"/>
 			</h:panelGroup>
 
-
-			<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUser}"
-				rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_DELETE}')"/>
 		</h:column>
 	</h:dataTable>
 	<br/>
+
+	<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
+					 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_DELETE}')"/>
+	<h:commandButton value="#{web.text.VPNUSER_REVOKE}" action="#{vpnUsersMBean.revokeVpnUsers}"
+		rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_REVOKE}')"/>
+
+	<br/>
+
+
+
 	<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=&ref=vpnusers" rendered="#{cryptoTokenMBean.allowedToModify}">
 		<h:outputText value="#{web.text.CRYPTOTOKEN_CREATENEW}"/>
 	</h:outputLink>

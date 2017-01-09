@@ -86,6 +86,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     }
 
     @Override
+    public void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
+        // TODO: auth
+        vpnUserSession.revokeVpnUser(vpnUserId);
+    }
+
+    @Override
     public VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         // TODO: auth
         return vpnUserSession.getVpnUser(vpnUserId);

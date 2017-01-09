@@ -24,7 +24,7 @@ public interface VpnUserSession {
     boolean isVpnUserNameUsed(String email);
     boolean isVpnUserNameUsed(String email, String device);
 
-    /** @return the specified CryptoToken or null if it does not exis.
+    /** @return the specified VPNUser or null if it does not exis.
      * @throws RuntimeException  */
     VpnUser getVpnUser(int vpnUserId);
 
@@ -43,21 +43,28 @@ public interface VpnUserSession {
      */
     VpnUser getVpnUser(String email, String device);
 
-    /** Add the specified CryptoToken to the database and return the id used to store it */
+    /** Add the specified VPNUser to the database and return the id used to store it */
     VpnUser mergeVpnUser(VpnUser vpnUser) throws VpnUserNameInUseException;
 
-    /** Remove the specified CryptoToken from the database.
+    /** Remove the specified VPNUser from the database.
      * @param vpnUserId the id of the crypto token that should be removed
      * @return true if crypto token exists and is deleted, false if crypto token with given id does not exist
      */
     boolean removeVpnUser(final int vpnUserId);
 
-    /** @return a list of all CryptoToken identifiers in the database. */
+    /**
+     * Revokes VPNUser - deletes all crypto related data.
+     * @param vpnUserId
+     * @return
+     */
+    boolean revokeVpnUser(final int vpnUserId);
+
+    /** @return a list of all VPNUser identifiers in the database. */
     List<Integer> getVpnUserIds();
 
-    /** Clears the CryptoToken cache. */
+    /** Clears the VPNUser cache. */
     void flushCache();
 
-    /** Clears the CryptoToken cache except for the cache entries specified in excludeIDs */
+    /** Clears the VPNUser cache except for the cache entries specified in excludeIDs */
     void flushExcludingIDs(List<Integer> excludeIDs);
 }

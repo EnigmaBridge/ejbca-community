@@ -46,6 +46,14 @@ public interface VpnUserManagementSession {
      */
     void deleteVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
+    /**
+     * Revokes the VPN user - deletes all certificate related data from the VPN DB.
+     * @param authenticationToken
+     * @param vpnUserId
+     * @throws AuthorizationDeniedException
+     */
+    void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
+
     VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
     VpnUser createVpnUser(final AuthenticationToken authenticationToken, VpnUser user)
