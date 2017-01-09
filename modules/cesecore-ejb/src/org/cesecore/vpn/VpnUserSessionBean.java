@@ -171,6 +171,7 @@ public class VpnUserSessionBean implements VpnUserSession {
         vpnUser.setCertificateId(null);
         vpnUser.setKeyStore(null);
         vpnUser.setRevokedStatus(1);
+        vpnUser.setDateModified(System.currentTimeMillis());
         createOrUpdateVpnUser(vpnUser);
 
 //        VpnUserCache.INSTANCE.updateWith(cryptoTokenId, 0, null, null);
