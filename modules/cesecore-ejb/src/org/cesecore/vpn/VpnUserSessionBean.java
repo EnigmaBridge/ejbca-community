@@ -135,7 +135,6 @@ public class VpnUserSessionBean implements VpnUserSession {
             // and hence we need to get the same one and perform updates on this object instead of trying to
             // merge a new object.
             vpnUserObj.setDateModified(lastUpdate);
-            vpnUserObj.setDateModified(lastUpdate);
             vpnUserObj.setRevokedStatus(vpnUser.getRevokedStatus());
             vpnUserObj.setCertificateId(vpnUser.getCertificateId());
             vpnUserObj.setCertificate(vpnUser.getCertificate());
