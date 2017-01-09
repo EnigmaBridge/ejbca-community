@@ -108,10 +108,14 @@ org.cesecore.authorization.control.CryptoTokenRules
 		</h:panelGroup>
 
 		<h:outputLabel for="dateCreated" value="#{web.text.VPNUSER_DATE_CREATED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
-		<h:outputText id="dateCreated" value="#{vpnUsersMBean.currentVpnUser.dateCreatedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="dateCreated" value="#{vpnUsersMBean.currentVpnUser.dateCreatedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
+			<f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+		</h:outputText>
 
 		<h:outputLabel for="dateModified" value="#{web.text.VPNUSER_DATE_MODIFIED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
-		<h:outputText id="dateModified" value="#{vpnUsersMBean.currentVpnUser.dateModifiedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="dateModified" value="#{vpnUsersMBean.currentVpnUser.dateModifiedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
+			<f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+		</h:outputText>
 
 		<h:outputLabel for="certificateId" value="#{web.text.VPNUSER_CERTIFICATE_ID}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		<h:outputLink value="" id="certificateId" onclick="return viewcert('#{vpnUsersMBean.currentVpnUser.name}')" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
