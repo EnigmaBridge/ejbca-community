@@ -151,6 +151,13 @@ org.cesecore.authorization.control.CryptoTokenRules
 			</h:outputLink>
 		</h:column>
 
+		<h:column>
+   			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_DATE_MODIFIED}"/></f:facet>
+			<h:outputText id="dateModified" value="#{vpnUserGuiInfo.dateModified}">
+				<f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+			</h:outputText>
+		</h:column>
+
 		<%--<h:column>--%>
    			<%--<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_EMAIL}"/></f:facet>--%>
 			<%--<h:outputText value="#{vpnUserGuiInfo.email}"/>--%>
