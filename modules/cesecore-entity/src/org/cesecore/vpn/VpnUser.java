@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "VpnUser")
-public class VpnUser implements Serializable {
+public class VpnUser implements Serializable, Cloneable {
     private static final long serialVersionUID = 3304969235926944711L;
 
     private int rowVersion = 0;
@@ -38,19 +38,6 @@ public class VpnUser implements Serializable {
     public VpnUser(String email, String device) {
         this.email = email;
         this.device = device;
-    }
-
-    public VpnUser(String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String keyStore, String vpnConfig) {
-        this.email = email;
-        this.device = device;
-        this.dateCreated = dateCreated;
-        this.dateModified = dateModified;
-        this.revokedStatus = revokedStatus;
-        this.otpDownload = otpDownload;
-        this.certificateId = certificateId;
-        this.certificate = certificate;
-        this.keyStore = keyStore;
-        this.vpnConfig = vpnConfig;
     }
 
     public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, String certificateId, String certificate, String keyStore, String vpnConfig) {
