@@ -108,7 +108,7 @@ public class VpnUserSessionBean implements VpnUserSession {
         final Integer vpnUserId = vpnUser.getId();
 
         if (log.isTraceEnabled()) {
-            log.trace(">addVpnUser " + vpnUserId + " name: " + vpnUserName + " " + vpnUser.getClass().getName());
+            log.trace(">mergeVpnUser " + vpnUserId + " name: " + vpnUserName + " " + vpnUser.getClass().getName());
         }
 
         final long lastUpdate = System.currentTimeMillis();
@@ -124,7 +124,7 @@ public class VpnUserSessionBean implements VpnUserSession {
             vpnUserObj.setId(vpnUser.getId());
             vpnUserObj.setDateCreated(lastUpdate);
             vpnUserObj.setDateModified(lastUpdate);
-            vpnUserObj.setRevokedStatus(0);
+            vpnUserObj.setRevokedStatus(vpnUser.getRevokedStatus());
             vpnUserObj.setCertificateId(vpnUser.getCertificateId());
             vpnUserObj.setCertificate(vpnUser.getCertificate());
             vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
@@ -149,7 +149,7 @@ public class VpnUserSessionBean implements VpnUserSession {
         // Update cache with provided token (it might be active and we like keeping things active)
 //        VpnUserCache.INSTANCE.updateWith(vpnUserId, vpnUserObj.getProtectString(0).hashCode(), tokenName, vpnUser);
         if (log.isTraceEnabled()) {
-            log.trace("<addVpnUser " + vpnUser.getEmail());
+            log.trace("<mergeVpnUser " + vpnUser.getEmail());
         }
 
         return vpnUserObj;   // tokenId
