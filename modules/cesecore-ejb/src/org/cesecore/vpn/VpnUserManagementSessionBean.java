@@ -13,6 +13,10 @@
 package org.cesecore.vpn;
 
 import org.apache.log4j.Logger;
+import org.cesecore.audit.enums.EventStatus;
+import org.cesecore.audit.enums.EventTypes;
+import org.cesecore.audit.enums.ModuleTypes;
+import org.cesecore.audit.enums.ServiceTypes;
 import org.cesecore.audit.log.SecurityEventsLoggerSessionLocal;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
@@ -83,12 +87,26 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     public void deleteVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         // TODO: auth
         vpnUserSession.removeVpnUser(vpnUserId);
+
+        // Audit logging
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPNUser deleted with id: " + vpnUserId);
+        details.put("id", vpnUserId);
+        securityEventsLoggerSession.log(EventTypes.VPN_USER_DELETE, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
     }
 
     @Override
     public void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         // TODO: auth
         vpnUserSession.revokeVpnUser(vpnUserId);
+
+        // Audit logging
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPNUser revoked with id: " + vpnUserId);
+        details.put("id", vpnUserId);
+        securityEventsLoggerSession.log(EventTypes.VPN_USER_REVOKE, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
     }
 
     @Override
@@ -106,7 +124,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         }
 
         // TODO: auth
-        // TODO: audit logging
         //assertAuthorizedToModifyCryptoTokens(authenticationToken);
 
         final Set<Integer> allVpnUsers = new HashSet<>(vpnUserSession.getVpnUserIds());
@@ -126,6 +143,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
         user.setId(vpnUserId);
         user = vpnUserSession.mergeVpnUser(user);
+
+        // Audit logging
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPNUser created with id: " + vpnUserId);
+        details.put("id", vpnUserId);
+        details.put("email", user.getEmail());
+        details.put("device", user.getDevice());
+        securityEventsLoggerSession.log(EventTypes.VPN_USER_CREATE, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
 
         if (log.isTraceEnabled()) {
             log.trace("<createVpnUser: " + user.getEmail());
@@ -165,6 +191,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         // TODO: Merge somehow...
         // e.g., do not overwrite keys
         user = vpnUserSession.mergeVpnUser(user);
+
+        // Audit logging
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPNUser changed with id: " + user.getId());
+        details.put("id", user.getId());
+        details.put("email", user.getEmail());
+        details.put("device", user.getDevice());
+        securityEventsLoggerSession.log(EventTypes.VPN_USER_CHANGE, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(user.getId()), null, null, details);
 
         if (log.isTraceEnabled()) {
             log.trace("<saveVpnUser: " + user.getEmail());
