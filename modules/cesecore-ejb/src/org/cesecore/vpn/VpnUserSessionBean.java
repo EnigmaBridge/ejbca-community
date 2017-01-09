@@ -195,6 +195,7 @@ public class VpnUserSessionBean implements VpnUserSession {
         try {
             userCopy = VpnUser.copy(vpnUser);
         } catch (CloneNotSupportedException e) {
+            log.error("Clone not supported for VpnUser", e);
             return null;
         }
 
