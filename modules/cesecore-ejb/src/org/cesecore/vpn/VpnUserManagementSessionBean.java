@@ -121,7 +121,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
         if (user != null){
             final Map<String, Object> details = new LinkedHashMap<String, Object>();
-            details.put("msg", "VPN config OTP downloaded for usrId" + vpnUserId);
+            details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
             details.put("otpToken", otpToken);
             details.put("ip", properties.getProperty("ip"));
             details.put("UA", properties.getProperty("ua"));
