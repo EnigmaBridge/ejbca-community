@@ -85,6 +85,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private Date dateCreated;
         private Date dateModified;
         private Date otpUsed;
+        private String otpDownload;
         private boolean revoked;
         private Certificate certificate;
         private PrivateKey key;
@@ -201,6 +202,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         public void setOtpUsed(Date otpUsed) {
             this.otpUsed = otpUsed;
+        }
+
+        public String getOtpDownload() {
+            return otpDownload;
+        }
+
+        public void setOtpDownload(String otpDownload) {
+            this.otpDownload = otpDownload;
         }
     }
 
@@ -429,7 +438,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
      */
     private String genRandomPwd() {
         final IPasswordGenerator pwdgen = PasswordGeneratorFactory.getInstance(PasswordGeneratorFactory.PASSWORDTYPE_NOSOUNDALIKEENLD);
-        return pwdgen.getNewPassword(16, 16);
+        return pwdgen.getNewPassword(24, 24);
     }
 
     /**
@@ -683,6 +692,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setId(vpnUser.getId());
         user.setEmail(vpnUser.getEmail());
         user.setDevice(vpnUser.getDevice());
+        user.setOtpDownload(vpnUser.getOtpDownload());
         user.setDateCreated(new Date(vpnUser.getDateCreated()));
         user.setDateModified(new Date(vpnUser.getDateModified()));
         user.setRevoked(vpnUser.getRevokedStatus() > 0);
