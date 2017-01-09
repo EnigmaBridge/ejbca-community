@@ -26,7 +26,7 @@ public class VpnUser implements Serializable {
     private long dateModified;
     private int revokedStatus;
     private String otpDownload;
-    private long otpUsed;
+    private Long otpUsed;
     private String certificateId;
     private String certificate;
     private String keyStore;
@@ -53,7 +53,7 @@ public class VpnUser implements Serializable {
         this.vpnConfig = vpnConfig;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, String certificateId, String certificate, String keyStore, String vpnConfig) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, String certificateId, String certificate, String keyStore, String vpnConfig) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -63,6 +63,7 @@ public class VpnUser implements Serializable {
         this.dateModified = dateModified;
         this.revokedStatus = revokedStatus;
         this.otpDownload = otpDownload;
+        this.otpUsed = otpUsed;
         this.certificateId = certificateId;
         this.certificate = certificate;
         this.keyStore = keyStore;
@@ -189,11 +190,11 @@ public class VpnUser implements Serializable {
         this.vpnConfig = config;
     }
 
-    public long getOtpUsed() {
+    public Long getOtpUsed() {
         return otpUsed;
     }
 
-    public void setOtpUsed(long otpUsed) {
+    public void setOtpUsed(Long otpUsed) {
         this.otpUsed = otpUsed;
     }
 }

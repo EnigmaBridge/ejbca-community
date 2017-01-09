@@ -84,6 +84,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         private Date dateCreated;
         private Date dateModified;
+        private Date otpUsed;
         private boolean revoked;
         private Certificate certificate;
         private PrivateKey key;
@@ -94,17 +95,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private String statusText;
 
         public VpnUserGuiInfo() {
-        }
-
-        public VpnUserGuiInfo(Integer id, String email, String device, Date dateCreated, Date dateModified, boolean revoked, Certificate certificate) {
-            this.id = id;
-            this.email = email;
-            this.device = device;
-            this.dateCreated = dateCreated;
-            this.dateModified = dateModified;
-            this.revoked = revoked;
-            this.certificate = certificate;
-            regenerateId();
         }
 
         public final void regenerateId(){
@@ -203,6 +193,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         public void setStatusText(String statusText) {
             this.statusText = statusText;
+        }
+
+        public Date getOtpUsed() {
+            return otpUsed;
+        }
+
+        public void setOtpUsed(Date otpUsed) {
+            this.otpUsed = otpUsed;
         }
     }
 
@@ -552,6 +550,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
                     vpnUser.setVpnConfig(vpnConfig);
+                    vpnUser.setOtpUsed(null);
                     vpnUser.setRevokedStatus(0);
                     vpnUser.setOtpDownload(genRandomPwd());
 
@@ -687,6 +686,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setDateCreated(new Date(vpnUser.getDateCreated()));
         user.setDateModified(new Date(vpnUser.getDateModified()));
         user.setRevoked(vpnUser.getRevokedStatus() > 0);
+        if (vpnUser.getOtpUsed() != null){
+            user.setOtpUsed(new Date(vpnUser.getOtpUsed()));
+        }
 
         return user;
     }
@@ -751,6 +753,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
                     vpnUser.setVpnConfig(vpnConfig);
+                    vpnUser.setOtpUsed(null);
                     vpnUser.setRevokedStatus(0);
                     vpnUser.setOtpDownload(genRandomPwd());
 

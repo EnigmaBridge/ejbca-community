@@ -128,6 +128,7 @@ public class VpnUserSessionBean implements VpnUserSession {
             vpnUserObj.setCertificateId(vpnUser.getCertificateId());
             vpnUserObj.setCertificate(vpnUser.getCertificate());
             vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
+            vpnUserObj.setOtpUsed(vpnUser.getOtpUsed());
             vpnUserObj.setKeyStore(vpnUser.getKeyStore());
             vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
         } else {
@@ -139,6 +140,7 @@ public class VpnUserSessionBean implements VpnUserSession {
             vpnUserObj.setCertificateId(vpnUser.getCertificateId());
             vpnUserObj.setCertificate(vpnUser.getCertificate());
             vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
+            vpnUserObj.setOtpUsed(vpnUser.getOtpUsed());
             vpnUserObj.setKeyStore(vpnUser.getKeyStore());
             vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
         }
