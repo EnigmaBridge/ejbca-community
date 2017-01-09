@@ -25,9 +25,26 @@ org.ejbca.core.model.authorization.AccessRulesConstants,
 org.cesecore.authorization.control.AuditLogRules,
 org.cesecore.authorization.control.CryptoTokenRules
 "%>
+<%@ page import="static org.ejbca.ui.web.admin.rainterface.ViewEndEntityHelper.USER_PARAMETER" %>
 
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
 <% GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource()); %>
+<%!
+	static final String USER_PARAMETER           = "username";
+	static final String HIDDEN_USERNAME          = "hiddenusername";
+	static final String HIDDEN_RECORDNUMBER      = "hiddenrecordnumber";
+	static final String SELECT_REVOKE_REASON     = "selectrevokereason";
+%>
+
+<%
+	// TODO: fix resource for ACL
+	final String VIEWCERT_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "viewcertificate.jsp";
+	final String VIEWUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewendentity.jsp";
+	final String EDITUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/editendentity.jsp";
+	final String VIEWHISTORY_LINK         = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewhistory.jsp";
+	final String VIEWTOKEN_LINK           = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "hardtoken/viewtoken.jsp";
+%>
+
 <html>
 <f:view>
 <head>
@@ -35,6 +52,23 @@ org.cesecore.authorization.control.CryptoTokenRules
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
   <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
+	<script>
+        function viewuser(username){
+            var link = "<%= VIEWUSER_LINK %>?<%= USER_PARAMETER %>="+username;
+            link = encodeURI(link);
+            win_popup = window.open(link, 'view_user','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
+            win_popup.focus();
+            return false;
+        }
+
+        function viewcert(username){
+            var link = "<%= VIEWCERT_LINK %>?<%= USER_PARAMETER %>="+username;
+            link = encodeURI(link);
+            win_popup = window.open(link, 'view_cert','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
+            win_popup.focus();
+            return false;
+        }
+	</script>
 </head>
 <body>
 	<h1>
@@ -72,6 +106,17 @@ org.cesecore.authorization.control.CryptoTokenRules
 	    	</h:inputText>
 	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.device}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
+
+		<h:outputLabel for="dateCreated" value="#{web.text.VPNUSER_DATE_CREATED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="dateCreated" value="#{vpnUsersMBean.currentVpnUser.dateCreatedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+
+		<h:outputLabel for="dateModified" value="#{web.text.VPNUSER_DATE_MODIFIED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="dateModified" value="#{vpnUsersMBean.currentVpnUser.dateModifiedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+
+		<h:outputLabel for="certificateId" value="#{web.text.VPNUSER_CERTIFICATE_ID}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputLink id="certificateId" onclick="return viewcert(#{vpnUsersMBean.currentVpnUser.name})" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
+			<h:outputText value="#{vpnUsersMBean.currentVpnUser.certificateId}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		</h:outputLink>
 
 		<h:panelGroup/>
 		<h:panelGroup>
