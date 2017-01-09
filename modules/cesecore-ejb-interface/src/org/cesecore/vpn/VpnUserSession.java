@@ -24,8 +24,10 @@ public interface VpnUserSession {
     boolean isVpnUserNameUsed(String email);
     boolean isVpnUserNameUsed(String email, String device);
 
-    /** @return the specified VPNUser or null if it does not exis.
-     * @throws RuntimeException  */
+    /**
+     * @return the specified VPNUser or null if it does not exist.
+     * @throws RuntimeException
+     */
     VpnUser getVpnUser(int vpnUserId);
 
     /**

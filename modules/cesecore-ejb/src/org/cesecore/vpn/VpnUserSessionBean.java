@@ -176,12 +176,6 @@ public class VpnUserSessionBean implements VpnUserSession {
 //        VpnUserCache.INSTANCE.updateWith(cryptoTokenId, 0, null, null);
         return true;
     }
-    
-//    @Override
-//    public Map<String,Integer> getCachedNameToIdMap() {
-//        return VpnUserCache.INSTANCE.getNameToIdMap();
-//    }
-    
     @Override
     public boolean isVpnUserNameUsed(final String email) {
         final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE a.email=:email");
