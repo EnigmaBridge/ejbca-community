@@ -167,18 +167,6 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_TYPE_SOFT}" rendered="#{!cryptoTokenGuiInfo.p11SlotType}"/>--%>
 		<%--</h:column>--%>
 		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_LIBRARY}"/></f:facet>--%>
-			<%--<h:outputText value="#{cryptoTokenGuiInfo.p11LibraryAlias}"/>--%>
-		<%--</h:column>--%>
-        <%--<h:column>--%>
-            <%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_LABEL_TYPE}"/></f:facet>--%>
-            <%--<h:outputText value="#{cryptoTokenGuiInfo.p11SlotLabelTypeText}"/>--%>
-        <%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_SLOT}"/></f:facet>--%>
-			<%--<h:outputText value="#{cryptoTokenGuiInfo.p11Slot}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
    			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_ACTIVE}"/></f:facet>--%>
 			<%--<h:graphicImage height="16" width="16" url="#{cryptoTokenGuiInfo.statusImg}" styleClass="statusIcon"/>--%>
 		<%--</h:column>--%>
