@@ -81,6 +81,17 @@
         <servlet-name>AutoEnrollServlet</servlet-name>
         <url-pattern>/autoenroll</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <description><![CDATA[Servlet used to download VPN related artifacts, e.g. VPN configuration files]]></description>
+        <display-name>VpnDownloadServlet</display-name>
+        <servlet-name>VpnDownload</servlet-name>
+        <servlet-class>org.ejbca.ui.web.admin.vpn.VpnDownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VpnDownload</servlet-name>
+        <url-pattern>/vpn/getvpn</url-pattern>
+    </servlet-mapping>
     
 <!--
     <servlet>
