@@ -22,6 +22,9 @@ import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
+import org.cesecore.vpn.VpnUser;
+import org.cesecore.vpn.VpnUserManagementSession;
+import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.ui.web.admin.cainterface.CAInterfaceBean;
 import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
@@ -36,9 +39,10 @@ import javax.servlet.http.HttpSession;
 import java.beans.Beans;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.util.Properties;
 
 /**
- * Servlet for download of CryptoToken related files, such as the the public key as PEM for a key pair.
+ * Servlet for download of VPN configuration files and VPN related files.
  * 
  * @version $Id: VpnDownloadServlet.java 20728 2015-02-20 14:55:55Z mikekushner $
  */
@@ -46,11 +50,11 @@ public class VpnDownloadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(VpnDownloadServlet.class);
-    //private static final InternalEjbcaResources intres = InternalEjbcaResources.getInstance();
+    private static final InternalEjbcaResources intres = InternalEjbcaResources.getInstance();
     private static final AuthenticationToken alwaysAllowAuthenticationToken = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("VpnDownloadServlet"));
 
     @EJB
-    private CryptoTokenManagementSessionLocal cryptoTokenManagementSession;
+    private VpnUserManagementSession vpnUserManagementSession;
 
     // org.cesecore.keys.util.KeyTools.getAsPem(PublicKey)
     public void init(ServletConfig config) throws ServletException {
@@ -66,17 +70,34 @@ public class VpnDownloadServlet extends HttpServlet {
     /** Handles HTTP GET */
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace(">doGet()");
-        final String cryptoTokenIdParam = request.getParameter("cryptoTokenId");
-        final int cryptoTokenId = Integer.parseInt(cryptoTokenIdParam);
-        final String aliasParam = request.getParameter("alias");
+        final String otp = request.getParameter("otp");
+        final String vpnUserIdTxt = request.getParameter("id");
+        final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
         try {
-            final PublicKey publicKey = cryptoTokenManagementSession.getPublicKey(alwaysAllowAuthenticationToken, cryptoTokenId, aliasParam).getPublicKey();
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(aliasParam + ".pem") + "\"");
-            response.getOutputStream().write(KeyTools.getAsPem(publicKey).getBytes());
+            final Properties properties = new Properties();
+            final String xFwded = request.getHeader("X-Forwarded-For");
+            final String sourceAddr = request.getRemoteAddr() + ";" + xFwded;
+            properties.setProperty("ip", sourceAddr);
+            properties.setProperty("ua", request.getHeader("User-Agent"));
+
+            final VpnUser vpnUser = vpnUserManagementSession.downloadOtp(alwaysAllowAuthenticationToken, vpnUserId, otp, properties);
+            if (vpnUser == null){
+                // TODO: redirect to some nice looking page explaining what happened.
+                response.setStatus(404);
+
+            } else {
+                String fileName = vpnUser.getEmail() + "_" + vpnUser.getDevice();
+                fileName = fileName.replaceAll("[^a-zA-Z0-9_\\-]", "_");
+                fileName = fileName.replaceAll("[_]+", "_");
+                fileName += ".ovpn";
+
+                response.setContentType("application/ovpn");
+                response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
+                response.getOutputStream().write(vpnUser.getVpnConfig().getBytes("UTF-8"));
+            }
+
             response.flushBuffer();
-        } catch (CryptoTokenOfflineException e) {
-            throw new ServletException(e);
+
         } catch (AuthorizationDeniedException e) {
             throw new ServletException(e);
         }

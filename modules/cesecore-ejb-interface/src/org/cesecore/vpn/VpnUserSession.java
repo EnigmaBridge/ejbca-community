@@ -12,6 +12,8 @@
  *************************************************************************/
 package org.cesecore.vpn;
 
+import org.cesecore.authentication.tokens.AuthenticationToken;
+
 import java.util.List;
 
 /**
@@ -60,6 +62,16 @@ public interface VpnUserSession {
      * @return
      */
     boolean revokeVpnUser(final int vpnUserId);
+
+    /**
+     * Loads VpnUser via OTP token. If token matches, user is returned
+     * and VPN config is removed from database.
+     *
+     * @param vpnUserId
+     * @param otpToken
+     * @return detached copy of the vpnUser - before cleaning.
+     */
+    VpnUser downloadOtp(int vpnUserId, String otpToken);
 
     /** @return a list of all VPNUser identifiers in the database. */
     List<Integer> getVpnUserIds();

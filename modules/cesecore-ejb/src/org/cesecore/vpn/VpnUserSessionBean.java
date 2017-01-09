@@ -176,6 +176,35 @@ public class VpnUserSessionBean implements VpnUserSession {
 //        VpnUserCache.INSTANCE.updateWith(cryptoTokenId, 0, null, null);
         return true;
     }
+
+    @Override
+    public VpnUser downloadOtp(int vpnUserId, String otpToken) {
+        final TypedQuery<VpnUser> query = entityManager.createQuery(
+                "SELECT a FROM VpnUser a WHERE a.id=:id AND a.otpDownload=:otp", VpnUser.class);
+        query.setParameter("id", vpnUserId);
+        query.setParameter("otp", otpToken);
+        final VpnUser vpnUser = QueryResultWrapper.getSingleResult(query);
+        if (vpnUser == null){
+            return null;
+        }
+
+        // Copy, detach from the persistence context
+        VpnUser userCopy = null;
+        try {
+            userCopy = VpnUser.copy(vpnUser);
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+
+        // save config, update db (reset config)
+        vpnUser.setDateModified(System.currentTimeMillis());
+        vpnUser.setOtpDownload(null);
+        vpnUser.setOtpUsed(System.currentTimeMillis());
+        vpnUser.setVpnConfig(null);
+        createOrUpdateVpnUser(vpnUser);
+        return userCopy;
+    }
+
     @Override
     public boolean isVpnUserNameUsed(final String email) {
         final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE a.email=:email");

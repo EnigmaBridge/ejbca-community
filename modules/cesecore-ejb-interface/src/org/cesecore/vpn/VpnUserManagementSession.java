@@ -20,6 +20,7 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import javax.ejb.Local;
 import java.security.KeyStore;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * CryptoToken management operations that require authorization and/or security events audit logging.
@@ -54,7 +55,27 @@ public interface VpnUserManagementSession {
      */
     void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
+    /**
+     * Loads VpnUser from the database using ID.
+     * @param authenticationToken
+     * @param vpnUserId
+     * @return
+     * @throws AuthorizationDeniedException
+     */
     VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
+
+    /**
+     * Loads VpnUser via OTP token. If token matches, user is returned
+     * and VPN config is removed from database.
+     *
+     * @param authenticationToken
+     * @param vpnUserId
+     * @param otpToken
+     * @return
+     * @throws AuthorizationDeniedException
+     */
+    VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties)
+            throws AuthorizationDeniedException;
 
     VpnUser createVpnUser(final AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;

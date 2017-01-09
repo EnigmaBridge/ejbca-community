@@ -115,6 +115,23 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         return vpnUserSession.getVpnUser(vpnUserId);
     }
 
+    public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties)
+            throws AuthorizationDeniedException {
+        // TODO: auth
+        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
+        if (user != null){
+            final Map<String, Object> details = new LinkedHashMap<String, Object>();
+            details.put("msg", "VPN config OTP downloaded for usrId" + vpnUserId);
+            details.put("otpToken", otpToken);
+            details.put("ip", properties.getProperty("ip"));
+            details.put("UA", properties.getProperty("ua"));
+            securityEventsLoggerSession.log(EventTypes.VPN_OTP_DOWNLOADED, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                    authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
+        }
+
+        return user;
+    }
+
     @Override
     public VpnUser createVpnUser(final AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException

@@ -26,6 +26,7 @@ public class VpnUser implements Serializable {
     private long dateModified;
     private int revokedStatus;
     private String otpDownload;
+    private long otpUsed;
     private String certificateId;
     private String certificate;
     private String keyStore;
@@ -66,6 +67,22 @@ public class VpnUser implements Serializable {
         this.certificate = certificate;
         this.keyStore = keyStore;
         this.vpnConfig = vpnConfig;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    /**
+     * Makes a shallow copy of the source vpn user.
+     * @param src
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    public static VpnUser copy(VpnUser src) throws CloneNotSupportedException {
+        final VpnUser vpnUser = (VpnUser) src.clone();
+        return vpnUser;
     }
 
     public int getRowVersion() {
@@ -170,5 +187,13 @@ public class VpnUser implements Serializable {
 
     public void setVpnConfig(String config) {
         this.vpnConfig = config;
+    }
+
+    public long getOtpUsed() {
+        return otpUsed;
+    }
+
+    public void setOtpUsed(long otpUsed) {
+        this.otpUsed = otpUsed;
     }
 }
