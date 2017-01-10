@@ -6,25 +6,20 @@ import org.cesecore.certificates.ca.CADoesntExistsException;
 import org.cesecore.certificates.ca.CAInfo;
 import org.cesecore.certificates.ca.CaSessionRemote;
 import org.cesecore.certificates.certificate.CertificateConstants;
-import org.cesecore.certificates.certificateprofile.CertificateProfileConstants;
 import org.cesecore.certificates.certificateprofile.CertificateProfileSessionRemote;
 import org.cesecore.certificates.endentity.EndEntityType;
 import org.cesecore.certificates.endentity.EndEntityTypes;
-import org.cesecore.certificates.util.DnComponents;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.EjbRemoteHelper;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
-import org.ejbca.core.ejb.vpn.VpnCons;
-import org.ejbca.core.model.SecConst;
+import org.ejbca.core.ejb.vpn.VpnProfiles;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileExistsException;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.CommandResult;
 import org.ejbca.ui.cli.infrastructure.parameter.ParameterContainer;
-import org.ejbca.util.passgen.PasswordGeneratorFactory;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Initialized profiles required for VPN operation.
@@ -60,7 +55,7 @@ public class InitEntityProfilesCommand extends BaseVpnCommand {
             return CommandResult.FUNCTIONAL_FAILURE;
         }
 
-        // Test if end entity profile exists
+        // Test if the client end entity profile exists.
         boolean createClientProfile = false;
         int endEntityProfile = -1;
         try {
@@ -69,53 +64,57 @@ public class InitEntityProfilesCommand extends BaseVpnCommand {
             createClientProfile = true;
         }
 
-        if (!createClientProfile){
-            log.info("End entity exists");
-            //TODO: remove return CommandResult.SUCCESS;
+        // Test if the server end entity profile exists.
+        boolean createServerProfile = false;
+        int endEntityServerProfile = -1;
+        try {
+            endEntityServerProfile = this.getVpnServerEndEntityProfile();
+        } catch (EndEntityProfileNotFoundException e) {
+            createServerProfile = true;
         }
 
-        // Create end entity profile.
-        final EndEntityProfileSessionRemote remote = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class);
-        final EndEntityProfile profile = new EndEntityProfile();
+        // Client profile - create if needed.
+        if (false && !createClientProfile){ // TODO: fix
+            log.info("End entity for client exists");
 
-        // Default CA & Available CAs
-        final String vpnCaId = Integer.toString(vpnCA.getCAId());
-        profile.setValue(EndEntityProfile.AVAILCAS, 0,vpnCaId);
-        profile.setRequired(EndEntityProfile.AVAILCAS, 0,true);
-        profile.setValue(EndEntityProfile.DEFAULTCA, 0, vpnCaId);
-        profile.setRequired(EndEntityProfile.DEFAULTCA, 0,true);
+        } else {
+            // Create end entity profile - client
+            final EndEntityProfileSessionRemote remote = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class);
+            final EndEntityProfile profile = VpnProfiles.getDefaultClientEndEntityProfile(vpnCA.getCAId());
+            try {
+                final String profileName = "VPN_" + System.currentTimeMillis(); //VpnCons.DEFAULT_END_ENTITY_PROFILE; // TODO: parametrise.
+                remote.addEndEntityProfile(getAuthenticationToken(), profileName, profile);
+                log.info(String.format("End entity for client: %s created", profileName));
 
-        // Key Stores
-        profile.setValue(EndEntityProfile.DEFKEYSTORE,0, Integer.toString(SecConst.TOKEN_SOFT_BROWSERGEN));
+            } catch (EndEntityProfileExistsException e) {
+                log.error("Ent entity profile already exists");
+                return CommandResult.FUNCTIONAL_FAILURE;
+            } catch (AuthorizationDeniedException e) {
+                log.error("ERROR: CLI user not authorized to add end entity profile.");
+                return CommandResult.AUTHORIZATION_FAILURE;
+            }
+        }
 
-        // Passwords
-        profile.setRequired(EndEntityProfile.PASSWORD,0,false);
-        profile.setUse(EndEntityProfile.PASSWORD,0 ,false);
-        profile.setModifyable(EndEntityProfile.PASSWORD,0 ,true);
-        profile.setValue(EndEntityProfile.AUTOGENPASSWORDTYPE,0, PasswordGeneratorFactory.PASSWORDTYPE_NOTALIKEENLD);
-        profile.setValue(EndEntityProfile.AUTOGENPASSWORDLENGTH, 0, "16");
-        profile.setUse(EndEntityProfile.AUTOGENPASSWORDTYPE, 0, true);
+        // Server profile - create if needed.
+        if (false && !createServerProfile){ // TODO: fix
+            log.info("End entity for server exists");
 
-        // Cert settings
-        profile.setRequired(DnComponents.COMMONNAME,0,true);
-        profile.setUse(EndEntityProfile.EMAIL, 0, true);
-        profile.addField(DnComponents.RFC822NAME);
-        profile.setUse(DnComponents.RFC822NAME, 0, true);
+        } else {
+            // Create end entity profile - client
+            final EndEntityProfileSessionRemote remote = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class);
+            final EndEntityProfile profile = VpnProfiles.getDefaultServerEndEntityProfile(vpnCA.getCAId());
+            try {
+                final String profileName = "VPNServer_" + System.currentTimeMillis(); //VpnCons.DEFAULT_END_ENTITY_PROFILE_SERVER; // TODO: parametrise.
+                remote.addEndEntityProfile(getAuthenticationToken(), profileName, profile);
+                log.info(String.format("End entity for client: %s created", profileName));
 
-        profile.setAllowMergeDnWebServices(false);
-        profile.setAvailableCertificateProfileIds(Collections.singletonList(CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER));
-
-        try {
-            final String profileName = "VPN_"+System.currentTimeMillis(); //VpnCons.DEFAULT_END_ENTITY_PROFILE; // TODO: parametrise.
-            remote.addEndEntityProfile(getAuthenticationToken(), profileName, profile);
-            log.info(String.format("End entity [%s] created", profileName));
-
-        } catch (EndEntityProfileExistsException e) {
-            log.error("Ent entity profile already exists");
-            return CommandResult.FUNCTIONAL_FAILURE;
-        } catch (AuthorizationDeniedException e) {
-            log.error("ERROR: CLI user not authorized to add end entity profile.");
-            return CommandResult.AUTHORIZATION_FAILURE;
+            } catch (EndEntityProfileExistsException e) {
+                log.error("Ent entity profile already exists");
+                return CommandResult.FUNCTIONAL_FAILURE;
+            } catch (AuthorizationDeniedException e) {
+                log.error("ERROR: CLI user not authorized to add end entity profile.");
+                return CommandResult.AUTHORIZATION_FAILURE;
+            }
         }
 
         return CommandResult.SUCCESS;

@@ -43,7 +43,17 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
     }
 
     /**
-     * VPN end entity client profile
+     * VPN end entity server profile.
+     * @return
+     * @throws EndEntityProfileNotFoundException
+     */
+    protected int getVpnServerEndEntityProfile() throws EndEntityProfileNotFoundException {
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class)
+                .getEndEntityProfileId(VpnCons.DEFAULT_END_ENTITY_PROFILE_SERVER); // TODO: to config
+    }
+
+    /**
+     * VPN end entity client profile.
      * @return
      * @throws EndEntityProfileNotFoundException
      */

@@ -318,6 +318,8 @@
 		<include name="org/ejbca/core/model/services/CustomServiceWorkerProperty.java"/>
 		<!-- VPN -->
 		<include name="org/ejbca/core/ejb/vpn/VpnCons.java"/>
+		<include name="org/ejbca/core/ejb/vpn/VpnProfiles.java"/>
+		<include name="org/ejbca/core/ejb/vpn/VpnUtils.java"/>
 	</fileset>
 	<pathconvert refid="source.fileset.ejbca-util" pathsep=" " property="source.fileset.ejbca-util.files">
 		<map from="${src.dir}/" to=""/>
