@@ -10,7 +10,7 @@
  *  See terms of license at gnu.org.                                     *
  *                                                                       *
  *************************************************************************/
-package org.cesecore.vpn;
+package org.ejbca.core.ejb.vpn;
 
 import org.apache.log4j.Logger;
 import org.cesecore.audit.enums.EventStatus;
@@ -38,7 +38,6 @@ import javax.ejb.TransactionAttributeType;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.Certificate;
 import java.util.*;
 

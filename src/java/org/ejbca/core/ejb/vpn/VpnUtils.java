@@ -1,12 +1,7 @@
-package org.cesecore.vpn;
+package org.ejbca.core.ejb.vpn;
 
-import org.bouncycastle.openssl.MiscPEMGenerator;
-import org.bouncycastle.openssl.PKCS8Generator;
 import org.bouncycastle.openssl.jcajce.JcaMiscPEMGenerator;
-import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
-import org.bouncycastle.util.io.pem.PemGenerationException;
-import org.bouncycastle.util.io.pem.PemObjectGenerator;
 import org.bouncycastle.util.io.pem.PemWriter;
 
 import java.io.CharArrayWriter;

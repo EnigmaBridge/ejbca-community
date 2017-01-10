@@ -10,7 +10,7 @@
  *  See terms of license at gnu.org.                                     *
  *                                                                       *
  *************************************************************************/
-package org.cesecore.vpn;
+package org.ejbca.core.ejb.vpn;
 
 import org.apache.log4j.Logger;
 import org.cesecore.config.CesecoreConfiguration;

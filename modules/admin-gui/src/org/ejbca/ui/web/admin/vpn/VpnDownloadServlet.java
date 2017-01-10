@@ -17,17 +17,11 @@ import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
 import org.cesecore.authorization.AuthorizationDeniedException;
-import org.cesecore.keys.token.CryptoTokenManagementSessionLocal;
-import org.cesecore.keys.token.CryptoTokenOfflineException;
-import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
-import org.cesecore.vpn.VpnUser;
-import org.cesecore.vpn.VpnUserManagementSession;
+import org.ejbca.core.ejb.vpn.VpnUser;
+import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.ejbca.core.model.InternalEjbcaResources;
-import org.ejbca.ui.web.admin.cainterface.CAInterfaceBean;
-import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
-import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -35,10 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.beans.Beans;
 import java.io.IOException;
-import java.security.PublicKey;
 import java.util.Properties;
 
 /**

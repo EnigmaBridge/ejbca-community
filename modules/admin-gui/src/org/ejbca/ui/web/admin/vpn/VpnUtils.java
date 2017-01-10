@@ -2,8 +2,7 @@ package org.ejbca.ui.web.admin.vpn;
 
 import org.cesecore.util.Base64;
 import org.cesecore.util.CertTools;
-import org.cesecore.vpn.VpnUser;
-import org.ejbca.core.model.authorization.AccessRulesConstants;
+import org.ejbca.core.ejb.vpn.VpnUser;
 import org.ejbca.ui.web.admin.cainterface.CAInterfaceBean;
 import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;

@@ -10,9 +10,7 @@
  *  See terms of license at gnu.org.                                     *
  *                                                                       *
  *************************************************************************/
-package org.cesecore.vpn;
-
-import org.cesecore.authentication.tokens.AuthenticationToken;
+package org.ejbca.core.ejb.vpn;
 
 import java.util.List;
 
