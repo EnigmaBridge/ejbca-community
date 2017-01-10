@@ -89,7 +89,7 @@ public class VpnUtils {
     public static  EjbcaWebBean getEjbcaWebBean(HttpServletRequest req)
             throws ServletException
     {
-        return getEjbcaWebBean(req, null);
+        return getEjbcaWebBean(req, (String[]) null);
     }
 
     /**
