@@ -29,6 +29,7 @@ import org.cesecore.certificates.util.AlgorithmTools;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
+import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.VpnUserNameInUseException;
@@ -711,14 +712,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
             if (getCurrentVpnUserId() == null) {
                 // End profile
-                final EndEntityProfile endProfile = endEntityProfileSession.getEndEntityProfile("VPN"); // TODO: to config
-                final int endProfileId = endEntityProfileSession.getEndEntityProfileId("VPN"); // TODO: to config
+                final EndEntityProfile endProfile = endEntityProfileSession.getEndEntityProfile(VpnCons.DEFAULT_END_ENTITY_PROFILE); // TODO: to config
+                final int endProfileId = endEntityProfileSession.getEndEntityProfileId(VpnCons.DEFAULT_END_ENTITY_PROFILE); // TODO: to config
 
                 // Certificate profile
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
 
                 // Get CA that works with VPN.
-                final CA vpnCA = caSession.getCA(authenticationToken, "VPN"); // TODO: to config
+                final CA vpnCA = caSession.getCA(authenticationToken, VpnCons.DEFAULT_CA); // TODO: to config
 
                 // Create new end entity.
                 UserView uview = new UserView();
