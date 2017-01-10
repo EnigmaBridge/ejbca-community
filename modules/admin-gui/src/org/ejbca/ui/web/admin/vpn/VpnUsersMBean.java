@@ -30,7 +30,7 @@ import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
-import org.ejbca.core.ejb.vpn.VpnUser;
+import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.VpnUserNameInUseException;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
 import org.ejbca.core.ejb.ca.sign.SignSession;

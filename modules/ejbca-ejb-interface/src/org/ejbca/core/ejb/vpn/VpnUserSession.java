@@ -12,6 +12,8 @@
  *************************************************************************/
 package org.ejbca.core.ejb.vpn;
 
+import org.cesecore.vpn.VpnUser;
+
 import java.util.List;
 
 /**

@@ -30,6 +30,7 @@ import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.keys.token.*;
 import org.cesecore.util.CertTools;
+import org.cesecore.vpn.VpnUser;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

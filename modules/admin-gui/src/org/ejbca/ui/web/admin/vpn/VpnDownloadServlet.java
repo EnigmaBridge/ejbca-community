@@ -19,7 +19,7 @@ import org.cesecore.authentication.tokens.UsernamePrincipal;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
-import org.ejbca.core.ejb.vpn.VpnUser;
+import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.ejbca.core.model.InternalEjbcaResources;
 

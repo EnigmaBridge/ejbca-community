@@ -3,6 +3,7 @@ package org.ejbca.core.ejb.vpn;
 import org.bouncycastle.openssl.jcajce.JcaMiscPEMGenerator;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.util.io.pem.PemWriter;
+import org.cesecore.vpn.VpnUser;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;

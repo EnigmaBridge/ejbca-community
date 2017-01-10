@@ -18,6 +18,7 @@ import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.QueryResultWrapper;
+import org.cesecore.vpn.VpnUser;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;

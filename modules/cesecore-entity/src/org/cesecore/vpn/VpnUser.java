@@ -1,4 +1,4 @@
-package org.ejbca.core.ejb.vpn;
+package org.cesecore.vpn;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
