@@ -18,6 +18,7 @@ import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
 import org.cesecore.authorization.control.CryptoTokenRules;
 import org.cesecore.certificates.ca.CA;
+import org.cesecore.certificates.ca.CAInfo;
 import org.cesecore.certificates.ca.CaSessionLocal;
 import org.cesecore.certificates.certificate.IllegalKeyException;
 import org.cesecore.certificates.certificateprofile.CertificateProfileConstants;
@@ -719,7 +720,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
 
                 // Get CA that works with VPN.
-                final CA vpnCA = caSession.getCA(authenticationToken, VpnCons.DEFAULT_CA); // TODO: to config
+                final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnCons.DEFAULT_CA); // TODO: to config
 
                 // Create new end entity.
                 UserView uview = new UserView();
