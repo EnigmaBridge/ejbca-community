@@ -133,6 +133,10 @@
         <validator-id>optionalHexSerialNumberValidator</validator-id>
         <validator-class>org.ejbca.ui.web.admin.OptionalHexSerialNumberValidator</validator-class>
   </validator>
+  <validator>
+        <validator-id>emailValidator</validator-id>
+        <validator-class>org.ejbca.ui.web.admin.EmailValidator</validator-class>
+  </validator>
 
   <converter>
         <converter-id>mapToStringConverter</converter-id>
