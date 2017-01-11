@@ -227,8 +227,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private String name = "";
         private String email = "";
         private String device = "default";
-        private boolean active = false;
-        private boolean referenced = false;
 
         private long dateCreated;
         private long dateModified;
@@ -284,22 +282,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         public void setDevice(String device) {
             this.device = device;
             regenerateId();
-        }
-
-        public boolean isActive() {
-            return active;
-        }
-
-        public void setActive(boolean active) {
-            this.active = active;
-        }
-
-        public boolean isReferenced() {
-            return referenced;
-        }
-
-        public void setReferenced(boolean referenced) {
-            this.referenced = referenced;
         }
 
         public long getDateCreated() {
@@ -1076,8 +1058,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     currentVpnUser.setCertificate(vpnUser.getCertificate());
                     currentVpnUser.setKey(vpnUser.getKeyStore());
                     currentVpnUser.setConfig(vpnUser.getVpnConfig());
-                    currentVpnUser.setActive(true);
-                    currentVpnUser.setReferenced(true);
                 }
             }
             this.currentVpnUser = currentVpnUser;
@@ -1100,100 +1080,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     public void toggleCurrentCryptoTokenEditMode() {
         currentVpnUserEditMode ^= true;
     }
-    
-    //
-    // KeyPair related stuff
-    //
-    
-    // This default is taken from CAToken.SOFTPRIVATESIGNKEYALIAS, but we don't want to depend on the CA module
-    private String newKeyPairAlias = "privatesignkeyalias";
-    private String newKeyPairSpec = AlgorithmConstants.KEYALGORITHM_RSA+"4096";
-    
-    /** @return a List of available (but not neccessarly supported by the underlying CryptoToken) key specs */
-    public List<SelectItem> getAvailbleKeySpecs() {
-//        final List<SelectItem> availableKeySpecs = new ArrayList<SelectItem>();
-//        final int[] SIZES_RSA = {1024, 1536, 2048, 3072, 4096, 6144, 8192};
-//        final int[] SIZES_DSA = {1024};
-//        for (int size : SIZES_RSA) {
-//            availableKeySpecs.add(new SelectItem(AlgorithmConstants.KEYALGORITHM_RSA+size, AlgorithmConstants.KEYALGORITHM_RSA+" "+size));
-//        }
-//        for (int size : SIZES_DSA) {
-//            availableKeySpecs.add(new SelectItem(AlgorithmConstants.KEYALGORITHM_DSA+size, AlgorithmConstants.KEYALGORITHM_DSA+" "+size));
-//        }
-//        final Map<String,String> processedCurveNames = new HashMap<String,String>();
-//        @SuppressWarnings("unchecked")
-//        final Enumeration<String> ecNamedCurves = ECNamedCurveTable.getNames();
-//        while (ecNamedCurves.hasMoreElements()) {
-//            final String ecNamedCurve = ecNamedCurves.nextElement();
-//            // Only add it if the key-length is sufficient
-//            try {
-//                final ECNamedCurveParameterSpec parameterSpec = ECNamedCurveTable.getParameterSpec(ecNamedCurve);
-//                final int bitLength = parameterSpec.getN().bitLength();
-//                KeyTools.checkValidKeyLength(AlgorithmConstants.KEYALGORITHM_ECDSA, bitLength);
-//                // Check if this exists under another alias
-//                boolean added = false;
-//                for (final String name : processedCurveNames.keySet()) {
-//                    final ECNamedCurveParameterSpec parameterSpec2 = ECNamedCurveTable.getParameterSpec(name);
-//                    if (parameterSpec.equals(parameterSpec2)) {
-//                        // We have already listed this curve under another name
-//                        added = true;
-//                        break;
-//                    }
-//                }
-//                if (!added) {
-//                    if (PKCS11CryptoToken.class.getSimpleName().equals(getCurrentVpnUser().getType())) {
-//                        if (AlgorithmTools.isNamedECKnownInDefaultProvider(ecNamedCurve)) {
-//                            processedCurveNames.put(ecNamedCurve, getEcKeySpecAliases(ecNamedCurve));
-//                        }
-//                    } else {
-//                        processedCurveNames.put(ecNamedCurve, getEcKeySpecAliases(ecNamedCurve));
-//                    }
-//                }
-//            } catch (InvalidKeyException e) {
-//                // Ignore very silently
-//                if (log.isTraceEnabled()) {
-//                    log.trace("Not adding keys that are not allowed to key list: "+e.getMessage());
-//                }
-//            } catch (Exception e) {
-//                // Ignore
-//                if (log.isDebugEnabled()) {
-//                    log.debug(e);
-//                }
-//            }
-//        }
-//        String[] keys = processedCurveNames.keySet().toArray(new String[0]);
-//        Arrays.sort(keys, new Comparator<String>() {
-//            @Override
-//            public int compare(String o1, String o2) {
-//                return o1.compareTo(o2);
-//            }
-//        });
-//        for (String name : keys) {
-//            availableKeySpecs.add(new SelectItem(name, AlgorithmConstants.KEYALGORITHM_ECDSA + " "+processedCurveNames.get(name)));
-//        }
-//
-//        for (String alg : CesecoreConfiguration.getExtraAlgs()) {
-//            for (String subalg : CesecoreConfiguration.getExtraAlgSubAlgs(alg)) {
-//                final String title = CesecoreConfiguration.getExtraAlgSubAlgTitle(alg, subalg);
-//                final String name = CesecoreConfiguration.getExtraAlgSubAlgName(alg, subalg);
-//                availableKeySpecs.add(new SelectItem(name, title));
-//            }
-//        }
-//
-//        return availableKeySpecs;
-        return null;
-    }
-
-    private String getEcKeySpecAliases(final String ecKeySpec) {
-        StringBuilder ret = new StringBuilder();
-        for (final String alias : AlgorithmTools.getEcKeySpecAliases(ecKeySpec)) {
-            if (ret.length()!=0) {
-                ret.append(" / ");
-            }
-            ret.append(alias);
-        }
-        return ret.toString();
-    }
 
     /** @return true if admin may generate keys in the current CryptoTokens. */
     public boolean isAllowedToKeyGeneration() {
@@ -1205,149 +1091,4 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return accessControlSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.TEST_KEYS.resource() + '/' + getCurrentVpnUserId());
     }
 
-    /** @return true if admin may remove keys from the current CryptoTokens. */
-    public boolean isAllowedToKeyRemoval() {
-        return accessControlSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.REMOVE_KEYS.resource() + '/' + getCurrentVpnUserId());
-    }
-
-    public boolean isKeyPairGuiListEmpty() throws AuthorizationDeniedException {
-        return getKeyPairGuiList().getRowCount()==0;
-    }
-    
-    public boolean isKeyPairGuiListFailed() throws AuthorizationDeniedException {
-        getKeyPairGuiList(); // ensure loaded
-        return keyPairGuiListError!=null;
-    }
-    
-    public String getKeyPairGuiListError() throws AuthorizationDeniedException {
-        getKeyPairGuiList(); // ensure loaded
-        return keyPairGuiListError;
-    }
-    
-    /** @return a list of all the keys in the current CryptoToken. */
-    @SuppressWarnings({ "rawtypes", "unchecked" }) //JDK6 does not support typing for ListDataModel
-    public ListDataModel getKeyPairGuiList() throws AuthorizationDeniedException {
-        if (keyPairGuiList==null) {
-//            final List<KeyPairGuiInfo> ret = new ArrayList<KeyPairGuiInfo>();
-//            if (getCurrentVpnUser().isActive()) {
-//                // Add existing key pairs
-//                try {
-//                    for (KeyPairInfo keyPairInfo : vpnUserManagementSession.getKeyPairInfos(getAdmin(), getCurrentVpnUserId())) {
-//                        ret.add(new KeyPairGuiInfo(keyPairInfo));
-//                    }
-//                } catch (CryptoTokenOfflineException ctoe) {
-//                    keyPairGuiListError = "Failed to load key pairs from CryptoToken: "+ctoe.getMessage();
-//                }
-//                // Add placeholders for key pairs
-//                String keyPlaceholders = getCurrentVpnUser().getKeyPlaceholders();
-//                for (String template : keyPlaceholders.split("["+CryptoToken.KEYPLACEHOLDERS_OUTER_SEPARATOR+"]")) {
-//                    if (!template.trim().isEmpty()) {
-//                        ret.add(new KeyPairGuiInfo(template));
-//                    }
-//                }
-//            }
-//            Collections.sort(ret, new Comparator<KeyPairGuiInfo>() {
-//                @Override
-//                public int compare(KeyPairGuiInfo keyPairInfo1, KeyPairGuiInfo keyPairInfo2) {
-//                    return keyPairInfo1.getAlias().compareTo(keyPairInfo2.getAlias());
-//                }
-//            });
-//            keyPairGuiInfos = ret;
-//            keyPairGuiList = new ListDataModel(keyPairGuiInfos);
-        }
-        return keyPairGuiList;
-    }
-
-    public String getNewKeyPairSpec() { return newKeyPairSpec; }
-    public void setNewKeyPairSpec(String newKeyPairSpec) { this.newKeyPairSpec = newKeyPairSpec; }
-
-    public String getNewKeyPairAlias() { return newKeyPairAlias; }
-    public void setNewKeyPairAlias(String newKeyPairAlias) { this.newKeyPairAlias = newKeyPairAlias; }
-
-//    /** Invoked when admin requests a new key pair generation. */
-//    public void generateNewKeyPair() {
-//        log.info(">generateNewKeyPair");
-//        try {
-//            vpnUserManagementSession.createKeyPair(getAdmin(), getCurrentVpnUserId(), getNewKeyPairAlias(), getNewKeyPairSpec());
-//        } catch (CryptoTokenOfflineException e) {
-//            super.addNonTranslatedErrorMessage("Token is off-line. KeyPair cannot be generated.");
-//        } catch (Exception e) {
-//            super.addNonTranslatedErrorMessage(e.getMessage());
-//            final String logMsg = getAdmin().toString() + " failed to generate a keypair:";
-//            if (log.isDebugEnabled()) {
-//                log.debug(logMsg, e);
-//            } else {
-//                log.info(logMsg + e.getMessage());
-//            }
-//        }
-//        flushCaches();
-//        log.info("<generateNewKeyPair");
-//    }
-    
-    /** Invoked when admin requests key pair generation from a template placeholder */
-    public void generateFromTemplate() {
-        log.info(">generateFromTemplate");
-//        final KeyPairGuiInfo keyPairGuiInfo = (KeyPairGuiInfo) keyPairGuiList.getRowData();
-//        final String alias = keyPairGuiInfo.getAlias();
-//        final String keyspec = KeyTools.keyalgspecToKeyspec(keyPairGuiInfo.getKeyAlgorithm(), keyPairGuiInfo.getRawKeySpec());
-//        try {
-//            vpnUserManagementSession.createKeyPairFromTemplate(getAdmin(), getCurrentVpnUserId(), alias, keyspec);
-//        } catch (CryptoTokenOfflineException e) {
-//            super.addNonTranslatedErrorMessage("Token is off-line. KeyPair cannot be generated.");
-//        } catch (Exception e) {
-//            super.addNonTranslatedErrorMessage(e.getMessage());
-//            final String logMsg = getAdmin().toString() + " failed to generate a keypair:";
-//            if (log.isDebugEnabled()) {
-//                log.debug(logMsg, e);
-//            } else {
-//                log.info(logMsg + e.getMessage());
-//            }
-//        }
-        flushCaches();
-        log.info("<generateFromTemplate");
-    }
-    
-    /** Invoked when admin requests a test of a key pair. */
-    public void testKeyPair() {
-//        final KeyPairGuiInfo keyPairGuiInfo = (KeyPairGuiInfo) keyPairGuiList.getRowData();
-//        final String alias = keyPairGuiInfo.getAlias();
-//        try {
-//            vpnUserManagementSession.testKeyPair(getAdmin(), getCurrentVpnUserId(), alias);
-//            super.addNonTranslatedInfoMessage(alias + " tested successfully.");
-//        } catch (Exception e) {
-//            super.addNonTranslatedErrorMessage(e.getMessage());
-//        }
-    }
-    
-    /** Invoked when admin requests the removal of a key pair. */
-    public void removeKeyPair() {
-//        final KeyPairGuiInfo keyPairGuiInfo = (KeyPairGuiInfo) keyPairGuiList.getRowData();
-//        final String alias = keyPairGuiInfo.getAlias();
-//        try {
-//            if (!keyPairGuiInfo.isPlaceholder()) {
-//                vpnUserManagementSession.removeKeyPair(getAdmin(), getCurrentVpnUserId(), alias);
-//            } else {
-//                vpnUserManagementSession.removeKeyPairPlaceholder(getAdmin(), getCurrentVpnUserId(), alias);
-//            }
-//            flushCaches();
-//        } catch (Exception e) {
-//            super.addNonTranslatedErrorMessage(e.getMessage());
-//        }
-    }
-
-    /** Invoked when admin requests the removal of multiple key pair. */
-    public void removeSelectedKeyPairs() {
-//        if (keyPairGuiInfos!=null) {
-//            for (KeyPairGuiInfo cryptoTokenKeyPairInfo : keyPairGuiInfos) {
-//                if (cryptoTokenKeyPairInfo.isSelected()) {
-//                    try {
-//                        vpnUserManagementSession.removeKeyPair(getAdmin(), getCurrentVpnUserId(), cryptoTokenKeyPairInfo.getAlias());
-//                    } catch (Exception e) {
-//                        super.addNonTranslatedErrorMessage(e.getMessage());
-//                    }
-//                }
-//            }
-//        }
-//        flushCaches();
-    }
 }
