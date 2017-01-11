@@ -93,8 +93,9 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<h:outputLabel for="currentVpnUserEmail" value="#{web.text.VPNUSER_EMAIL}:"/>
 		<h:panelGroup id="currentVpnUserEmail">
-	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.email}" style="width: 300px" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
-	    		<f:validator validatorId="legalCharsValidator"/>
+	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.email}" style="width: 300px" required="true"
+						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
+	    		<f:validator validatorId="emailValidator"/>
 	    	</h:inputText>
 	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.email}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
