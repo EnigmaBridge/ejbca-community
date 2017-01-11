@@ -43,8 +43,10 @@ import java.security.cert.Certificate;
 import java.util.*;
 
 /**
+ * Management session bean for VPN functionality. Top level.
+ *
  * @see CryptoTokenManagementSession
- * @version $Id: CryptoTokenManagementSessionBean.java 20728 2015-02-20 14:55:55Z mikekushner $
+ * @author ph4r05
  */
 @Stateless(mappedName = JndiConstants.APP_JNDI_PREFIX + "VpnUserManagement")
 @TransactionAttribute(TransactionAttributeType.REQUIRED)

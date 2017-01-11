@@ -26,6 +26,7 @@ import javax.faces.validator.ValidatorException;
 
 /**
  * JSF validator to check that input fields for valid email.
+ * @author ph4r05
  */
 public class EmailValidator implements Validator {
 	private static final Logger log = Logger.getLogger(EmailValidator.class);

@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Base for VPN commands, contains common functions for VPN operation.
  *
- * @version $Id: BaseRaCommand.java 19902 2014-09-30 14:32:24Z anatom $
+ * @author ph4r05
  */
 public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
 

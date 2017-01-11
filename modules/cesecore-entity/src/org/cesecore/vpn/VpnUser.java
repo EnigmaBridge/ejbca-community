@@ -6,6 +6,11 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
+ * VpnUser DB entity.
+ * Stores basic VPN user data, related to EJBCA VPN module.
+ * One record represents user + device.
+ *
+ * @author ph4r05
  * Created by dusanklinec on 23.12.16.
  */
 @Entity

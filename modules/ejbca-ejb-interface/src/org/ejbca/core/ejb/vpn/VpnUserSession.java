@@ -17,8 +17,9 @@ import org.cesecore.vpn.VpnUser;
 import java.util.List;
 
 /**
- * @version $Id: VpnUserSession.java 19902 2014-09-30 14:32:24Z anatom $
+ * Basic CRUD operations on VpnUser.
  *
+ * @author ph4r05
  */
 public interface VpnUserSession {
 

@@ -25,6 +25,7 @@ import java.util.Collection;
 /**
  * Initialized profiles required for VPN operation.
  *
+ * @author ph4r05
  * Created by dusanklinec on 10.01.17.
  */
 public class InitEntityProfilesCommand extends BaseVpnCommand {

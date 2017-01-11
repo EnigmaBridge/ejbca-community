@@ -67,7 +67,7 @@ import java.util.*;
  * JavaServer Faces Managed Bean for managing VPN users.
  * Session scoped and will cache the list of tokens and keys.
  * 
- * @version $Id: VpnUsersMBean.java 20320 2014-11-25 18:05:45Z mikekushner $
+ * @author ph4r05
  */
 public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private static final long serialVersionUID = 1L;

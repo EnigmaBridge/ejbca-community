@@ -32,8 +32,8 @@ import java.util.List;
 
 /**
  * Basic CRUD and activation caching of VpnUsers is provided through this local access SSB.
- * 
- * @version $Id: VpnUserSessionBean.java 19678 2014-09-03 10:06:54Z aveen4711 $
+ *
+ * @author ph4r05
  */
 @Stateless(mappedName = JndiConstants.APP_JNDI_PREFIX + "VpnUserSession")
 @TransactionAttribute(TransactionAttributeType.REQUIRED)

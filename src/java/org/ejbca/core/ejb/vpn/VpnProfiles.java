@@ -11,6 +11,7 @@ import java.util.Collections;
 /**
  * VPN profiles (end entities, certificates) related methods.
  *
+ * @author ph4r05
  * Created by dusanklinec on 10.01.17.
  */
 public class VpnProfiles {

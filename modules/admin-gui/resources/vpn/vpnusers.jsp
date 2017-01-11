@@ -12,7 +12,7 @@
  *                                                                       *
  *************************************************************************/
 
- // Version: $Id: cryptotokens.jsp 20320 2014-11-25 18:05:45Z mikekushner $
+ // Author: ph4r05
 %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>

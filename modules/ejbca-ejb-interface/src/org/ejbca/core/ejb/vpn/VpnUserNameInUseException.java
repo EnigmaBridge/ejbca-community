@@ -19,7 +19,7 @@ import org.cesecore.ErrorCode;
  * An exception thrown when someone tries to create a VpnUser with an existing name.
  *
  * TODO: fix name
- * @version $Id: VpnUserNameInUseException.java 17625 2013-09-20 07:12:06Z netmackan $
+ * @author ph4r05
  */
 public class VpnUserNameInUseException extends CesecoreException {
 

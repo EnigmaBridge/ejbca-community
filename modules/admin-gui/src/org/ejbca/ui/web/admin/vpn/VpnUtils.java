@@ -22,6 +22,8 @@ import java.security.cert.CertificateException;
 
 /**
  * Simple utilities for VPN beans.
+ *
+ * @author ph4r05
  * Created by dusanklinec on 05.01.17.
  */
 public class VpnUtils {

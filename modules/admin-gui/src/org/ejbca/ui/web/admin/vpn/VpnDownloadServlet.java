@@ -34,8 +34,8 @@ import java.util.Properties;
 
 /**
  * Servlet for download of VPN configuration files and VPN related files.
- * 
- * @version $Id: VpnDownloadServlet.java 20728 2015-02-20 14:55:55Z mikekushner $
+ *
+ * @author ph4r05
  */
 public class VpnDownloadServlet extends HttpServlet {
 

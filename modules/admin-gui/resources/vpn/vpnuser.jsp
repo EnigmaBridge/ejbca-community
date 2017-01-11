@@ -12,7 +12,7 @@
  *                                                                       *
  *************************************************************************/
 
- // Version: $Id: cryptotoken.jsp 19577 2014-08-25 14:17:31Z davidcarella $
+ // Author: ph4r05
 %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>

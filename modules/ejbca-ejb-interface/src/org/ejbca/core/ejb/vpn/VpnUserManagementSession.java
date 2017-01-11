@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * CryptoToken management operations that require authorization and/or security events audit logging.
- * 
- * @version $Id: VpnUserManagementSession.java 20728 2015-02-20 14:55:55Z mikekushner $
+ * VpnUser management operations that require authorization and/or security events audit logging.
+ *
+ * @author ph4r05
  */
 @Local
 public interface VpnUserManagementSession {
