@@ -232,12 +232,17 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private long dateModified;
         private Date dateCreatedDate;
         private Date dateModifiedDate;
+        private Date dateOtpDownloaded;
+        private Date dateMailSent;
         private int revokedStatus;
         private String otpDownload;
         private String certificateId;
         private String certificate;
         private String key;
         private String config;
+
+        // Not stored in db, just indicator
+        private boolean sendConfigEmail = true;
 
         // End entity view
         private UserView userview;
@@ -371,6 +376,30 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         public void setUserview(UserView userview) {
             this.userview = userview;
         }
+
+        public Date getDateOtpDownloaded() {
+            return dateOtpDownloaded;
+        }
+
+        public void setDateOtpDownloaded(Date dateOtpDownloaded) {
+            this.dateOtpDownloaded = dateOtpDownloaded;
+        }
+
+        public Date getDateMailSent() {
+            return dateMailSent;
+        }
+
+        public void setDateMailSent(Date dateMailSent) {
+            this.dateMailSent = dateMailSent;
+        }
+
+        public boolean isSendConfigEmail() {
+            return sendConfigEmail;
+        }
+
+        public void setSendConfigEmail(boolean sendConfigEmail) {
+            this.sendConfigEmail = sendConfigEmail;
+        }
     }
 
     private List<VpnUserGuiInfo> vpnUserGuiInfos = new ArrayList<VpnUserGuiInfo>();
@@ -440,6 +469,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
            raif = VpnUtils.getRaBean();
         }
         return raif;
+    }
+
+    private Date dateOrNull(Long date){
+        if (date == null){
+            return null;
+        }
+
+        return new Date(date);
     }
 
     public String getStatusText(int status){
@@ -686,13 +723,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setDateCreated(new Date(vpnUser.getDateCreated()));
         user.setDateModified(new Date(vpnUser.getDateModified()));
         user.setRevoked(vpnUser.getRevokedStatus() > 0);
-        if (vpnUser.getOtpUsed() != null){
-            user.setOtpUsed(new Date(vpnUser.getOtpUsed()));
-        }
-        if (vpnUser.getLastMailSent() != null){
-            user.setLastMailSent(new Date(vpnUser.getLastMailSent()));
-        }
-
+        user.setOtpUsed(dateOrNull(vpnUser.getOtpUsed()));
+        user.setLastMailSent(dateOrNull(vpnUser.getLastMailSent()));
         return user;
     }
 
@@ -1058,15 +1090,13 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     currentVpnUser.setCertificate(vpnUser.getCertificate());
                     currentVpnUser.setKey(vpnUser.getKeyStore());
                     currentVpnUser.setConfig(vpnUser.getVpnConfig());
+                    currentVpnUser.setDateOtpDownloaded(dateOrNull(vpnUser.getOtpUsed()));
+                    currentVpnUser.setDateMailSent(dateOrNull(vpnUser.getLastMailSent()));
                 }
             }
             this.currentVpnUser = currentVpnUser;
         }
         return this.currentVpnUser;
-    }
-    
-    public void selectCryptoTokenType() {
-        // NOOP: Only for page reload
     }
 
     public boolean isCurrentVpnUserEditMode() {
