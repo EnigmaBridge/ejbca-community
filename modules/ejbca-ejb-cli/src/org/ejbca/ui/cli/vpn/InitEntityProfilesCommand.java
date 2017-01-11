@@ -131,42 +131,11 @@ public class InitEntityProfilesCommand extends BaseVpnCommand {
         StringBuilder sb = new StringBuilder();
         sb.append(getCommandDescription() + "\n\n");
         sb.append("Please note VPN CA has to be already created when calling this.\n\n");
-        String existingCas = "";
 
-        // Get existing CAs
-        Collection<Integer> cas = EjbRemoteHelper.INSTANCE.getRemoteSession(CaSessionRemote.class).getAuthorizedCaIds(getAuthenticationToken());
-        try {
-            for (int caid : cas) {
-                CAInfo info = EjbRemoteHelper.INSTANCE.getRemoteSession(CaSessionRemote.class).getCAInfo(getAuthenticationToken(), caid);
-                existingCas += (existingCas.length() == 0 ? "" : ", ") + "\"" + info.getName() + "\"";
-            }
-        } catch (AuthorizationDeniedException e) {
-            existingCas = "ERROR: CLI user not authorized to fetch available CAs>";
-        } catch (CADoesntExistsException e) {
-            throw new IllegalStateException("CA couldn't be retrieved even though it was just referenced.");
-        }
-        sb.append("Existing CAs: " + existingCas + "\n");
+        // Add existing CAs, end entity profiles, certificate profiles
+        addAvailableStuff(sb);
 
-        // Get End entity profiles
-        String endEntityProfiles = "";
-        Collection<Integer> eps = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class).getAuthorizedEndEntityProfileIds(
-                getAuthenticationToken());
-        for (int epid : eps) {
-            endEntityProfiles += (endEntityProfiles.length() == 0 ? "" : ", ") + "\""
-                    + EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class).getEndEntityProfileName(epid) + "\"";
-        }
-        sb.append("End entity profiles: " + endEntityProfiles + "\n");
-
-        // Get Cert profiles
-        String certificateProfiles = "";
-        Collection<Integer> cps = EjbRemoteHelper.INSTANCE.getRemoteSession(CertificateProfileSessionRemote.class)
-                .getAuthorizedCertificateProfileIds(getAuthenticationToken(), CertificateConstants.CERTTYPE_ENDENTITY);
-        for (int cpid : cps) {
-            certificateProfiles += (certificateProfiles.length() == 0 ? "" : ", ") + "\""
-                    + EjbRemoteHelper.INSTANCE.getRemoteSession(CertificateProfileSessionRemote.class).getCertificateProfileName(cpid) + "\"";
-        }
-        sb.append("Certificate profiles: " + certificateProfiles + "\n\n");
-        sb.append("If an End entity profile is selected it must allow selected Certificate profiles.\n");
+        sb.append("\nIf an End entity profile is selected it must allow selected Certificate profiles.\n");
         return sb.toString();
     }
 
