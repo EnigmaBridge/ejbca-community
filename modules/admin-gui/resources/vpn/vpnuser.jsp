@@ -117,10 +117,25 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
 		</h:outputText>
 
+		<h:outputLabel for="mailSentDate" value="#{web.text.VPNUSER_MAIL_SENT}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="mailSentDate" value="#{vpnUsersMBean.currentVpnUser.dateMailSent}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
+			<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
+		</h:outputText>
+
+		<h:outputLabel for="dateOtpDownloaded" value="#{web.text.VPNUSER_OTP_USED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:outputText id="dateOtpDownloaded" value="#{vpnUsersMBean.currentVpnUser.dateOtpDownloaded}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
+			<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
+		</h:outputText>
+
 		<h:outputLabel for="certificateId" value="#{web.text.VPNUSER_CERTIFICATE_ID}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		<h:outputLink value="" id="certificateId" onclick="return viewcert('#{vpnUsersMBean.currentVpnUser.name}')" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
 			<h:outputText value="#{vpnUsersMBean.currentVpnUser.certificateId}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		</h:outputLink>
+
+		<h:panelGroup id="sendEmailNowAfterCreate" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}}">
+			<h:selectBooleanCheckbox id="sendEmailNowAfterCreateCheck" value="#{vpnUsersMBean.currentVpnUser.sendConfigEmail}"/>
+			<h:outputLabel for="sendEmailNowAfterCreateCheck" value="#{web.text.VPNUSER_MAIL_SEND_CHECKBOX}:"/>
+		</h:panelGroup>
 
 		<h:panelGroup/>
 		<h:panelGroup>
