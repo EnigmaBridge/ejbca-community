@@ -102,19 +102,22 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:"/>
 		<h:panelGroup id="currentVpnUserDevice">
-	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
+	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" required="true"
+						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
 	    		<f:validator validatorId="legalCharsValidator"/>
 	    	</h:inputText>
 	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.device}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
 
 		<h:outputLabel for="dateCreated" value="#{web.text.VPNUSER_DATE_CREATED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
-			<h:outputText id="dateCreated" value="#{vpnUsersMBean.currentVpnUser.dateCreatedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
+			<h:outputText id="dateCreated" value="#{vpnUsersMBean.currentVpnUser.dateCreatedDate}"
+						  rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
 				<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
 			</h:outputText>
 
 		<h:outputLabel for="dateModified" value="#{web.text.VPNUSER_DATE_MODIFIED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
-			<h:outputText id="dateModified" value="#{vpnUsersMBean.currentVpnUser.dateModifiedDate}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
+			<h:outputText id="dateModified" value="#{vpnUsersMBean.currentVpnUser.dateModifiedDate}"
+						  rendered="#{!vpnUsersMBean.currentVpnUserEditMode}">
 				<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
 			</h:outputText>
 
@@ -137,17 +140,21 @@ org.cesecore.authorization.control.CryptoTokenRules
 		</h:panelGroup>
 
 		<h:outputLabel for="certificateId" value="#{web.text.VPNUSER_CERTIFICATE_ID}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
-		<h:outputLink value="" id="certificateId" onclick="return viewcert('#{vpnUsersMBean.currentVpnUser.name}')" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
+		<h:outputLink value="" id="certificateId" onclick="return viewcert('#{vpnUsersMBean.currentVpnUser.name}')"
+					  rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.certificateId!=null}">
 			<h:outputText value="#{vpnUsersMBean.currentVpnUser.certificateId}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		</h:outputLink>
 
 		<h:outputLabel for="sendEmailNowAfterCreateCheck" value="#{web.text.VPNUSER_MAIL_SEND_CHECKBOX}" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"/>
-		<h:selectBooleanCheckbox id="sendEmailNowAfterCreateCheck" value="#{vpnUsersMBean.currentVpnUser.sendConfigEmail}" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"/>
+		<h:selectBooleanCheckbox id="sendEmailNowAfterCreateCheck" value="#{vpnUsersMBean.currentVpnUser.sendConfigEmail}"
+								 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"/>
 
 		<h:panelGroup/>
 		<h:panelGroup>
-			<h:commandButton action="#{vpnUsersMBean.cancelCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_CANCEL}" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
-			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}" rendered="#{vpnUsersMBean.currentVpnUserEditMode}"/>
+			<h:commandButton action="#{vpnUsersMBean.cancelCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_CANCEL}"
+							 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
+			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}"
+							 rendered="#{vpnUsersMBean.currentVpnUserEditMode}"/>
 		</h:panelGroup>
 	</h:panelGrid>
 	</h:form>
