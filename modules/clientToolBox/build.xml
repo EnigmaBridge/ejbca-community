@@ -24,6 +24,7 @@
             <include name="commons-configuration-1.6.jar"/>
             <include name="commons-logging-1.1.1.jar"/>
         	<include name="commons-io-*.jar"/>
+        	<include name="commons-validator-*.jar"/>
         </fileset>
 	</path>
 

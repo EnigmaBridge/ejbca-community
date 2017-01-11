@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
 /**
  * Misc VPN utils.
  * EJB level class.
@@ -58,6 +60,19 @@ public class VpnUtils {
         writer.close();
 
         return charWriter.toString();
+    }
+
+    /**
+     * Returns true if given email is valid.
+     * @param email
+     * @return
+     */
+    public static boolean isEmailValid(String email){
+        if (email == null || email.isEmpty()){
+            return false;
+        }
+
+        return EmailValidator.getInstance().isValid(email);
     }
 
 }
