@@ -27,6 +27,7 @@ public class VpnUser implements Serializable, Cloneable {
     private int revokedStatus;
     private String otpDownload;
     private Long otpUsed;
+    private Long lastMailSent;
     private String certificateId;
     private String certificate;
     private String keyStore;
@@ -40,7 +41,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.device = device;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, String certificateId, String certificate, String keyStore, String vpnConfig) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -51,6 +52,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.revokedStatus = revokedStatus;
         this.otpDownload = otpDownload;
         this.otpUsed = otpUsed;
+        this.lastMailSent = lastMailSent;
         this.certificateId = certificateId;
         this.certificate = certificate;
         this.keyStore = keyStore;
@@ -183,5 +185,13 @@ public class VpnUser implements Serializable, Cloneable {
 
     public void setOtpUsed(Long otpUsed) {
         this.otpUsed = otpUsed;
+    }
+
+    public Long getLastMailSent() {
+        return lastMailSent;
+    }
+
+    public void setLastMailSent(Long lastMailSent) {
+        this.lastMailSent = lastMailSent;
     }
 }

@@ -84,6 +84,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private Date dateCreated;
         private Date dateModified;
         private Date otpUsed;
+        private Date lastMailSent;
         private String otpDownload;
         private boolean revoked;
         private Certificate certificate;
@@ -209,6 +210,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         public void setOtpDownload(String otpDownload) {
             this.otpDownload = otpDownload;
+        }
+
+        public Date getLastMailSent() {
+            return lastMailSent;
+        }
+
+        public void setLastMailSent(Date lastMailSent) {
+            this.lastMailSent = lastMailSent;
         }
     }
 
@@ -697,6 +706,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setRevoked(vpnUser.getRevokedStatus() > 0);
         if (vpnUser.getOtpUsed() != null){
             user.setOtpUsed(new Date(vpnUser.getOtpUsed()));
+        }
+        if (vpnUser.getLastMailSent() != null){
+            user.setLastMailSent(new Date(vpnUser.getLastMailSent()));
         }
 
         return user;
