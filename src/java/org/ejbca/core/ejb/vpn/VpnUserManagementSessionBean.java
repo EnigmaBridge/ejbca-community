@@ -273,15 +273,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             // TODO: exception handling
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            log.error("Unsupported encoding in VPN config generation", e);
         } catch (KeyStoreException e) {
-            e.printStackTrace();
+            log.error("KeyStore exception in VPN config generation", e);
         } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
+            log.error("Unrecoverable key exception in VPN config generation", e);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            log.error("NoSuchAlgorithmException in VPN config generation", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("IOException in VPN config generation", e);
         }
 
         return null;
