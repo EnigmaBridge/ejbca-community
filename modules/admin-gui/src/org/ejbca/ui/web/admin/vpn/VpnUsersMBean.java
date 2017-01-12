@@ -30,6 +30,7 @@ import org.cesecore.certificates.util.AlgorithmTools;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
+import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
@@ -581,7 +582,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Regenerate certificate
                 try {
                     final KeyStore ks = doCreateKeys(endEntity, EndEntityConstants.STATUS_NEW);
-                    VpnUtils.addKeyStoreToUser(vpnUser, ks, vpnUserGuiInfo.getUserDesc(), "enigma".toCharArray()); // TODO: export pass
+                    VpnUtils.addKeyStoreToUser(vpnUser, ks, vpnUserGuiInfo.getUserDesc(), VpnConfig.getKeyStorePass().toCharArray());
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
@@ -739,14 +740,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
             if (getCurrentVpnUserId() == null) {
                 // End profile
-                final EndEntityProfile endProfile = endEntityProfileSession.getEndEntityProfile(VpnCons.DEFAULT_END_ENTITY_PROFILE); // TODO: to config
-                final int endProfileId = endEntityProfileSession.getEndEntityProfileId(VpnCons.DEFAULT_END_ENTITY_PROFILE); // TODO: to config
+                final int endProfileId = endEntityProfileSession.getEndEntityProfileId(
+                        VpnConfig.getClientEndEntityProfile());
 
                 // Certificate profile
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
 
                 // Get CA that works with VPN.
-                final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnCons.DEFAULT_CA); // TODO: to config
+                final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
 
                 // Create new end entity.
                 UserView uview = new UserView();
@@ -783,7 +784,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Create certificate
                 try {
                     final KeyStore ks = doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
-                    VpnUtils.addKeyStoreToUser(vpnUser, ks, name, "enigma".toCharArray()); // TODO: export pass
+                    VpnUtils.addKeyStoreToUser(vpnUser, ks, name, VpnConfig.getKeyStorePass().toCharArray());
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);

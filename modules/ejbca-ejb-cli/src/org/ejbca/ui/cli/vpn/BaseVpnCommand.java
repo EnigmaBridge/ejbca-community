@@ -22,10 +22,12 @@ import org.cesecore.certificates.certificate.CertificateConstants;
 import org.cesecore.certificates.certificateprofile.CertificateProfileSessionRemote;
 import org.cesecore.util.EjbRemoteHelper;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
+import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +53,7 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
      */
     protected int getVpnServerEndEntityProfile() throws EndEntityProfileNotFoundException {
         return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class)
-                .getEndEntityProfileId(VpnCons.DEFAULT_END_ENTITY_PROFILE_SERVER); // TODO: to config
+                .getEndEntityProfileId(VpnConfig.getServerEndEntityProfile());
     }
 
     /**
@@ -61,7 +63,7 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
      */
     protected int getVpnClientEndEntityProfile() throws EndEntityProfileNotFoundException {
         return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class)
-                .getEndEntityProfileId(VpnCons.DEFAULT_END_ENTITY_PROFILE); // TODO: to config
+                .getEndEntityProfileId(VpnConfig.getClientEndEntityProfile());
     }
 
     /**
@@ -72,7 +74,7 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
      */
     protected CAInfo getVpnCA() throws AuthorizationDeniedException, CADoesntExistsException {
         return EjbRemoteHelper.INSTANCE.getRemoteSession(CaSessionRemote.class)
-                .getCAInfo(getAuthenticationToken(), VpnCons.DEFAULT_CA); // TODO: to config
+                .getCAInfo(getAuthenticationToken(), VpnConfig.getCA());
     }
 
     /**
@@ -163,5 +165,21 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
 
         // Get Cert profiles
         addAvailableCertProfiles(sb);
+    }
+
+    /**
+     * Return environment variable EJBCA_HOME or an empty string if the variable
+     * isn't set.
+     *
+     * @return Environment variable EJBCA_HOME
+     */
+    protected static String getHomeDir() {
+        String ejbcaHomeDir = System.getenv("EJBCA_HOME");
+        if (ejbcaHomeDir == null) {
+            ejbcaHomeDir = "";
+        } else if (!ejbcaHomeDir.endsWith("/") && !ejbcaHomeDir.endsWith("\\")) {
+            ejbcaHomeDir += File.separatorChar;
+        }
+        return ejbcaHomeDir;
     }
 }

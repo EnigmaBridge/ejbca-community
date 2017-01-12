@@ -4,23 +4,18 @@ import org.apache.log4j.Logger;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.certificates.ca.CADoesntExistsException;
 import org.cesecore.certificates.ca.CAInfo;
-import org.cesecore.certificates.ca.CaSessionRemote;
-import org.cesecore.certificates.certificate.CertificateConstants;
-import org.cesecore.certificates.certificateprofile.CertificateProfileSessionRemote;
 import org.cesecore.certificates.endentity.EndEntityType;
 import org.cesecore.certificates.endentity.EndEntityTypes;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.EjbRemoteHelper;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
-import org.ejbca.core.ejb.vpn.VpnCons;
+import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnProfiles;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileExistsException;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.CommandResult;
 import org.ejbca.ui.cli.infrastructure.parameter.ParameterContainer;
-
-import java.util.Collection;
 
 /**
  * Initialized profiles required for VPN operation.
@@ -84,7 +79,7 @@ public class InitEntityProfilesCommand extends BaseVpnCommand {
             final EndEntityProfileSessionRemote remote = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class);
             final EndEntityProfile profile = VpnProfiles.getDefaultClientEndEntityProfile(vpnCA.getCAId());
             try {
-                final String profileName = VpnCons.DEFAULT_END_ENTITY_PROFILE; // TODO: parametrise.
+                final String profileName = VpnConfig.getClientEndEntityProfile();
                 remote.addEndEntityProfile(getAuthenticationToken(), profileName, profile);
                 log.info(String.format("End entity for client: %s created", profileName));
 
@@ -106,7 +101,7 @@ public class InitEntityProfilesCommand extends BaseVpnCommand {
             final EndEntityProfileSessionRemote remote = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class);
             final EndEntityProfile profile = VpnProfiles.getDefaultServerEndEntityProfile(vpnCA.getCAId());
             try {
-                final String profileName = VpnCons.DEFAULT_END_ENTITY_PROFILE_SERVER; // TODO: parametrise.
+                final String profileName = VpnConfig.getServerEndEntityProfile();
                 remote.addEndEntityProfile(getAuthenticationToken(), profileName, profile);
                 log.info(String.format("End entity for client: %s created", profileName));
 

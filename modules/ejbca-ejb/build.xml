@@ -321,6 +321,7 @@
 		<include name="org/ejbca/core/ejb/vpn/VpnCons.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnProfiles.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnUtils.java"/>
+		<include name="org/ejbca/core/ejb/vpn/VpnConfig.java"/>
 	</fileset>
 	<pathconvert refid="source.fileset.ejbca-util" pathsep=" " property="source.fileset.ejbca-util.files">
 		<map from="${src.dir}/" to=""/>

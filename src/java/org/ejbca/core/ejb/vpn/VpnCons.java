@@ -10,5 +10,6 @@ public class VpnCons {
     public static final String DEFAULT_CA = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE_SERVER = "VPNServer";
+    public static final String DEFAULT_KEYSTORE_PASS = "enigma";
 
 }
