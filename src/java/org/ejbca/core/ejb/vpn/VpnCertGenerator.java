@@ -43,12 +43,26 @@ public class VpnCertGenerator {
     private static final Logger log = Logger.getLogger(VpnCertGenerator.class);
 
     private AuthenticationToken authenticationToken;
+    private AuthenticationTokenProvider authenticationTokenProvider;
     private boolean fetchRemoteSessions = true;
 
     private CaSession caSession;
     private EndEntityAccessSession endEntityAccessSession;
     private EndEntityAuthenticationSession endEntityAuthenticationSession;
     private SignSession signSession;
+
+    /**
+     * Returns auth token. If provider is registered, provider is used.
+     * Otherwise static token is returned.
+     * @return auth token
+     */
+    private AuthenticationToken getAuthToken(){
+        if (authenticationTokenProvider != null){
+            return authenticationTokenProvider.getAuthenticationToken();
+        }
+
+        return authenticationToken;
+    }
 
     /**
      * Recovers or generates new keys for the user and generates keystore.
@@ -129,20 +143,20 @@ public class VpnCertGenerator {
         X509Certificate cert = null;
         if (orgCert != null) {
             cert = orgCert;
-            boolean finishUser = getCaSession().getCAInfo(authenticationToken, caid).getFinishUser();
+            boolean finishUser = getCaSession().getCAInfo(getAuthToken(), caid).getFinishUser();
             if (finishUser) {
-                EndEntityInformation userdata = getEndEntityAccessSession().findUser(authenticationToken, username);
+                EndEntityInformation userdata = getEndEntityAccessSession().findUser(getAuthToken(), username);
                 getEndEntityAuthenticationSession().finishUser(userdata);
             }
 
         } else {
             String sigAlg = AlgorithmConstants.SIGALG_SHA1_WITH_RSA;
             X509Certificate selfcert = CertTools.genSelfCert("CN=selfsigned", 1, null, rsaKeys.getPrivate(), rsaKeys.getPublic(), sigAlg, false);
-            cert = (X509Certificate) getSignSession().createCertificate(authenticationToken, username, password, selfcert);
+            cert = (X509Certificate) getSignSession().createCertificate(getAuthToken(), username, password, selfcert);
         }
 
         // Make a certificate chain from the certificate and the CA-certificate
-        Certificate[] cachain = getSignSession().getCertificateChain(authenticationToken, caid).toArray(new Certificate[0]);
+        Certificate[] cachain = getSignSession().getCertificateChain(getAuthToken(), caid).toArray(new Certificate[0]);
         // Verify CA-certificate
         if (CertTools.isSelfSigned((X509Certificate) cachain[cachain.length - 1])) {
             try {
@@ -266,5 +280,13 @@ public class VpnCertGenerator {
 
     public void setFetchRemoteSessions(boolean fetchRemoteSessions) {
         this.fetchRemoteSessions = fetchRemoteSessions;
+    }
+
+    public AuthenticationTokenProvider getAuthenticationTokenProvider() {
+        return authenticationTokenProvider;
+    }
+
+    public void setAuthenticationTokenProvider(AuthenticationTokenProvider authenticationTokenProvider) {
+        this.authenticationTokenProvider = authenticationTokenProvider;
     }
 }
