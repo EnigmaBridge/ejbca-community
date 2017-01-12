@@ -3,15 +3,24 @@ package org.ejbca.core.ejb.vpn;
 import org.bouncycastle.openssl.jcajce.JcaMiscPEMGenerator;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.util.io.pem.PemWriter;
+import org.cesecore.util.Base64;
+import org.cesecore.util.CertTools;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 
 import org.apache.commons.validator.routines.EmailValidator;
+import org.ejbca.util.passgen.IPasswordGenerator;
+import org.ejbca.util.passgen.PasswordGeneratorFactory;
 
 /**
  * Misc VPN utils.
@@ -27,7 +36,7 @@ public class VpnUtils {
      * @return end entity user name
      */
     public static String getUserName(VpnUser user){
-        return user.getEmail() + "/" + user.getDevice();
+        return StringTools.stripUsername(user.getEmail() + "/" + user.getDevice());
     }
 
     /**
@@ -92,7 +101,7 @@ public class VpnUtils {
      * @return CommonName
      */
     public static String getCN(VpnUser user){
-        return getCN(StringTools.stripUsername(getUserName(user)));
+        return getCN(getUserName(user));
     }
 
     /**
@@ -102,6 +111,44 @@ public class VpnUtils {
      */
     public static String getAltName(VpnUser user){
         return "rfc822name="+user.getEmail();
+    }
+
+    /**
+     * Adds key store to the VpnUser - sets appropriate fields
+     * @param vpnUser vpn user record
+     * @param ks KeyStore with cert & private key
+     * @param password KeyStore password
+     * @return
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyStoreException
+     * @throws IOException
+     */
+    public static VpnUser addKeyStoreToUser(VpnUser vpnUser, KeyStore ks, char[] password) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        // Store KS to the database
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ks.store(bos, password);
+        vpnUser.setKeyStore(new String(Base64.encode(bos.toByteArray()), "UTF-8"));
+
+        // Extract certificate & fingerprint
+        final Certificate cert = ks.getCertificate(getUserName(vpnUser));
+        final String certFprint = CertTools.getFingerprintAsString(cert);
+        vpnUser.setCertificateId(certFprint);
+        vpnUser.setCertificate(new String(Base64.encode(cert.getEncoded())));
+        vpnUser.setDateModified(System.currentTimeMillis());
+        vpnUser.setRevokedStatus(0);
+
+        return vpnUser;
+    }
+
+    /**
+     * Generated a random OTP password
+     *
+     * @return a randomly generated password
+     */
+    public static String genRandomPwd() {
+        final IPasswordGenerator pwdgen = PasswordGeneratorFactory.getInstance(PasswordGeneratorFactory.PASSWORDTYPE_NOSOUNDALIKEENLD);
+        return pwdgen.getNewPassword(24, 24);
     }
 
 }

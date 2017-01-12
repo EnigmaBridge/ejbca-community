@@ -150,21 +150,4 @@ public class VpnWebUtils {
         return cabean;
     }
 
-    public static VpnUser addKeyStoreToUser(VpnUser vpnUser, KeyStore ks, String name, char[] password) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        // Store KS to the database
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ks.store(bos, password);
-        vpnUser.setKeyStore(new String(Base64.encode(bos.toByteArray()), "UTF-8"));
-
-        // Extract certificate & fingerprint
-        final Certificate cert = ks.getCertificate(name);
-        final String certFprint = CertTools.getFingerprintAsString(cert);
-        vpnUser.setCertificateId(certFprint);
-        vpnUser.setCertificate(new String(Base64.encode(cert.getEncoded())));
-        vpnUser.setDateModified(System.currentTimeMillis());
-        vpnUser.setRevokedStatus(0);
-
-        return vpnUser;
-    }
-
 }

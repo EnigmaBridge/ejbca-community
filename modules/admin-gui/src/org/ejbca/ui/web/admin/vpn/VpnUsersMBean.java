@@ -48,8 +48,6 @@ import org.ejbca.core.model.ra.NotFoundException;
 import org.ejbca.ui.web.admin.BaseManagedBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
-import org.ejbca.util.passgen.IPasswordGenerator;
-import org.ejbca.util.passgen.PasswordGeneratorFactory;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -450,16 +448,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     }
 
     /**
-     * Generated a random OTP password
-     *
-     * @return a randomly generated password
-     */
-    private String genRandomPwd() {
-        final IPasswordGenerator pwdgen = PasswordGeneratorFactory.getInstance(PasswordGeneratorFactory.PASSWORDTYPE_NOSOUNDALIKEENLD);
-        return pwdgen.getNewPassword(24, 24);
-    }
-
-    /**
      * Gets RA bean.
      * @return
      */
@@ -583,15 +571,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Regenerate certificate
                 try {
                     final KeyStore ks = doCreateKeys(endEntity, EndEntityConstants.STATUS_NEW);
-                    VpnWebUtils.addKeyStoreToUser(vpnUser, ks, vpnUserGuiInfo.getUserDesc(), VpnConfig.getKeyStorePass().toCharArray());
+                    VpnUtils.addKeyStoreToUser(vpnUser, ks, VpnConfig.getKeyStorePass().toCharArray());
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
                     vpnUser.setVpnConfig(vpnConfig);
                     vpnUser.setOtpUsed(null);
                     vpnUser.setLastMailSent(null);
-                    vpnUser.setRevokedStatus(0);
-                    vpnUser.setOtpDownload(genRandomPwd());
+                    vpnUser.setOtpDownload(VpnUtils.genRandomPwd());
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
@@ -774,15 +761,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Create certificate
                 try {
                     final KeyStore ks = doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
-                    VpnWebUtils.addKeyStoreToUser(vpnUser, ks, name, VpnConfig.getKeyStorePass().toCharArray());
+                    VpnUtils.addKeyStoreToUser(vpnUser, ks, VpnConfig.getKeyStorePass().toCharArray());
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
                     vpnUser.setVpnConfig(vpnConfig);
                     vpnUser.setOtpUsed(null);
                     vpnUser.setLastMailSent(null);
-                    vpnUser.setRevokedStatus(0);
-                    vpnUser.setOtpDownload(genRandomPwd());
+                    vpnUser.setOtpDownload(VpnUtils.genRandomPwd());
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
