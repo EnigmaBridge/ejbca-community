@@ -86,6 +86,7 @@ public class ErrorCode implements Serializable {
     private static final String _BAD_CERTIFICATE_PROFILE_TYPE = "BAD_CERTIFICATE_PROFILE_TYPE"; // when using a cert/endentity profile of the wrong type
     private static final String _ROLE_DOES_NOT_EXIST = "ROLE_DOES_NOT_EXIST"; // When trying to find a role that does not exist
     private static final String _VPN_USER_NAME_IN_USE = "VPN_USER_NAME_IN_USE"; // User name exists already
+    private static final String _VPN_GENERATOR_EXCEPTION = "VPN_GENERATOR_EXCEPTION"; // Generic VPN generation error
 
     /** Default constructor. */
     private ErrorCode() {}
@@ -187,6 +188,7 @@ public class ErrorCode implements Serializable {
     public static final ErrorCode BAD_CERTIFICATE_PROFILE_TYPE = new ErrorCode(_BAD_CERTIFICATE_PROFILE_TYPE);
     public static final ErrorCode ROLE_DOES_NOT_EXIST = new ErrorCode(_ROLE_DOES_NOT_EXIST);
     public static final ErrorCode VPN_USER_NAME_IN_USE = new ErrorCode(_VPN_USER_NAME_IN_USE);
+    public static final ErrorCode VPN_GENERATOR_EXCEPTION = new ErrorCode(_ROLE_DOES_NOT_EXIST);
 
 
     /** Get the internal error code. */
