@@ -16,4 +16,6 @@ public class VpnCons {
     public static final String DEFAULT_KEY_ALGORITHM = AlgorithmConstants.KEYALGORITHM_RSA;
     public static final String DEFAULT_KEY_SIZE = "2048";
 
+    public static final String VPN_SERVER_USERNAME = "VPN Server";
+
 }

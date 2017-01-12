@@ -21,6 +21,7 @@ import org.cesecore.certificates.ca.CaSessionRemote;
 import org.cesecore.certificates.certificate.CertificateConstants;
 import org.cesecore.certificates.certificateprofile.CertificateProfileSessionRemote;
 import org.cesecore.util.EjbRemoteHelper;
+import org.cesecore.util.StringTools;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
 import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnCons;
@@ -181,5 +182,22 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
             ejbcaHomeDir += File.separatorChar;
         }
         return ejbcaHomeDir;
+    }
+
+    /**
+     * Prompts for the password if not set on command line
+     * @param commandLineArgument
+     * @return
+     */
+    protected String getAuthenticationCode(final String commandLineArgument) {
+        final String authenticationCode;
+        if (commandLineArgument == null || "null".equalsIgnoreCase(commandLineArgument)) {
+            getLogger().info("Enter password: ");
+            getLogger().info("");
+            authenticationCode = StringTools.passwordDecryption(String.valueOf(System.console().readPassword()), "End Entity Password");
+        } else {
+            authenticationCode = StringTools.passwordDecryption(commandLineArgument, "End Entity Password");
+        }
+        return authenticationCode;
     }
 }

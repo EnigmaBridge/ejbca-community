@@ -85,6 +85,8 @@ public class VpnProfiles {
         profile.setRequired(DnComponents.COMMONNAME,0,true);
         profile.setUse(EndEntityProfile.EMAIL, 0, false);
         profile.removeField(DnComponents.RFC822NAME, 0);
+        profile.addField(DnComponents.ORGANIZATIONALUNIT);
+        profile.setRequired(DnComponents.ORGANIZATIONALUNIT, 0, false);
 
         profile.setAllowMergeDnWebServices(false);
         profile.setAvailableCertificateProfileIds(Collections.singletonList(CertificateProfileConstants.CERTPROFILE_FIXED_SERVER));
