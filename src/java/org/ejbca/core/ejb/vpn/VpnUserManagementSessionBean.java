@@ -242,8 +242,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final String caCertPem = VpnUtils.certificateToPem(caCert);
 
             final Certificate cert = ks.getCertificate(endEntity.getUsername());
-            final String certPem = VpnUtils.certificateToPem(cert);
+            if (cert == null){
+                log.error("Certificate is null, cannot generate config");
+                return null;
+            }
 
+            final String certPem = VpnUtils.certificateToPem(cert);
             final Key key = ks.getKey(endEntity.getUsername(), null);
             final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key);
 
