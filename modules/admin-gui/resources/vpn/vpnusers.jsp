@@ -204,7 +204,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<%--</h:column>--%>
 		<h:column>
 			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_STATUS}"/></f:facet>
-			<h:outputText value="#{vpnUserGuiInfo.statusText}" rendered="#{vpnUserGuiInfo.userview != null}"/>
+			<h:outputText value="#{vpnUserGuiInfo.statusText}" rendered="#{vpnUserGuiInfo.statusText != null}"/>
 		</h:column>
 
 		<h:column>
