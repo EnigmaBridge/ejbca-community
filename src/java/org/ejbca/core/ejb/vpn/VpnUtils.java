@@ -151,4 +151,16 @@ public class VpnUtils {
         return pwdgen.getNewPassword(24, 24);
     }
 
+    /**
+     * Sanitizes single file name
+     * @param fileName
+     * @return
+     */
+    public static String sanitizeFileName(String fileName){
+        fileName = StringTools.stripFilename(fileName);
+        fileName = fileName.replaceAll("[^a-zA-Z0-9.-_]", "_");
+        fileName = fileName.replaceAll("[_]{2,}", "_");
+        return fileName;
+    }
+
 }
