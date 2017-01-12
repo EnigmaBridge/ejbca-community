@@ -26,7 +26,7 @@ import java.security.cert.CertificateException;
  * @author ph4r05
  * Created by dusanklinec on 05.01.17.
  */
-public class VpnUtils {
+public class VpnWebUtils {
 
     /**
      * Gets RAInterface bean in the Faces context.
@@ -60,7 +60,7 @@ public class VpnUtils {
 
     /**
      * Gets RAInterfaceBean in the servlet context with web bean initialization.
-     * If webBean is null, {@link VpnUtils#getEjbcaWebBean(HttpServletRequest)} call is used to init the RA bean.
+     * If webBean is null, {@link VpnWebUtils#getEjbcaWebBean(HttpServletRequest)} call is used to init the RA bean.
      */
     public static RAInterfaceBean getRaBean(HttpServletRequest req, EjbcaWebBean webBean)
             throws ServletException

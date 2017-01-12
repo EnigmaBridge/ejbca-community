@@ -17,7 +17,6 @@ import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
 import org.cesecore.authorization.control.CryptoTokenRules;
-import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CAInfo;
 import org.cesecore.certificates.ca.CaSessionLocal;
 import org.cesecore.certificates.certificate.IllegalKeyException;
@@ -25,13 +24,13 @@ import org.cesecore.certificates.certificateprofile.CertificateProfileConstants;
 import org.cesecore.certificates.certificateprofile.CertificateProfileSession;
 import org.cesecore.certificates.endentity.EndEntityConstants;
 import org.cesecore.certificates.endentity.EndEntityInformation;
+import org.cesecore.certificates.endentity.EndEntityTypes;
 import org.cesecore.certificates.util.AlgorithmConstants;
-import org.cesecore.certificates.util.AlgorithmTools;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
+import org.cesecore.util.StringTools;
 import org.ejbca.core.ejb.vpn.VpnConfig;
-import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.VpnUserNameInUseException;
@@ -39,13 +38,13 @@ import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
 import org.ejbca.core.ejb.ca.sign.SignSession;
 import org.ejbca.core.ejb.ra.*;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
+import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.core.model.SecConst;
 import org.ejbca.core.model.approval.ApprovalException;
 import org.ejbca.core.model.approval.WaitingForApprovalException;
 import org.ejbca.core.model.ra.AlreadyRevokedException;
 import org.ejbca.core.model.ra.NotFoundException;
-import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
@@ -56,7 +55,6 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
@@ -467,7 +465,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
      */
     private RAInterfaceBean getRaif() throws IOException, ClassNotFoundException {
         if (raif == null) {
-           raif = VpnUtils.getRaBean();
+           raif = VpnWebUtils.getRaBean();
         }
         return raif;
     }
@@ -507,7 +505,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return vpnUserManagementSession.getUserName(usr);
     }
 
-    /** Build a list sorted by name from the authorized cryptoTokens that can be presented to the user */
+    /** Build a list sorted by name from the authorized VpnUsers that can be presented to the user */
     @SuppressWarnings({ "rawtypes", "unchecked" }) //JDK6 does not support typing for ListDataModel
     public ListDataModel getVpnUserGuiList() throws AuthorizationDeniedException {
         if (vpnUserGuiList ==null) {
@@ -526,6 +524,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     UserView userview = new UserView(endEntity, caIdToNameMap);
                     guiUser.setUserview(userview);
                     guiUser.setStatusText(getStatusText(userview.getStatus()));
+
+                } else {
+                    guiUser.setStatusText(getEjbcaWebBean().getText("VPNINVALIDNOENTITY"));
                 }
 
                 users.add(guiUser);
@@ -582,7 +583,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Regenerate certificate
                 try {
                     final KeyStore ks = doCreateKeys(endEntity, EndEntityConstants.STATUS_NEW);
-                    VpnUtils.addKeyStoreToUser(vpnUser, ks, vpnUserGuiInfo.getUserDesc(), VpnConfig.getKeyStorePass().toCharArray());
+                    VpnWebUtils.addKeyStoreToUser(vpnUser, ks, vpnUserGuiInfo.getUserDesc(), VpnConfig.getKeyStorePass().toCharArray());
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
@@ -670,13 +671,17 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 }
 
                 // Revocation first. TODO: revocation reason parametrisation
-                endEntityManagementSession.revokeAndDeleteUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 0);
+                try {
+                    endEntityManagementSession.revokeAndDeleteUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 0);
+                } catch(NotFoundException e){
+                    log.warn("End entity not found");
+                }
 
                 // Delete VpnUser record itself
                 vpnUserManagementSession.deleteVpnUser(authenticationToken, vpnUserGuiInfo.getId());
                 flushCaches();
             }
-        } catch (ApprovalException | WaitingForApprovalException | RemoveException | NotFoundException e) {
+        } catch (ApprovalException | WaitingForApprovalException | RemoveException e) {
             msg = e.getMessage();
         }
 
@@ -734,58 +739,42 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     public void saveCurrentVpnUser() throws AuthorizationDeniedException {
         String msg = null;
         try {
-            final String name = getCurrentVpnUser().getName();
+            final String name = StringTools.stripUsername(getCurrentVpnUser().getName());
             final String email = getCurrentVpnUser().getEmail();
-            final String device = getCurrentVpnUser().getDevice();
             final VpnUser vpnUser = fromGuiUser(getCurrentVpnUser());
+            if (!VpnUtils.isEmailValid(email)){
+                throw new IllegalArgumentException("Invalid email");
+            }
 
             if (getCurrentVpnUserId() == null) {
-                // End profile
-                final int endProfileId = endEntityProfileSession.getEndEntityProfileId(
-                        VpnConfig.getClientEndEntityProfile());
-
-                // Certificate profile
+                final int endProfileId = endEntityProfileSession.getEndEntityProfileId(VpnConfig.getClientEndEntityProfile());
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
-
-                // Get CA that works with VPN.
                 final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
-
-                // Create new end entity.
-                UserView uview = new UserView();
-                uview.setCAId(vpnCA.getCAId());
-                uview.setEndEntityProfileId(endProfileId);
-                uview.setCertificateProfileId(certProfileId);
-
-                uview.setEmail(email);
-                uview.setUsername(name);
-                uview.setTimeCreated(new Date());
-                uview.setTimeModified(new Date());
-
-                uview.setSubjectDN("CN="+name); // TODO: sanitize
-                uview.setClearTextPassword(false);
+                final String dn = VpnUtils.getCN(name);
+                final EndEntityInformation uservo = new EndEntityInformation(
+                        name,
+                        dn,
+                        vpnCA.getCAId(),
+                        VpnUtils.getAltName(vpnUser),
+                        email,
+                        EndEntityConstants.STATUS_NEW,
+                        EndEntityTypes.ENDUSER.toEndEntityType(),
+                        endProfileId,
+                        certProfileId,
+                        new Date(), new Date(),
+                        SecConst.TOKEN_SOFT_P12,
+                        0, null);
 
                 // If auto-generated password is used in end entity profile, this password has to be null.
                 // Password will be generated automatically and sent via email to the end entity.
-                uview.setPassword(null); // TODO: random password
-                uview.setTokenType(SecConst.TOKEN_SOFT_P12);
-
-                //raif.addUser(uview);
-                EndEntityInformation uservo = new EndEntityInformation(uview.getUsername(), uview.getSubjectDN(),
-                        uview.getCAId(), uview.getSubjectAltName(),
-                        uview.getEmail(), EndEntityConstants.STATUS_NEW, uview.getType(),
-                        uview.getEndEntityProfileId(), uview.getCertificateProfileId(),
-                        null,null, uview.getTokenType(),
-                        uview.getHardTokenIssuerId(), null);
-
-                uservo.setPassword(uview.getPassword());
-                uservo.setExtendedinformation(uview.getExtendedInformation());
-                uservo.setCardNumber(uview.getCardNumber());
-                endEntityManagementSession.addUser(authenticationToken, uservo, uview.getClearTextPassword());
+                uservo.setPassword(null);
+                uservo.setCardNumber(null);
+                endEntityManagementSession.addUser(authenticationToken, uservo, false);
 
                 // Create certificate
                 try {
                     final KeyStore ks = doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
-                    VpnUtils.addKeyStoreToUser(vpnUser, ks, name, VpnConfig.getKeyStorePass().toCharArray());
+                    VpnWebUtils.addKeyStoreToUser(vpnUser, ks, name, VpnConfig.getKeyStorePass().toCharArray());
 
                     // Generate VPN configuration
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
