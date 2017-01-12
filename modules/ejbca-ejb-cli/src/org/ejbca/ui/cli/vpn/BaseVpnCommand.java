@@ -29,6 +29,7 @@ import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +42,11 @@ import java.util.List;
 public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
 
 	public static final String MAINCOMMAND = "vpn";
+
+    /**
+     * VPN data dir - default one.
+     */
+    public static final String VPN_DATA = "vpn";
 	
     @Override
     public String[] getCommandPath() {
@@ -199,5 +205,24 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
             authenticationCode = StringTools.passwordDecryption(commandLineArgument, "End Entity Password");
         }
         return authenticationCode;
+    }
+
+    /**
+     * Returns VPN data directory to store VPN related files (e.g., certificates, p12, ...).
+     * If directory does not exist, it will be created.
+     * If null/empty string is given, EJBCA_HOME/vpn is used.
+     *
+     * @param directory directory
+     * @return File representing the directory.
+     * @throws IOException
+     */
+    protected File getVpnDataDir(String directory) throws IOException {
+        if (directory == null || directory.isEmpty()) {
+            directory = getHomeDir() + VPN_DATA;
+        }
+
+        File dir = new File(directory).getCanonicalFile();
+        dir.mkdir();
+        return dir;
     }
 }
