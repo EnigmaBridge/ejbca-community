@@ -210,6 +210,14 @@ public class P12toPEM {
             return;
         }
 
+        // Readable & writable only by the owner.
+        tmpFile.createNewFile();
+        tmpFile.setReadable(false);
+        tmpFile.setExecutable(false);
+        tmpFile.setWritable(false);
+        tmpFile.setReadable(true, true);
+        tmpFile.setWritable(true, true);
+
         out = new FileOutputStream(tmpFile);
         out.write(beginPrivateKey);
         out.write(NL);
