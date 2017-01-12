@@ -109,7 +109,8 @@ public class GenServerCertCommand extends BaseVpnCommand {
                     if (uservo == null && !createIfMissing){
                         log.error(String.format("Server end entity [%s] does not exist", VpnCons.VPN_SERVER_USERNAME));
                         return CommandResult.FUNCTIONAL_FAILURE;
-                    } else {
+
+                    } else if (uservo != null) {
                         // Revoke existing certificate
                         EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
                                 .revokeUser(getAuthenticationToken(), uservo.getUsername(), 0);
