@@ -18,7 +18,6 @@ import org.cesecore.ErrorCode;
 /**
  * An exception thrown when someone tries to create a VpnUser with an existing name.
  *
- * TODO: fix name
  * @author ph4r05
  */
 public class VpnUserNameInUseException extends CesecoreException {
@@ -30,7 +29,7 @@ public class VpnUserNameInUseException extends CesecoreException {
      */
     public VpnUserNameInUseException() {
         super();
-        super.setErrorCode(ErrorCode.CRYPTOTOKEN_NAME_IN_USE);
+        super.setErrorCode(ErrorCode.VPN_USER_NAME_IN_USE);
     }
 
     /**
@@ -38,7 +37,7 @@ public class VpnUserNameInUseException extends CesecoreException {
      * @param msg the detail message.
      */
     public VpnUserNameInUseException(String msg) {
-        super(ErrorCode.CRYPTOTOKEN_NAME_IN_USE, msg);
+        super(ErrorCode.VPN_USER_NAME_IN_USE, msg);
     }
 
     /**
@@ -46,7 +45,7 @@ public class VpnUserNameInUseException extends CesecoreException {
      * @param exception the exception that caused this
      */
     public VpnUserNameInUseException(Exception exception) {
-        super(ErrorCode.CRYPTOTOKEN_NAME_IN_USE, exception);
+        super(ErrorCode.VPN_USER_NAME_IN_USE, exception);
     }
 
     /**
@@ -55,6 +54,6 @@ public class VpnUserNameInUseException extends CesecoreException {
      * @param e the exception that caused this
      */
     public VpnUserNameInUseException(String msg, Exception e) {
-        super(ErrorCode.CRYPTOTOKEN_NAME_IN_USE, msg, e);
+        super(ErrorCode.VPN_USER_NAME_IN_USE, msg, e);
     }
 }
