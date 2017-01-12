@@ -903,7 +903,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             throws Exception {
 
         X509Certificate orgCert = null;
-        KeyPair rsaKeys = KeyTools.genKeys("2048", AlgorithmConstants.KEYALGORITHM_RSA);
+        KeyPair rsaKeys = KeyTools.genKeys(VpnConfig.getKeySize(), VpnConfig.getKeySpec());
 
         // Get certificate for user and create keystore
         if (rsaKeys != null) {

@@ -1,5 +1,7 @@
 package org.ejbca.core.ejb.vpn;
 
+import org.cesecore.certificates.util.AlgorithmConstants;
+
 /**
  * VPN related constants.
  *
@@ -11,5 +13,7 @@ public class VpnCons {
     public static final String DEFAULT_END_ENTITY_PROFILE = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE_SERVER = "VPNServer";
     public static final String DEFAULT_KEYSTORE_PASS = "enigma";
+    public static final String DEFAULT_KEY_ALGORITHM = AlgorithmConstants.KEYALGORITHM_RSA;
+    public static final String DEFAULT_KEY_SIZE = "2048";
 
 }
