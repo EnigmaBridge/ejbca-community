@@ -72,7 +72,7 @@ public class GenServerCertCommand  extends BaseVpnCommand {
                     vpnCA.getCAId(),
                     null,null,
                     EndEntityConstants.STATUS_NEW,
-                    new EndEntityType(EndEntityTypes.ENDUSER),
+                    EndEntityTypes.ENDUSER.toEndEntityType(),
                     endProfileId,
                     certProfileId,
                     new Date(), new Date(),

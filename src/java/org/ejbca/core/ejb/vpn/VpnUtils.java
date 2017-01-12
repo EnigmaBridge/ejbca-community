@@ -3,6 +3,7 @@ package org.ejbca.core.ejb.vpn;
 import org.bouncycastle.openssl.jcajce.JcaMiscPEMGenerator;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.util.io.pem.PemWriter;
+import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
 
 import java.io.CharArrayWriter;
@@ -74,6 +75,33 @@ public class VpnUtils {
         }
 
         return EmailValidator.getInstance().isValid(email);
+    }
+
+    /**
+     * Returns Common name for the user name
+     * @param name user
+     * @return CommonName
+     */
+    public static String getCN(String name){
+        return "CN="+ StringTools.stripUsername(name);
+    }
+
+    /**
+     * Returns Common name for the user
+     * @param user user
+     * @return CommonName
+     */
+    public static String getCN(VpnUser user){
+        return getCN(StringTools.stripUsername(getUserName(user)));
+    }
+
+    /**
+     * Returns SubjectAltName for the VpnUser.
+     * @param user user
+     * @return SubjectAltName
+     */
+    public static String getAltName(VpnUser user){
+        return "rfc822name="+user.getEmail();
     }
 
 }
