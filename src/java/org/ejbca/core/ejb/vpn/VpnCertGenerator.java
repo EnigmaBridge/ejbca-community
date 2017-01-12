@@ -15,9 +15,13 @@ import org.cesecore.certificates.util.AlgorithmConstants;
 import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
+import org.cesecore.util.EjbRemoteHelper;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
+import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionRemote;
 import org.ejbca.core.ejb.ca.sign.SignSession;
+import org.ejbca.core.ejb.ca.sign.SignSessionRemote;
 import org.ejbca.core.ejb.ra.EndEntityAccessSession;
+import org.ejbca.core.ejb.ra.EndEntityAccessSessionRemote;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.core.model.ca.AuthLoginException;
 import org.ejbca.core.model.ca.AuthStatusException;
@@ -39,6 +43,7 @@ public class VpnCertGenerator {
     private static final Logger log = Logger.getLogger(VpnCertGenerator.class);
 
     private AuthenticationToken authenticationToken;
+    private boolean fetchRemoteSessions = true;
 
     private CaSession caSession;
     private EndEntityAccessSession endEntityAccessSession;
@@ -124,20 +129,20 @@ public class VpnCertGenerator {
         X509Certificate cert = null;
         if (orgCert != null) {
             cert = orgCert;
-            boolean finishUser = caSession.getCAInfo(authenticationToken, caid).getFinishUser();
+            boolean finishUser = getCaSession().getCAInfo(authenticationToken, caid).getFinishUser();
             if (finishUser) {
-                EndEntityInformation userdata = endEntityAccessSession.findUser(authenticationToken, username);
-                endEntityAuthenticationSession.finishUser(userdata);
+                EndEntityInformation userdata = getEndEntityAccessSession().findUser(authenticationToken, username);
+                getEndEntityAuthenticationSession().finishUser(userdata);
             }
 
         } else {
             String sigAlg = AlgorithmConstants.SIGALG_SHA1_WITH_RSA;
             X509Certificate selfcert = CertTools.genSelfCert("CN=selfsigned", 1, null, rsaKeys.getPrivate(), rsaKeys.getPublic(), sigAlg, false);
-            cert = (X509Certificate) signSession.createCertificate(authenticationToken, username, password, selfcert);
+            cert = (X509Certificate) getSignSession().createCertificate(authenticationToken, username, password, selfcert);
         }
 
         // Make a certificate chain from the certificate and the CA-certificate
-        Certificate[] cachain = signSession.getCertificateChain(authenticationToken, caid).toArray(new Certificate[0]);
+        Certificate[] cachain = getSignSession().getCertificateChain(authenticationToken, caid).toArray(new Certificate[0]);
         // Verify CA-certificate
         if (CertTools.isSelfSigned((X509Certificate) cachain[cachain.length - 1])) {
             try {
@@ -208,7 +213,11 @@ public class VpnCertGenerator {
     }
 
     public CaSession getCaSession() {
-        return caSession;
+        if (caSession != null || !fetchRemoteSessions) {
+            return caSession;
+        }
+
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(CaSessionRemote.class);
     }
 
     public void setCaSession(CaSession caSession) {
@@ -216,7 +225,11 @@ public class VpnCertGenerator {
     }
 
     public EndEntityAccessSession getEndEntityAccessSession() {
-        return endEntityAccessSession;
+        if (endEntityAccessSession != null || !fetchRemoteSessions) {
+            return endEntityAccessSession;
+        }
+
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAccessSessionRemote.class);
     }
 
     public void setEndEntityAccessSession(EndEntityAccessSession endEntityAccessSession) {
@@ -224,7 +237,11 @@ public class VpnCertGenerator {
     }
 
     public EndEntityAuthenticationSession getEndEntityAuthenticationSession() {
-        return endEntityAuthenticationSession;
+        if (endEntityAuthenticationSession != null || !fetchRemoteSessions) {
+            return endEntityAuthenticationSession;
+        }
+
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAuthenticationSessionRemote.class);
     }
 
     public void setEndEntityAuthenticationSession(EndEntityAuthenticationSession endEntityAuthenticationSession) {
@@ -232,10 +249,22 @@ public class VpnCertGenerator {
     }
 
     public SignSession getSignSession() {
-        return signSession;
+        if (signSession != null || !fetchRemoteSessions) {
+            return signSession;
+        }
+
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(SignSessionRemote.class);
     }
 
     public void setSignSession(SignSession signSession) {
         this.signSession = signSession;
+    }
+
+    public boolean isFetchRemoteSessions() {
+        return fetchRemoteSessions;
+    }
+
+    public void setFetchRemoteSessions(boolean fetchRemoteSessions) {
+        this.fetchRemoteSessions = fetchRemoteSessions;
     }
 }
