@@ -37,11 +37,12 @@ import java.util.Enumeration;
  */
 public class P12toPEM {
     private static Logger log = Logger.getLogger(P12toPEM.class);
-    String exportpath = "./p12/pem/";
-    String p12File;
-    String password;
-    String fileNameBase;
-    KeyStore ks = null;
+    private String exportpath = "./p12/pem/";
+    private String p12File;
+    private String password;
+    private String userName;
+    private String fileNameBase;
+    private KeyStore ks = null;
     boolean overwrite = false;
 
     private static final byte[] beginCertificate = "-----BEGIN CERTIFICATE-----".getBytes();
@@ -95,6 +96,14 @@ public class P12toPEM {
      */
     public void setFileNameBase(String fileNameBase) {
         this.fileNameBase = fileNameBase;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**
@@ -164,8 +173,17 @@ public class P12toPEM {
         X509Certificate userX509Certificate = (X509Certificate) chain[0];
         final byte[] certBytes = userX509Certificate.getEncoded();
         final String dname = CertTools.getSubjectDN(userX509Certificate);
-        final String userFile = StringTools.stripFilename(
-                fileNameBase != null ? fileNameBase : CertTools.getPartFromDN(dname, "CN"));
+        final String cname = CertTools.getPartFromDN(dname, "CN");
+        String userFileTmp = null;
+        if (fileNameBase != null){
+            userFileTmp = fileNameBase;
+        } else if (userName != null){
+            userFileTmp = userName + "_" + cname;
+        } else {
+            userFileTmp = cname;
+        }
+
+        final String userFile = VpnUtils.sanitizeFileName(userFileTmp);
         final String filetype = ".pem";
 
         File path = new File(exportpath);
