@@ -54,6 +54,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
     private static final String DIRECTORY_KEY = "--directory";
     private static final String PEM_KEY = "--pem";
     private static final String REGENERATE_KEY = "--regenerate";
+    private static final String CREATE_KEY = "--create";
 
     {
         registerParameter(new Parameter(PASSWORD_KEY, "Password", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.ARGUMENT,
@@ -64,7 +65,8 @@ public class GenServerCertCommand extends BaseVpnCommand {
                 "If parameter is used, PEM files are dumped together with P12."));
         registerParameter(new Parameter(REGENERATE_KEY, "Regenerate", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.FLAG,
                 "If parameter is used, existing server is revoked & regenerated."));
-
+        registerParameter(new Parameter(CREATE_KEY, "Create", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.FLAG,
+                "If parameter is used, server end entity is created if missing."));
     }
 
     private String mainStoreDir;
@@ -82,6 +84,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
         final String argDirectory = parameters.get(DIRECTORY_KEY);
         final boolean genPem = (parameters.get(PEM_KEY) != null);
         final boolean regenerate = (parameters.get(REGENERATE_KEY) != null);
+        final boolean createIfMissing = (parameters.get(REGENERATE_KEY) != null);
         final String password = getAuthenticationCode(parameters.get(PASSWORD_KEY));
 
         StringBuilder errorString = new StringBuilder();
@@ -102,21 +105,31 @@ public class GenServerCertCommand extends BaseVpnCommand {
                 if (regenerate){
                     uservo = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAccessSessionRemote.class)
                             .findUser(getAuthenticationToken(), VpnCons.VPN_SERVER_USERNAME);
-                    if (uservo == null){
+
+                    if (uservo == null && !createIfMissing){
                         log.error(String.format("Server end entity [%s] does not exist", VpnCons.VPN_SERVER_USERNAME));
                         return CommandResult.FUNCTIONAL_FAILURE;
+                    } else {
+                        // Revoke existing certificate
+                        EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                                .revokeUser(getAuthenticationToken(), uservo.getUsername(), 0);
+
+                        // Update password.
+                        uservo.setPassword(password);
+                        uservo.setTimeModified(new Date());
+                        EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                                .changeUser(getAuthenticationToken(), uservo, false);
+
+                        // Set status to new
+                        EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                                .setUserStatus(getAuthenticationToken(), uservo.getUsername(),
+                                        EndEntityConstants.STATUS_NEW);
                     }
 
-                    // Revoke existing certificate
-                    EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
-                            .revokeUser(getAuthenticationToken(), uservo.getUsername(), 0);
+                }
 
-                    // Update password.
-                    uservo.setPassword(password);
-                    EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
-                            .changeUser(getAuthenticationToken(), uservo, false);
-
-                } else {
+                // User is null - create a new one
+                if (uservo == null) {
                     uservo = new EndEntityInformation(
                             VpnCons.VPN_SERVER_USERNAME,
                             String.format("CN=%s,OU=VPN", cn),
