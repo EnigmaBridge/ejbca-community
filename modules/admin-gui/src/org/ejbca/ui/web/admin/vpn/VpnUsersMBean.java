@@ -588,6 +588,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
                     vpnUser.setVpnConfig(vpnConfig);
                     vpnUser.setOtpUsed(null);
+                    vpnUser.setLastMailSent(null);
                     vpnUser.setRevokedStatus(0);
                     vpnUser.setOtpDownload(genRandomPwd());
 
@@ -790,6 +791,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
                     vpnUser.setVpnConfig(vpnConfig);
                     vpnUser.setOtpUsed(null);
+                    vpnUser.setLastMailSent(null);
                     vpnUser.setRevokedStatus(0);
                     vpnUser.setOtpDownload(genRandomPwd());
 
