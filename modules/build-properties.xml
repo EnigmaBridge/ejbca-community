@@ -487,6 +487,14 @@
         </fileset>
     </path>
 
+	<!-- Thymeleaf -->
+	<path id="lib.thymeleaf.classpath">
+		<fileset dir="${ejbca.home}/lib/thymeleaf">
+			<include name="thymeleaf-*.jar"/>
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
     <!-- Now when everything is set up, we can load the old property defaults -->
     <condition property="jndi.properties.file" value="${ejbca.home}/conf/jndi.properties.${appserver.subtype}">
         <available file="${ejbca.home}/conf/jndi.properties.${appserver.subtype}"/>
