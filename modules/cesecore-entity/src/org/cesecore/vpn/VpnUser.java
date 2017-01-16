@@ -24,17 +24,37 @@ public class VpnUser implements Serializable, Cloneable {
     @Id
     private Integer id;
 
+    /**
+     * Email + device is unique identifier of the VPN user.
+     */
     private String email;
     private String device;
 
     private long dateCreated;
     private long dateModified;
     private int revokedStatus;
+
+    /**
+     * One time download token used to download OVPN configuration.
+     */
     private String otpDownload;
+
+    /**
+     * UTCmilli encoded time of last OTP download. Null if OTP has not been used yet.
+     */
     private Long otpUsed;
+
+    /**
+     * Last configuration email send to the user.
+     * If null, no configuration email for the current key/config has been sent.
+     */
     private Long lastMailSent;
     private String certificateId;
     private String certificate;
+
+    /**
+     * Base64 encoded keystore contains user certificate.
+     */
     private String keyStore;
     private String vpnConfig;
 
