@@ -5,6 +5,7 @@ import org.ejbca.config.EjbcaConfigurationHolder;
 /**
  * VPN related configuration.
  *
+ * @author ph4r05
  * Created by dusanklinec on 12.01.17.
  */
 public class VpnConfig {

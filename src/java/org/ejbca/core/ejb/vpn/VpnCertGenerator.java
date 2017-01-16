@@ -37,6 +37,7 @@ import java.security.spec.InvalidKeySpecException;
 /**
  * Generator of the VPN certificates / keys.
  *
+ * @author ph4r05
  * Created by dusanklinec on 12.01.17.
  */
 public class VpnCertGenerator {
