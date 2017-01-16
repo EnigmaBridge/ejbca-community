@@ -71,13 +71,13 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     public List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken) {
         // TODO: auth
         final List<Integer> allVpnUsersIds = vpnUserSession.getVpnUserIds();
-        final List<Integer> auhtorizedVpnUserIds = new ArrayList<Integer>();
+        final List<Integer> authorizedVpnUserIds = new ArrayList<Integer>();
         for (final Integer current : allVpnUsersIds) {
             //if (accessControlSessionSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.VIEW.resource() + "/" + current.toString())) {
-                auhtorizedVpnUserIds.add(current);
+                authorizedVpnUserIds.add(current);
             //}
         }
-        return auhtorizedVpnUserIds;
+        return authorizedVpnUserIds;
     }
 
     @Override
