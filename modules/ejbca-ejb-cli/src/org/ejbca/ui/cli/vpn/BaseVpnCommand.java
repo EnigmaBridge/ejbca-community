@@ -14,7 +14,6 @@
 package org.ejbca.ui.cli.vpn;
 
 import org.cesecore.authorization.AuthorizationDeniedException;
-import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CADoesntExistsException;
 import org.cesecore.certificates.ca.CAInfo;
 import org.cesecore.certificates.ca.CaSessionRemote;
@@ -24,7 +23,6 @@ import org.cesecore.util.EjbRemoteHelper;
 import org.cesecore.util.StringTools;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
 import org.ejbca.core.ejb.vpn.VpnConfig;
-import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
 

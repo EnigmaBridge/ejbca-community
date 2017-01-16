@@ -1,5 +1,6 @@
 package org.ejbca.core.ejb.vpn;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.bouncycastle.openssl.jcajce.JcaMiscPEMGenerator;
 import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 import org.bouncycastle.util.io.pem.PemWriter;
@@ -7,6 +8,8 @@ import org.cesecore.util.Base64;
 import org.cesecore.util.CertTools;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.util.passgen.IPasswordGenerator;
+import org.ejbca.util.passgen.PasswordGeneratorFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
@@ -17,10 +20,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-
-import org.apache.commons.validator.routines.EmailValidator;
-import org.ejbca.util.passgen.IPasswordGenerator;
-import org.ejbca.util.passgen.PasswordGeneratorFactory;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 /**
  * Misc VPN utils.

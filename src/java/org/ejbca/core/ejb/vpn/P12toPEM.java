@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.Base64;
 import org.cesecore.util.CertTools;
-import org.cesecore.util.StringTools;
 
 import java.io.*;
 import java.security.*;
