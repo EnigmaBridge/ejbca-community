@@ -28,6 +28,7 @@ public enum VpnRules {
 
     USER_VIEW(USER.resource() + "/view"),
     USER_NEW(USER.resource() + "/new"),
+    USER_DELETE(USER.resource() + "/delete"),
     USER_REVOKE(USER.resource() + "/revoke"),
     USER_MODIFY(USER.resource() + "/modify"),
     USER_GENERATE(USER.resource() + "/generate"),
