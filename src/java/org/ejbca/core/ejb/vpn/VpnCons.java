@@ -15,7 +15,14 @@ public class VpnCons {
     public static final String DEFAULT_KEYSTORE_PASS = "enigma";
     public static final String DEFAULT_KEY_ALGORITHM = AlgorithmConstants.KEYALGORITHM_RSA;
     public static final String DEFAULT_KEY_SIZE = "2048";
+    public static final String DEFAULT_TEMPLATE_DIR = "vpn_templates";
+    public static final String DEFAULT_LANGUAGE_DIR = "vpn_lang";
+    public static final String DEFAULT_LANGUAGE = "en";
 
     public static final String VPN_SERVER_USERNAME = "VPN Server";
+    public static final String VPN_LANGUAGE_FILE = "languagefile";
+
+    public static final String VPN_EMAIL_TEMPLATE = "emailconfig";
+    public static final String VPN_CONFIG_TEMPLATE = "vpnconfig";
 
 }

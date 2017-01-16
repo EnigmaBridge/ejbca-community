@@ -165,4 +165,20 @@ public class VpnUtils {
         return fileName;
     }
 
+    /**
+     * Converts resource bundle to properties.
+     * @param resource
+     * @return
+     */
+    public static Properties convertResourceBundleToProperties(ResourceBundle resource) {
+        final Properties properties = new Properties();
+        final Enumeration<String> keys = resource.getKeys();
+        while (keys.hasMoreElements()) {
+            final String key = keys.nextElement();
+            properties.put(key, resource.getString(key));
+        }
+
+        return properties;
+    }
+
 }
