@@ -30,6 +30,12 @@ public class VpnUser implements Serializable, Cloneable {
     private String email;
     private String device;
 
+    /**
+     * Primary language user communicates.
+     * If possible, emails are localised using this language
+     */
+    private String usrLang;
+
     private long dateCreated;
     private long dateModified;
     private int revokedStatus;
@@ -218,5 +224,13 @@ public class VpnUser implements Serializable, Cloneable {
 
     public void setLastMailSent(Long lastMailSent) {
         this.lastMailSent = lastMailSent;
+    }
+
+    public String getUsrLang() {
+        return usrLang;
+    }
+
+    public void setUsrLang(String language) {
+        this.usrLang = language;
     }
 }
