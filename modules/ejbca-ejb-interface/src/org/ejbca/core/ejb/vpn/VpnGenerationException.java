@@ -5,9 +5,11 @@ import org.cesecore.ErrorCode;
 
 /**
  * General exception thrown by Vpn Generators
+ *
+ * @author ph4r05
  * Created by dusanklinec on 12.01.17.
  */
-public class VpnGenerationException  extends CesecoreException {
+public class VpnGenerationException extends VpnException {
 
     private static final long serialVersionUID = 1L;
 

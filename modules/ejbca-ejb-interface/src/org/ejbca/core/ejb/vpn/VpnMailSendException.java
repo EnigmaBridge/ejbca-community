@@ -6,9 +6,10 @@ import org.cesecore.ErrorCode;
 /**
  * Exception on mail send failure.
  *
+ * @author ph4r05
  * Created by dusanklinec on 16.01.17.
  */
-public class VpnMailSendException extends CesecoreException {
+public class VpnMailSendException extends VpnException {
 
     private static final long serialVersionUID = 1L;
 
