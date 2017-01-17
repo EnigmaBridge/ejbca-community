@@ -734,12 +734,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 final int endProfileId = endEntityProfileSession.getEndEntityProfileId(VpnConfig.getClientEndEntityProfile());
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
                 final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
-                final String dn = VpnUtils.getCN(name);
+                final String dn = VpnUtils.genUserCN(name);
                 final EndEntityInformation uservo = new EndEntityInformation(
                         name,
                         dn,
                         vpnCA.getCAId(),
-                        VpnUtils.getAltName(vpnUser),
+                        VpnUtils.genUserAltName(vpnUser),
                         email,
                         EndEntityConstants.STATUS_NEW,
                         EndEntityTypes.ENDUSER.toEndEntityType(),

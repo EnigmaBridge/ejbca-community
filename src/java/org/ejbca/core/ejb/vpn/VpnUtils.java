@@ -93,7 +93,7 @@ public class VpnUtils {
      * @param name user
      * @return CommonName
      */
-    public static String getCN(String name){
+    public static String genUserCN(String name){
         return "CN="+ StringTools.stripUsername(name);
     }
 
@@ -102,8 +102,8 @@ public class VpnUtils {
      * @param user user
      * @return CommonName
      */
-    public static String getCN(VpnUser user){
-        return getCN(getUserName(user));
+    public static String genUserCN(VpnUser user){
+        return genUserCN(getUserName(user));
     }
 
     /**
@@ -111,7 +111,7 @@ public class VpnUtils {
      * @param user user
      * @return SubjectAltName
      */
-    public static String getAltName(VpnUser user){
+    public static String genUserAltName(VpnUser user){
         return "rfc822name="+user.getEmail();
     }
 
