@@ -104,7 +104,7 @@ public class LanguageHelper {
         final TemplateEngine templateEngine = new TemplateEngine();
         int order = 1;
 
-        final String templatePrefix = VpnConfig.getTemplateDir().getCanonicalPath();
+        final String templatePrefix = VpnConfig.getTemplateDir().getCanonicalPath() + "/";
 
         // Language based resolver - if language was specified.
         // Each user we send an email to should have a language specified.
