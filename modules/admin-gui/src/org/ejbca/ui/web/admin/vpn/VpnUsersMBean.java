@@ -25,10 +25,7 @@ import org.cesecore.certificates.certificateprofile.CertificateProfileSession;
 import org.cesecore.certificates.endentity.EndEntityConstants;
 import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.certificates.endentity.EndEntityTypes;
-import org.cesecore.certificates.util.AlgorithmConstants;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
-import org.cesecore.keys.util.KeyTools;
-import org.cesecore.util.CertTools;
 import org.cesecore.util.StringTools;
 import org.ejbca.core.ejb.vpn.*;
 import org.cesecore.vpn.VpnUser;
@@ -54,7 +51,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.*;
 import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
 import java.util.*;
 
 /**
@@ -553,6 +549,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Revocation first - if there is some certificate already.
                 endEntityManagementSession.revokeUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 4);
+
                 // Delete VPN related crypto info
                 vpnUserManagementSession.revokeVpnUser(authenticationToken, vpnUserGuiInfo.getId());
 
@@ -567,15 +564,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Regenerate certificate
                 try {
-                    final KeyStore ks = doCreateKeys(endEntity, EndEntityConstants.STATUS_NEW);
-                    VpnUtils.addKeyStoreToUser(vpnUser, ks, VpnConfig.getKeyStorePass().toCharArray());
-
-                    // Generate VPN configuration
-                    final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, endEntity, ks);
-                    vpnUser.setVpnConfig(vpnConfig);
-                    vpnUser.setOtpUsed(null);
-                    vpnUser.setLastMailSent(null);
-                    vpnUser.setOtpDownload(VpnUtils.genRandomPwd());
+                    generateKeyAndConfig(endEntity, vpnUser);
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
@@ -585,14 +574,19 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     newStatusString = "FAILED";
 
                     log.error(InternalEjbcaResources.getInstance().getLocalizedMessage(
-                            "batch.errorsetstatus", newStatusString), e);
+                            "vpn.errorsetstatus", newStatusString), e);
                     final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage(
-                            "batch.errorbatchfaileduser", endEntity.getUsername());
-                    throw new RuntimeException(errMsg);
+                            "vpn.erroruser", endEntity.getUsername());
+                    throw new RuntimeException(errMsg, e);
                 }
 
-                // Create user itself
+                // Update the user itself
                 final VpnUser newVpnUser = vpnUserManagementSession.saveVpnUser(authenticationToken, vpnUser);
+
+                // Send email.
+                final VpnUser freshUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+                vpnUserManagementSession.sendConfigurationEmail(authenticationToken, endEntity, freshUser);
+
                 currentVpnUserId = newVpnUser.getId();
                 msg = "VpnUser regenerated successfully.";
 
@@ -600,8 +594,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             }
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
-        } catch (VpnUserNameInUseException e) {
-            e.printStackTrace();
+        } catch (VpnUserNameInUseException | IOException | VpnMailSendException e) {
+            msg = e.getMessage();
         }
 
         if (msg != null) {
@@ -719,6 +713,18 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return user;
     }
 
+    /**
+     * Generates a new key store for the end entity, generates new VPN configuration and
+     * resets OTP download.
+     *
+     * @param uservo
+     * @param vpnUser
+     * @throws Exception
+     */
+    private void generateKeyAndConfig(EndEntityInformation uservo, VpnUser vpnUser) throws Exception {
+        vpnUserManagementSession.newVpnCredentials(authenticationToken, uservo, vpnUser);
+    }
+
     /** Invoked when admin requests a VPNUser creation. */
     public void saveCurrentVpnUser() throws AuthorizationDeniedException {
         String msg = null;
@@ -757,16 +763,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Create certificate
                 try {
-                    final KeyStore ks = doCreateKeys(uservo, EndEntityConstants.STATUS_NEW);
-                    VpnUtils.addKeyStoreToUser(vpnUser, ks, VpnConfig.getKeyStorePass().toCharArray());
-
-                    // Generate VPN configuration
-                    final String vpnConfig = vpnUserManagementSession.generateVpnConfig(authenticationToken, uservo, ks);
-                    vpnUser.setVpnConfig(vpnConfig);
-                    vpnUser.setOtpUsed(null);
-                    vpnUser.setLastMailSent(null);
-                    vpnUser.setOtpDownload(VpnUtils.genRandomPwd());
-
+                    generateKeyAndConfig(uservo, vpnUser);
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
                     final String newStatusString;
@@ -775,19 +772,26 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     newStatusString = "FAILED";
 
                     if (e instanceof IllegalKeyException) {
-                        final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorbatchfaileduser", uservo.getUsername());
+                        final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.erroruser", uservo.getUsername());
                         log.error(errMsg + " " + e.getMessage());
-                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorsetstatus", newStatusString));
-                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorcheckconfig"));
+                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.errorsetstatus", newStatusString));
+                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.errorcheckconfig"));
                     } else {
-                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorsetstatus", newStatusString), e);
-                        final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.errorbatchfaileduser", uservo.getUsername());
-                        throw new Exception(errMsg);
+                        log.error(InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.errorsetstatus", newStatusString), e);
+                        final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.erroruser", uservo.getUsername());
+                        throw new Exception(errMsg, e);
                     }
                 }
 
                 // Create user itself
                 final VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
+
+                // Send email.
+                if (getCurrentVpnUser().isSendConfigEmail()) {
+                    final VpnUser freshUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUser.getId());
+                    vpnUserManagementSession.sendConfigurationEmail(authenticationToken, uservo, freshUser);
+                }
+
                 currentVpnUserId = newVpnUser.getId();
                 msg = "VpnUser created successfully.";
 
@@ -805,63 +809,13 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             msg = e.getMessage();
         } catch (Throwable e) {
             msg = e.getMessage();
-            log.info("", e);
+            log.info("General exception in saving the user", e);
         }
 
         if (msg != null) {
             log.info("Message displayed to user: " + msg);
             super.addNonTranslatedErrorMessage(msg);
         }
-    }
-
-    /**
-     * Generates a new RSA keys & certificate for the end entity.
-     * @param data EndEntityInformation
-     * @param status entity status to determine a) generate new key b) recover stored key
-     * @return
-     * @throws Exception
-     */
-    private KeyStore doCreateKeys(EndEntityInformation data, int status) throws Exception {
-        KeyStore ret = null;
-
-        // get users Token Type.
-        int tokentype = data.getTokenType();
-        boolean createJKS = (tokentype == SecConst.TOKEN_SOFT_JKS);
-        boolean createPEM = (tokentype == SecConst.TOKEN_SOFT_PEM);
-        boolean createP12 = (tokentype == SecConst.TOKEN_SOFT_P12);
-        // Only generate supported tokens
-        if (createP12 || createPEM || createJKS) {
-            final VpnCertGenerator generator = new VpnCertGenerator();
-            generator.setAuthenticationToken(authenticationToken);
-            generator.setCaSession(caSession);
-            generator.setEndEntityAccessSession(endEntityAccessSession);
-            generator.setEndEntityAuthenticationSession(endEntityAuthenticationSession);
-            generator.setSignSession(signSession);
-            KeyStore ks = generator.generateClient(data, createJKS, createPEM, (status == EndEntityConstants.STATUS_KEYRECOVERY));
-
-            // If all was OK, users status is set to GENERATED by the
-            // signsession when the user certificate is created.
-            // If status is still NEW, FAILED or KEYRECOVER though, it means we
-            // should set it back to what it was before, probably it had a
-            // request counter
-            // meaning that we should not reset the clear text password yet.
-            EndEntityInformation vo = endEntityAccessSession.findUser(authenticationToken, data.getUsername());
-
-            if ((vo.getStatus() == EndEntityConstants.STATUS_NEW) || (vo.getStatus() == EndEntityConstants.STATUS_FAILED)
-                    || (vo.getStatus() == EndEntityConstants.STATUS_KEYRECOVERY)) {
-                endEntityManagementSession.setClearTextPassword(authenticationToken, data.getUsername(), data.getPassword());
-            } else {
-                // Delete clear text password, if we are not letting status be
-                // the same as originally
-                endEntityManagementSession.setClearTextPassword(authenticationToken, data.getUsername(), null);
-            }
-            ret = ks;
-            String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("batch.generateduser", data.getUsername());
-            log.info(iMsg);
-        } else {
-            log.error("Cannot batchmake browser generated token for user (wrong tokentype)- " + data.getUsername());
-        }
-        return ret;
     }
 
     /** Invoked when admin cancels a CryptoToken create or edit. */
