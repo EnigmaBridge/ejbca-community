@@ -33,7 +33,7 @@ public class LanguageHelper {
      * @return Locale corresponding to the language tag
      */
     public static Locale getLocale(String language){
-        return Locale.forLanguageTag(language);
+        return language == null ? null : Locale.forLanguageTag(language);
     }
 
     /**
