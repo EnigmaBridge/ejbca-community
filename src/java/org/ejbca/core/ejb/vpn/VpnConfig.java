@@ -209,4 +209,24 @@ public class VpnConfig {
 
         return port;
     }
+
+    /**
+     * Returns fromAddress to put on emails sent by the VPN module.
+     * By default tries to load CONFIG_VPN_EMAIL_FROM, if that is empty / null,
+     * tries general one mail.from.
+     * @return email address to put in the from field or null
+     */
+    public static String getEmailFromAddress(){
+        final String vpnEmailFrom = getSetting(CONFIG_VPN_EMAIL_FROM);
+        if (vpnEmailFrom != null && !vpnEmailFrom.isEmpty()){
+            return vpnEmailFrom;
+        }
+
+        final String genericFrom = EjbcaConfigurationHolder.getString("mail.from");
+        if (genericFrom != null && !genericFrom.isEmpty()){
+            return genericFrom;
+        }
+
+        return null;
+    }
 }
