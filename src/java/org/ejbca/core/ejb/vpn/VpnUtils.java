@@ -160,7 +160,7 @@ public class VpnUtils {
      */
     public static String sanitizeFileName(String fileName){
         fileName = StringTools.stripFilename(fileName);
-        fileName = fileName.replaceAll("[^a-zA-Z0-9.-_]", "_");
+        fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-_]", "_");
         fileName = fileName.replaceAll("[_]{2,}", "_");
         return fileName;
     }
