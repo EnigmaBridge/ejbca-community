@@ -13,6 +13,8 @@
 package org.ejbca.core.ejb.vpn;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.cesecore.CesecoreException;
 import org.cesecore.audit.enums.EventStatus;
 import org.cesecore.audit.enums.EventTypes;
 import org.cesecore.audit.enums.ModuleTypes;
@@ -21,26 +23,41 @@ import org.cesecore.audit.log.SecurityEventsLoggerSessionLocal;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
-import org.cesecore.certificates.ca.CA;
-import org.cesecore.certificates.ca.CADoesntExistsException;
-import org.cesecore.certificates.ca.CaSessionLocal;
+import org.cesecore.certificates.ca.*;
+import org.cesecore.certificates.certificate.CertificateCreateException;
+import org.cesecore.certificates.certificate.CertificateRevokeException;
+import org.cesecore.certificates.certificate.IllegalKeyException;
+import org.cesecore.certificates.certificate.exception.CertificateSerialNumberException;
+import org.cesecore.certificates.certificate.exception.CustomCertificateSerialNumberException;
+import org.cesecore.certificates.endentity.EndEntityConstants;
 import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
+import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionLocal;
+import org.ejbca.core.ejb.ca.sign.SignSession;
+import org.ejbca.core.ejb.ca.sign.SignSessionLocal;
+import org.ejbca.core.ejb.ra.EndEntityAccessSession;
+import org.ejbca.core.ejb.ra.EndEntityAccessSessionLocal;
+import org.ejbca.core.ejb.ra.EndEntityManagementSessionLocal;
+import org.ejbca.core.model.InternalEjbcaResources;
+import org.ejbca.core.model.SecConst;
+import org.ejbca.core.model.ca.AuthLoginException;
+import org.ejbca.core.model.ca.AuthStatusException;
+import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
+import org.ejbca.core.model.ra.raadmin.UserDoesntFullfillEndEntityProfile;
 import org.ejbca.util.mail.MailSender;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 /**
@@ -66,6 +83,14 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     private VpnUserSession vpnUserSession;
     @EJB
     private CaSessionLocal caSession;
+    @EJB
+    private EndEntityManagementSessionLocal endEntityManagementSession;
+    @EJB
+    private EndEntityAuthenticationSessionLocal endEntityAuthenticationSession;
+    @EJB
+    private EndEntityAccessSessionLocal endEntityAccessSession;
+    @EJB
+    private SignSessionLocal signSession;
 
     @Override
     public List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken) {
@@ -240,6 +265,151 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         }
 
         return user;
+    }
+
+    /**
+     * Send email with configuration.
+     */
+    public void sendConfigurationEmail(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+            throws AuthorizationDeniedException, VpnMailSendException, IOException {
+
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_MAIL.resource() + "/" + user.getId())) {
+            throw new AuthorizationDeniedException();
+        }
+
+        final String userLang = user.getUsrLang();
+
+        final ResourceBundle langBundle = LanguageHelper.loadLanguageResource(userLang);
+        final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine(userLang);
+
+        final String receiverAddress = user.getEmail();
+        final String senderAddress = VpnConfig.getSetting(VpnConfig.CONFIG_VPN_EMAIL_FROM);
+
+        final Context ctx = new Context();
+        ctx.setLocale(LanguageHelper.getLocale(userLang));
+        ctx.setVariable("user", user);
+        ctx.setVariable("entity", endEntity);
+
+        final String messageBody = templateEngine.process(VpnCons.VPN_EMAIL_TEMPLATE, ctx);
+        try {
+            MailSender.sendMailOrThrow(senderAddress,
+                    Collections.singletonList(receiverAddress),
+                    MailSender.NO_CC,
+                    langBundle.getString("vpn.email.config.subject"),
+                    messageBody,
+                    MailSender.NO_ATTACHMENTS);
+
+            final String logmsg = INTRES.getLocalizedMessage("vpn.email.config.sent", receiverAddress);
+            log.info(logmsg);
+
+        } catch (Exception e) {
+            String msg = INTRES.getLocalizedMessage("vpn.email.config.errorsend", receiverAddress);
+            log.info(msg, e);
+
+            throw new VpnMailSendException(e);
+        }
+    }
+
+    /**
+     * Creates a new key store with valid private key and certificate signed by the user's CA.
+     *
+     * @param authenticationToken
+     * @param endEntity
+     * @return
+     * @throws CustomCertificateSerialNumberException
+     * @throws AuthStatusException
+     * @throws InvalidAlgorithmParameterException
+     * @throws CertificateSerialNumberException
+     * @throws CryptoTokenOfflineException
+     * @throws CertificateRevokeException
+     * @throws FinderException
+     * @throws OperatorCreationException
+     * @throws AuthLoginException
+     * @throws IllegalKeyException
+     * @throws IOException
+     * @throws CertificateCreateException
+     * @throws VpnGenerationException
+     * @throws AuthorizationDeniedException
+     * @throws InvalidAlgorithmException
+     * @throws SignRequestSignatureException
+     * @throws CADoesntExistsException
+     * @throws IllegalNameException
+     * @throws CertificateException
+     * @throws IllegalValidityException
+     * @throws CAOfflineException
+     * @throws UserDoesntFullfillEndEntityProfile
+     */
+    private KeyStore createKeys(AuthenticationToken authenticationToken, EndEntityInformation endEntity)
+            throws CustomCertificateSerialNumberException, AuthStatusException, InvalidAlgorithmParameterException,
+            CertificateSerialNumberException, CryptoTokenOfflineException, CertificateRevokeException,
+            FinderException, OperatorCreationException, AuthLoginException, IllegalKeyException,
+            IOException, CertificateCreateException, VpnGenerationException, AuthorizationDeniedException,
+            InvalidAlgorithmException, SignRequestSignatureException, CADoesntExistsException, IllegalNameException,
+            CertificateException, IllegalValidityException, CAOfflineException, UserDoesntFullfillEndEntityProfile
+    {
+        final int tokentype = endEntity.getTokenType();
+        final boolean createJKS = (tokentype == SecConst.TOKEN_SOFT_JKS);
+        final boolean createPEM = (tokentype == SecConst.TOKEN_SOFT_PEM);
+
+        final VpnCertGenerator generator = new VpnCertGenerator();
+        generator.setAuthenticationToken(authenticationToken);
+        generator.setCaSession(caSession);
+        generator.setEndEntityAccessSession(endEntityAccessSession);
+        generator.setEndEntityAuthenticationSession(endEntityAuthenticationSession);
+        generator.setSignSession(signSession);
+
+        final KeyStore ks = generator.generateClient(endEntity, createJKS, createPEM, false);
+
+        // If all was OK, users status is set to GENERATED by the signsession when the user certificate is created.
+        // If status is still NEW, FAILED or KEYRECOVER though, it means we should set it back to what it was before,
+        // probably it had a request counter meaning that we should not reset the clear text password yet.
+        final EndEntityInformation vo = endEntityAccessSession.findUser(authenticationToken, endEntity.getUsername());
+        if ((vo.getStatus() == EndEntityConstants.STATUS_NEW)
+                || (vo.getStatus() == EndEntityConstants.STATUS_FAILED)
+                || (vo.getStatus() == EndEntityConstants.STATUS_KEYRECOVERY))
+        {
+            endEntityManagementSession.setClearTextPassword(authenticationToken, endEntity.getUsername(), endEntity.getPassword());
+        } else {
+            // Delete clear text password, if we are not letting status be the same as originally
+            endEntityManagementSession.setClearTextPassword(authenticationToken, endEntity.getUsername(), null);
+        }
+
+        String iMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.generateduser", endEntity.getUsername());
+        log.info(iMsg);
+
+        return ks;
+    }
+
+    /**
+     * Generates new VPN creds.
+     *
+     * @param authenticationToken auth token
+     * @param endEntity user end entity
+     * @param user VPN user DB entity
+     * @throws AuthorizationDeniedException
+     * @throws CADoesntExistsException
+     * @throws IOException
+     * @throws VpnException
+     */
+    public void newVpnCredentials(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+            throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException {
+        try {
+            final KeyStore ks = createKeys(authenticationToken, endEntity);
+            VpnUtils.addKeyStoreToUser(user, ks, VpnConfig.getKeyStorePass().toCharArray());
+
+            // Generate VPN configuration
+            final String vpnConfig = generateVpnConfig(authenticationToken, endEntity, ks);
+            user.setVpnConfig(vpnConfig);
+            user.setOtpUsed(null);
+            user.setLastMailSent(null);
+            user.setOtpDownload(VpnUtils.genRandomPwd());
+
+        } catch (AuthorizationDeniedException | CADoesntExistsException | IOException e){
+            throw e;
+        } catch(Exception e){
+            throw new VpnException("Exception in creating new VPN credentials", e);
+        }
     }
 
     /**

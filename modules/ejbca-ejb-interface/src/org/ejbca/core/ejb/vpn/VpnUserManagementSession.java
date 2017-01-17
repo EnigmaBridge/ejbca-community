@@ -19,6 +19,7 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.vpn.VpnUser;
 
 import javax.ejb.Local;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.Properties;
@@ -89,6 +90,41 @@ public interface VpnUserManagementSession {
     VpnUser saveVpnUser(AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;
 
+    /**
+     * Sends a configuration email or throws an exception
+     * @param authenticationToken auth token
+     * @param endEntity user end entity
+     * @param user VPN user DB entity
+     * @throws AuthorizationDeniedException token invalid
+     * @throws IOException generic problem with IO - email template / email sending
+     * @throws VpnMailSendException generic problem with IO - email template / email sending
+     */
+    void sendConfigurationEmail(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+            throws AuthorizationDeniedException, VpnMailSendException, IOException;
+
+    /**
+     * Generates new VPN credentials - new certificate, VPN configuration. Resets OTP state.
+     * @param authenticationToken auth token
+     * @param endEntity user end entity
+     * @param user VPN user DB entity
+     * @throws AuthorizationDeniedException token invalid
+     * @throws CADoesntExistsException invalid CA in the end entity
+     * @throws IOException IO exception in key gen / templates
+     * @throws VpnException Generic exception encapsulating many internal exceptions
+     *      (e.g., UserDoesntFullfillEndEntityProfile)
+     */
+    void newVpnCredentials(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+            throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException;
+
+    /**
+     * Generates a new VPN configuration file given the key store, user and token.
+     * @param authenticationToken auth token
+     * @param user user end entity
+     * @param ks key store
+     * @return VPN configuration
+     * @throws AuthorizationDeniedException token invalid
+     * @throws CADoesntExistsException invalid CA in the end entity
+     */
     String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation user, KeyStore ks)
             throws AuthorizationDeniedException, CADoesntExistsException;
 }
