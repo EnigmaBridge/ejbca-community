@@ -93,6 +93,7 @@ public class LanguageHelper {
         resolver.getTextTemplateModePatternSpec().addPattern(".*\\.txt");
         resolver.getTextTemplateModePatternSpec().addPattern(".*\\.ovpn");
         resolver.getTextTemplateModePatternSpec().addPattern(".*\\.pem");
+        resolver.setCheckExistence(true);
     }
 
     /**
