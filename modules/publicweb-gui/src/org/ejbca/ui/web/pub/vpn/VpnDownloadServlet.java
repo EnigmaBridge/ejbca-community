@@ -23,6 +23,7 @@ import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.ejbca.config.GlobalConfiguration;
+import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.ui.web.RequestHelper;
 
@@ -91,8 +92,7 @@ public class VpnDownloadServlet extends HttpServlet {
 
             } else {
                 String fileName = vpnUser.getEmail() + "_" + vpnUser.getDevice();
-                fileName = fileName.replaceAll("[^a-zA-Z0-9_\\-]", "_");
-                fileName = fileName.replaceAll("[_]+", "_");
+                fileName = VpnUtils.sanitizeFileName(fileName);
                 fileName += ".ovpn";
 
                 response.setContentType("application/ovpn");
