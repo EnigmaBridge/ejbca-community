@@ -317,6 +317,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final String logmsg = INTRES.getLocalizedMessage("vpn.email.config.sent", receiverAddress);
             log.info(logmsg);
 
+            // Update VpnUser record.
+            user.setLastMailSent(System.currentTimeMillis());
+
         } catch (Exception e) {
             String msg = INTRES.getLocalizedMessage("vpn.email.config.errorsend", receiverAddress);
             log.info(msg, e);
