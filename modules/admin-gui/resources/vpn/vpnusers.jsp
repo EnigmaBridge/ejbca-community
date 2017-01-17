@@ -168,10 +168,11 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<h:column>
    			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_OTP_USED}"/></f:facet>
-			<h:outputText value="#{web.text.VPNUSER_DASH}" rendered="#{vpnUserGuiInfo.otpUsed == null}"/>
 			<h:outputText id="otpUsed" value="#{vpnUserGuiInfo.otpUsed}" rendered="#{vpnUserGuiInfo.otpUsed != null}">
 				<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
 			</h:outputText>
+			<h:commandButton value="#{web.text.VPNUSER_SEND_EMAIL}" action="#{vpnUsersMBean.sendConfigEmail}"
+							 rendered="#{vpnUserGuiInfo.otpDownload != null}" />
 		</h:column>
 
 		<%--<h:column>--%>

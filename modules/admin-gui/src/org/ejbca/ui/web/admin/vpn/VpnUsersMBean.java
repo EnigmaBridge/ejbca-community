@@ -662,6 +662,27 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
     }
 
+    /** Sends configuration email to the user */
+    public void sendConfigEmail() {
+        if (vpnUserGuiList == null) {
+            return;
+        }
+
+        try {
+            final VpnUserGuiInfo current = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
+            final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, current.getId());
+            final String endEntityId = getEndEntityId(vpnUser);
+            final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, endEntityId);
+            vpnUserManagementSession.sendConfigurationEmail(authenticationToken, endEntity, vpnUser);
+
+        } catch (Exception e) {
+            final String msg = "Sending an email by administrator " + authenticationToken.toString() + " failed. ";
+            super.addNonTranslatedErrorMessage(msg);
+            log.info(msg, e);
+        }
+        flushCaches();
+    }
+
     /** @return true if admin may create new or modify existing CryptoTokens. */
     public boolean isAllowedToModify() {
         //TODO: Migrate to VPN user auth
