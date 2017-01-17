@@ -1,5 +1,6 @@
 package org.ejbca.core.ejb.vpn;
 
+import org.apache.log4j.Logger;
 import org.ejbca.config.EjbcaConfigurationHolder;
 
 import java.io.File;
@@ -12,6 +13,8 @@ import java.io.IOException;
  * Created by dusanklinec on 12.01.17.
  */
 public class VpnConfig {
+    private static final Logger log = Logger.getLogger(VpnConfig.class);
+
     public static final String CONFIG_VPN_CA = "vpn.ca";
     public static final String CONFIG_VPN_CLIENT_END_PROFILE = "vpn.client.endprofile";
     public static final String CONFIG_VPN_SERVER_END_PROFILE = "vpn.server.endprofile";
@@ -185,5 +188,25 @@ public class VpnConfig {
         }
 
         return getDefaultLangDir();
+    }
+
+    /**
+     * Returns public HTTPS web port.
+     * @return integer port number
+     */
+    public static int getPublicHttpsPort(){
+        final int DEFAULT_PORT = 8442;
+        final String portStr = EjbcaConfigurationHolder.getString("httpserver.pubhttps");
+
+        int port = DEFAULT_PORT;
+        if (portStr != null && !portStr.isEmpty()) {
+            try{
+                port = Integer.parseInt(portStr);
+            } catch(Exception e){
+                log.error("Exception in parsing port number", e);
+            }
+        }
+
+        return port;
     }
 }
