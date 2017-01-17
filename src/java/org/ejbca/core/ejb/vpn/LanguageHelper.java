@@ -111,7 +111,7 @@ public class LanguageHelper {
         // Each user we send an email to should have a language specified.
         // Then we send him localized email.
         // This could potentially break IMessageResolver as it looks for email-en-en.properties
-        if (lang != null) {
+        if (lang != null && !lang.isEmpty()) {
             final FileTemplateResolver langResolver = new FileTemplateResolver();
             setupResolver(langResolver);
             langResolver.setName("LanguageTemplates");
