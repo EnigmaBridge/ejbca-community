@@ -21,14 +21,12 @@ import org.cesecore.audit.log.SecurityEventsLoggerSessionLocal;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
-import org.cesecore.authorization.control.CryptoTokenRules;
 import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CADoesntExistsException;
 import org.cesecore.certificates.ca.CaSessionLocal;
 import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
-import org.cesecore.keys.token.*;
 import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUser;
 
@@ -45,7 +43,6 @@ import java.util.*;
 /**
  * Management session bean for VPN functionality. Top level.
  *
- * @see CryptoTokenManagementSession
  * @author ph4r05
  */
 @Stateless(mappedName = JndiConstants.APP_JNDI_PREFIX + "VpnUserManagement")
@@ -69,13 +66,13 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
     @Override
     public List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken) {
-        // TODO: auth
         final List<Integer> allVpnUsersIds = vpnUserSession.getVpnUserIds();
         final List<Integer> authorizedVpnUserIds = new ArrayList<Integer>();
         for (final Integer current : allVpnUsersIds) {
-            //if (accessControlSessionSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.VIEW.resource() + "/" + current.toString())) {
+            if (accessControlSessionSession.isAuthorizedNoLogging(authenticationToken,
+                    VpnRules.USER_VIEW.resource() + "/" + current.toString())) {
                 authorizedVpnUserIds.add(current);
-            //}
+            }
         }
         return authorizedVpnUserIds;
     }
@@ -87,7 +84,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
     @Override
     public void deleteVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
-        // TODO: auth
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_DELETE.resource() + "/" + vpnUserId)) {
+            throw new AuthorizationDeniedException();
+        }
         vpnUserSession.removeVpnUser(vpnUserId);
 
         // Audit logging
@@ -100,7 +100,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
     @Override
     public void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
-        // TODO: auth
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_REVOKE.resource() + "/" + vpnUserId)) {
+            throw new AuthorizationDeniedException();
+        }
         vpnUserSession.revokeVpnUser(vpnUserId);
 
         // Audit logging
@@ -113,7 +116,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
     @Override
     public VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
-        // TODO: auth
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_VIEW.resource() + "/" + vpnUserId)) {
+            throw new AuthorizationDeniedException();
+        }
         return vpnUserSession.getVpnUser(vpnUserId);
     }
 
@@ -143,8 +149,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             log.trace(">createVpnUser: " + user.getEmail());
         }
 
-        // TODO: auth
-        //assertAuthorizedToModifyCryptoTokens(authenticationToken);
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_NEW.resource())) {
+            throw new AuthorizationDeniedException();
+        }
 
         final Set<Integer> allVpnUsers = new HashSet<>(vpnUserSession.getVpnUserIds());
 
@@ -187,8 +195,8 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
      * @throws AuthorizationDeniedException thrown if authorization was denied.
      */
     private void assertAuthorizedToModifyVpnUsers(AuthenticationToken authenticationToken) throws AuthorizationDeniedException {
-        if (!accessControlSessionSession.isAuthorized(authenticationToken, CryptoTokenRules.MODIFY_CRYPTOTOKEN.resource())) {
-            final String msg = INTRES.getLocalizedMessage("authorization.notuathorizedtoresource", CryptoTokenRules.MODIFY_CRYPTOTOKEN.resource(),
+        if (!accessControlSessionSession.isAuthorized(authenticationToken, VpnRules.USER_MODIFY.resource())) {
+            final String msg = INTRES.getLocalizedMessage("authorization.notuathorizedtoresource", VpnRules.USER_MODIFY.resource(),
                     authenticationToken.toString());
             throw new AuthorizationDeniedException(msg);
         }
@@ -200,8 +208,11 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         if (log.isTraceEnabled()) {
             log.trace(">saveVpnUser: " + user.getEmail());
         }
-        // TODO: auth
-        // TODO: audit logging
+
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_REVOKE.resource() + "/" + user.getId())) {
+            throw new AuthorizationDeniedException();
+        }
 
         final VpnUser currentVpnUser = vpnUserSession.getVpnUser(user.getEmail(), user.getDevice());
         if(currentVpnUser == null){
@@ -233,7 +244,11 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             throws AuthorizationDeniedException, CADoesntExistsException {
 
         try {
-            // TODO: auth, logging
+            if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                    VpnRules.USER_VIEW.resource())) {
+                throw new AuthorizationDeniedException();
+            }
+            // TODO: logging
 
             final CA ca = caSession.getCA(authenticationToken, endEntity.getCAId());
             final java.security.cert.Certificate caCert = ca.getCACertificate();
