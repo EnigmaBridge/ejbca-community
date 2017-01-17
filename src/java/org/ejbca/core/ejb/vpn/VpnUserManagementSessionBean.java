@@ -36,6 +36,7 @@ import org.cesecore.jndi.JndiConstants;
 import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.config.EjbcaConfigurationHolder;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionLocal;
 import org.ejbca.core.ejb.ca.sign.SignSession;
 import org.ejbca.core.ejb.ca.sign.SignSessionLocal;
@@ -278,18 +279,31 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             throw new AuthorizationDeniedException();
         }
 
+        if (user.getOtpDownload() == null){
+            throw new VpnMailSendException("OTP is null");
+        }
+
         final String userLang = user.getUsrLang();
 
         final ResourceBundle langBundle = LanguageHelper.loadLanguageResource(userLang);
         final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine(userLang);
 
         final String receiverAddress = user.getEmail();
-        final String senderAddress = VpnConfig.getSetting(VpnConfig.CONFIG_VPN_EMAIL_FROM);
+        final String senderAddress = VpnConfig.getEmailFromAddress();
+
+        String downloadLink = null;
+        try {
+            downloadLink = genConfigDownloadLink(authenticationToken, endEntity, user);
+        } catch(CADoesntExistsException e){
+            throw new VpnMailSendException("Cannot generate the link", e);
+        }
 
         final Context ctx = new Context();
-        ctx.setLocale(LanguageHelper.getLocale(userLang));
+        final Locale userLocale = LanguageHelper.getLocale(userLang);
+        ctx.setLocale(userLocale == null ? LanguageHelper.getLocale(VpnConfig.getDefaultLanguage()) : userLocale);
         ctx.setVariable("user", user);
         ctx.setVariable("entity", endEntity);
+        ctx.setVariable("vpn_link", downloadLink);
 
         final String messageBody = templateEngine.process(VpnCons.VPN_EMAIL_TEMPLATE, ctx);
         try {
