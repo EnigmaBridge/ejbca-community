@@ -93,13 +93,13 @@ public interface VpnUserManagementSession {
     /**
      * Sends a configuration email or throws an exception
      * @param authenticationToken auth token
-     * @param endEntity user end entity
-     * @param user VPN user DB entity
+     * @param vpnUserId vpn user ID
+     * @param properties optional properties
      * @throws AuthorizationDeniedException token invalid
      * @throws IOException generic problem with IO - email template / email sending
      * @throws VpnMailSendException generic problem with IO - email template / email sending
      */
-    void sendConfigurationEmail(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+    void sendConfigurationEmail(AuthenticationToken authenticationToken, int vpnUserId, Properties properties)
             throws AuthorizationDeniedException, VpnMailSendException, IOException;
 
     /**

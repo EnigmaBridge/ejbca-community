@@ -578,8 +578,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 final VpnUser newVpnUser = vpnUserManagementSession.saveVpnUser(authenticationToken, vpnUser);
 
                 // Send email.
-                final VpnUser freshUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserGuiInfo.getId());
-                vpnUserManagementSession.sendConfigurationEmail(authenticationToken, endEntity, freshUser);
+                vpnUserManagementSession.sendConfigurationEmail(authenticationToken, vpnUserGuiInfo.getId(), null);
 
                 currentVpnUserId = newVpnUser.getId();
                 msg = "VpnUser regenerated successfully.";
@@ -670,10 +669,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         try {
             final VpnUserGuiInfo current = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
-            final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, current.getId());
-            final String endEntityId = getEndEntityId(vpnUser);
-            final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, endEntityId);
-            vpnUserManagementSession.sendConfigurationEmail(authenticationToken, endEntity, vpnUser);
+            vpnUserManagementSession.sendConfigurationEmail(authenticationToken, current.getId(), null);
 
         } catch (Exception e) {
             final String msg = "Sending an email by administrator " + authenticationToken.toString() + " failed. ";
@@ -802,8 +798,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Send email.
                 if (getCurrentVpnUser().isSendConfigEmail()) {
-                    final VpnUser freshUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUser.getId());
-                    vpnUserManagementSession.sendConfigurationEmail(authenticationToken, uservo, freshUser);
+                    vpnUserManagementSession.sendConfigurationEmail(authenticationToken, vpnUser.getId(), null);
                 }
 
                 currentVpnUserId = newVpnUser.getId();

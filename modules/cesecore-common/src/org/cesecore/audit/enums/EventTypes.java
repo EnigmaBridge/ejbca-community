@@ -146,6 +146,7 @@ public enum EventTypes implements EventType {
     VPN_USER_DELETE,
     VPN_USER_REGENERATE,
     VPN_OTP_DOWNLOADED,
+    VPN_MAIL_SENT,
     ;
 
     @Override

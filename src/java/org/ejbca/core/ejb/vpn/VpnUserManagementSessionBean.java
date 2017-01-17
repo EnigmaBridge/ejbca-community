@@ -271,13 +271,17 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     /**
      * Send email with configuration.
      */
-    public void sendConfigurationEmail(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+    public void sendConfigurationEmail(AuthenticationToken authenticationToken, int vpnUserId, Properties properties)
             throws AuthorizationDeniedException, VpnMailSendException, IOException {
 
         if (!accessControlSessionSession.isAuthorized(authenticationToken,
-                VpnRules.USER_MAIL.resource() + "/" + user.getId())) {
+                VpnRules.USER_MAIL.resource() + "/" + vpnUserId)) {
             throw new AuthorizationDeniedException();
         }
+
+        final VpnUser user = vpnUserSession.getVpnUser(vpnUserId);
+        final String userName = VpnUtils.getUserName(user);
+        final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, userName);
 
         if (user.getOtpDownload() == null){
             throw new VpnMailSendException("OTP is null");
@@ -319,6 +323,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             // Update VpnUser record.
             user.setLastMailSent(System.currentTimeMillis());
+
+            // Audit logging
+            final Map<String, Object> details = new LinkedHashMap<String, Object>();
+            details.put("msg", "VPNUser mail sent");
+            details.put("id", vpnUserId);
+            details.put("email", receiverAddress);
+            details.put("device", user.getDevice());
+            securityEventsLoggerSession.log(EventTypes.VPN_MAIL_SENT, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                    authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
 
         } catch (Exception e) {
             String msg = INTRES.getLocalizedMessage("vpn.email.config.errorsend", receiverAddress);
