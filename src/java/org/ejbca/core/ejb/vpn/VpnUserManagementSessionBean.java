@@ -312,6 +312,32 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     }
 
     /**
+     * Generates VPN download link for the user to download the configuration.
+     *
+     * @param authenticationToken
+     * @param endEntity
+     * @param user
+     * @return
+     * @throws AuthorizationDeniedException
+     * @throws CADoesntExistsException
+     */
+    private String genConfigDownloadLink(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+            throws AuthorizationDeniedException, CADoesntExistsException
+    {
+        if (user.getOtpDownload() == null){
+            throw new IllegalStateException("OTP is empty, cannot generate the link");
+        }
+
+        final int port = VpnConfig.getPublicHttpsPort();
+        final CA ca = caSession.getCA(authenticationToken, endEntity.getCAId());
+        final java.security.cert.Certificate caCert = ca.getCACertificate();
+        final String hostname = VpnUtils.extractCN(caCert);
+
+        return String.format("https://%s:%d/ejbca/vpn/getvpn?id=%d&otp=%s",
+                hostname, port, user.getId(), user.getOtpDownload());
+    }
+
+    /**
      * Creates a new key store with valid private key and certificate signed by the user's CA.
      *
      * @param authenticationToken
@@ -435,8 +461,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             final CA ca = caSession.getCA(authenticationToken, endEntity.getCAId());
             final java.security.cert.Certificate caCert = ca.getCACertificate();
-            final String caCertDN = CertTools.getSubjectDN(caCert);
-            final String hostname = CertTools.getPartFromDN(caCertDN, "CN");
+            final String hostname = VpnUtils.extractCN(caCert);
             final String caCertPem = VpnUtils.certificateToPem(caCert).trim();
 
             final Certificate cert = ks.getCertificate(endEntity.getUsername());
