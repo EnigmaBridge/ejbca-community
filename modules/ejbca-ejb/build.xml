@@ -326,6 +326,7 @@
 		<include name="org/ejbca/core/ejb/vpn/P12toPEM.java"/>
 		<include name="org/ejbca/core/ejb/vpn/LanguageHelper.java"/>
 		<include name="org/ejbca/core/ejb/vpn/AuthenticationTokenProvider.java"/>
+		<include name="org/ejbca/core/ejb/vpn/VpnBaseHelper.java"/>
 	</fileset>
 	<pathconvert refid="source.fileset.ejbca-util" pathsep=" " property="source.fileset.ejbca-util.files">
 		<map from="${src.dir}/" to=""/>

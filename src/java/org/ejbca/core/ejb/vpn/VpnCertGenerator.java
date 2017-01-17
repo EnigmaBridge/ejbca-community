@@ -40,30 +40,13 @@ import java.security.spec.InvalidKeySpecException;
  * @author ph4r05
  * Created by dusanklinec on 12.01.17.
  */
-public class VpnCertGenerator {
+public class VpnCertGenerator extends VpnBaseHelper {
     private static final Logger log = Logger.getLogger(VpnCertGenerator.class);
-
-    private AuthenticationToken authenticationToken;
-    private AuthenticationTokenProvider authenticationTokenProvider;
-    private boolean fetchRemoteSessions = true;
 
     private CaSession caSession;
     private EndEntityAccessSession endEntityAccessSession;
     private EndEntityAuthenticationSession endEntityAuthenticationSession;
     private SignSession signSession;
-
-    /**
-     * Returns auth token. If provider is registered, provider is used.
-     * Otherwise static token is returned.
-     * @return auth token
-     */
-    private AuthenticationToken getAuthToken(){
-        if (authenticationTokenProvider != null){
-            return authenticationTokenProvider.getAuthenticationToken();
-        }
-
-        return authenticationToken;
-    }
 
     /**
      * Recovers or generates new keys for the user and generates keystore.
@@ -219,20 +202,14 @@ public class VpnCertGenerator {
         return ks;
     }
 
-    public AuthenticationToken getAuthenticationToken() {
-        return authenticationToken;
-    }
-
-    public void setAuthenticationToken(AuthenticationToken authenticationToken) {
-        this.authenticationToken = authenticationToken;
-    }
+    // Getters / setters.
 
     public CaSession getCaSession() {
         if (caSession != null || !fetchRemoteSessions) {
             return caSession;
         }
 
-        return EjbRemoteHelper.INSTANCE.getRemoteSession(CaSessionRemote.class);
+        return getRemoteSession(CaSessionRemote.class);
     }
 
     public void setCaSession(CaSession caSession) {
@@ -244,7 +221,7 @@ public class VpnCertGenerator {
             return endEntityAccessSession;
         }
 
-        return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAccessSessionRemote.class);
+        return getRemoteSession(EndEntityAccessSessionRemote.class);
     }
 
     public void setEndEntityAccessSession(EndEntityAccessSession endEntityAccessSession) {
@@ -256,7 +233,7 @@ public class VpnCertGenerator {
             return endEntityAuthenticationSession;
         }
 
-        return EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAuthenticationSessionRemote.class);
+        return getRemoteSession(EndEntityAuthenticationSessionRemote.class);
     }
 
     public void setEndEntityAuthenticationSession(EndEntityAuthenticationSession endEntityAuthenticationSession) {
@@ -268,7 +245,7 @@ public class VpnCertGenerator {
             return signSession;
         }
 
-        return EjbRemoteHelper.INSTANCE.getRemoteSession(SignSessionRemote.class);
+        return getRemoteSession(SignSessionRemote.class);
     }
 
     public void setSignSession(SignSession signSession) {
@@ -283,11 +260,4 @@ public class VpnCertGenerator {
         this.fetchRemoteSessions = fetchRemoteSessions;
     }
 
-    public AuthenticationTokenProvider getAuthenticationTokenProvider() {
-        return authenticationTokenProvider;
-    }
-
-    public void setAuthenticationTokenProvider(AuthenticationTokenProvider authenticationTokenProvider) {
-        this.authenticationTokenProvider = authenticationTokenProvider;
-    }
 }
