@@ -29,6 +29,9 @@ import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.util.mail.MailSender;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -239,6 +242,16 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         return user;
     }
 
+    /**
+     * Generates VPN configuration.
+     *
+     * @param authenticationToken
+     * @param endEntity
+     * @param ks
+     * @return
+     * @throws AuthorizationDeniedException
+     * @throws CADoesntExistsException
+     */
     @Override
     public String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation endEntity, KeyStore ks)
             throws AuthorizationDeniedException, CADoesntExistsException {
@@ -266,31 +279,17 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final Key key = ks.getKey(endEntity.getUsername(), null);
             final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key);
 
-            // TODO: refactor to templates / settings / configuration builder
-            final String ovpnTemplate="client\n" +
-                    "dev tun\n" +
-                    "proto udp\n" +
-                    "remote %s 1194\n" +
-                    "resolv-retry infinite\n" +
-                    "nobind\n" +
-                    "persist-key\n" +
-                    "persist-tun\n" +
-                    "comp-lzo\n" +
-                    "verb 3\n" +
-                    "<ca>\n" +
-                    "%s" +
-                    "</ca>\n" +
-                    "<cert>\n" +
-                    "%s" +
-                    "</cert>\n" +
-                    "<key>\n" +
-                    "%s" +
-                    "</key>\n" +
-                    "\n";
+            final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine();
+            final Context ctx = new Context();
+            ctx.setVariable("vpnhost", hostname);
+            ctx.setVariable("entity", endEntity);
+            ctx.setVariable("vpn_ca", caCertPem);
+            ctx.setVariable("vpn_cert", certPem);
+            ctx.setVariable("vpn_key", keyPem);
 
-            return String.format(ovpnTemplate, hostname, caCertPem, certPem, keyPem);
+            final String tpl = templateEngine.process(VpnCons.VPN_CONFIG_TEMPLATE, ctx);
+            return tpl;
 
-            // TODO: exception handling
         } catch (UnsupportedEncodingException e) {
             log.error("Unsupported encoding in VPN config generation", e);
         } catch (KeyStoreException e) {
