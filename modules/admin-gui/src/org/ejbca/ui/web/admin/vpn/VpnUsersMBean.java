@@ -397,9 +397,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     @SuppressWarnings("rawtypes") //JDK6 does not support typing for ListDataModel
     private ListDataModel vpnUserGuiList = null;
 
-    @SuppressWarnings("rawtypes") //JDK6 does not support typing for ListDataModel
-    private ListDataModel keyPairGuiList = null;
-    private String keyPairGuiListError = null;
     private Integer currentVpnUserId = null;
     private CurrentVpnUserGuiInfo currentVpnUser = null;
     private boolean currentVpnUserEditMode = true;  // currentVpnUserId==0 from start
@@ -410,12 +407,10 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private final EndEntityManagementSession endEntityManagementSession = getEjbcaWebBean().getEjb().getEndEntityManagementSession();
     private final EndEntityAccessSession endEntityAccessSession = getEjbcaWebBean().getEjb().getEndEntityAccessSession();
     private final EndEntityAuthenticationSession endEntityAuthenticationSession = getEjbcaWebBean().getEjb().getEndEntityAuthenticationSession();
-    private final SignSession signSession = getEjbcaWebBean().getEjb().getSignSession();
 
     private final AccessControlSessionLocal accessControlSession = getEjbcaWebBean().getEjb().getAccessControlSession();
     private final AuthenticationToken authenticationToken = getAdmin();
     private final CaSessionLocal caSession = getEjbcaWebBean().getEjb().getCaSession();
-    private final InternalKeyBindingMgmtSessionLocal internalKeyBindingMgmtSession = getEjbcaWebBean().getEjb().getInternalKeyBindingMgmtSession();
 
     /**
      * Registration Authority bean
@@ -436,7 +431,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     
     /** Force reload from underlying (cache) layer for the current CryptoToken and its list of key pairs */
     private void flushCurrent() {
-        keyPairGuiList = null;
         currentVpnUser = null;
     }
 
