@@ -30,13 +30,18 @@ import java.util.Properties;
  */
 @Local
 public interface VpnUserManagementSession {
-    /** @return a list of IDs for VpnUsers that the caller is authorized to view */
+    /**
+     * Fetches list of VPN users.
+     *
+     * @param authenticationToken auth token
+     * @return a list of IDs for VpnUsers that the caller is authorized to view
+     */
     List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken);
 
     /**
      * Returns end entity user name generated from the VPN record.
-     * @param user
-     * @return
+     * @param user VPN user entity
+     * @return unique VPN user identifier (email + device).
      */
     String getUserName(VpnUser user);
 
@@ -50,18 +55,18 @@ public interface VpnUserManagementSession {
 
     /**
      * Revokes the VPN user - deletes all certificate related data from the VPN DB.
-     * @param authenticationToken
-     * @param vpnUserId
-     * @throws AuthorizationDeniedException
+     * @param authenticationToken auth token
+     * @param vpnUserId VPN user id
+     * @throws AuthorizationDeniedException token invalid
      */
     void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
     /**
      * Loads VpnUser from the database using ID.
-     * @param authenticationToken
-     * @param vpnUserId
-     * @return
-     * @throws AuthorizationDeniedException
+     * @param authenticationToken auth token
+     * @param vpnUserId VPN user id
+     * @return VPN user
+     * @throws AuthorizationDeniedException token invalid
      */
     VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
@@ -69,11 +74,11 @@ public interface VpnUserManagementSession {
      * Loads VpnUser via OTP token. If token matches, user is returned
      * and VPN config is removed from database.
      *
-     * @param authenticationToken
-     * @param vpnUserId
-     * @param otpToken
-     * @return
-     * @throws AuthorizationDeniedException
+     * @param authenticationToken auth token
+     * @param vpnUserId VPN user id
+     * @param otpToken OTP token
+     * @return vpn user
+     * @throws AuthorizationDeniedException token invalid
      */
     VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties)
             throws AuthorizationDeniedException;
