@@ -1,0 +1,24 @@
+client
+dev tun
+proto udp
+
+remote [[${vpnhost}]] 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+comp-lzo
+verb 3
+
+cipher AES-256-CBC
+keepalive 5 60
+
+<ca>
+[[${vpn_ca}]]
+</ca>
+<cert>
+[[${vpn_cert}]]
+</cert>
+<key>
+[[${vpn_key}]]
+</key>
