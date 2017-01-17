@@ -181,4 +181,14 @@ public class VpnUtils {
         return properties;
     }
 
+    /**
+     * Extracts CN from the DN of the certificate.
+     * @param certificate certificate to extract CN from
+     * @return CN from DN from the certificate
+     */
+    public static String extractCN(Certificate certificate){
+        final String certDn = CertTools.getSubjectDN(certificate);
+        return CertTools.getPartFromDN(certDn, "CN");
+    }
+
 }
