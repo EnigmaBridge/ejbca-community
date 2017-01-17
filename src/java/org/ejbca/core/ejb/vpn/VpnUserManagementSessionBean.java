@@ -267,7 +267,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final java.security.cert.Certificate caCert = ca.getCACertificate();
             final String caCertDN = CertTools.getSubjectDN(caCert);
             final String hostname = CertTools.getPartFromDN(caCertDN, "CN");
-            final String caCertPem = VpnUtils.certificateToPem(caCert);
+            final String caCertPem = VpnUtils.certificateToPem(caCert).trim();
 
             final Certificate cert = ks.getCertificate(endEntity.getUsername());
             if (cert == null){
@@ -275,9 +275,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
                 return null;
             }
 
-            final String certPem = VpnUtils.certificateToPem(cert);
+            final String certPem = VpnUtils.certificateToPem(cert).trim();
             final Key key = ks.getKey(endEntity.getUsername(), null);
-            final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key);
+            final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key).trim();
 
             final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine();
             final Context ctx = new Context();
