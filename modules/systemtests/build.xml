@@ -92,6 +92,7 @@
 		<path refid="lib.batik.classpath" />
 		<path refid="lib.xmlsec.classpath" />
 		<path refid="lib.jee.classpath" />
+		<path refid="lib.thymeleaf.classpath" />
 		<path refid="lib.ejbca-common-web.classpath" />
 		<pathelement location="${mod.ejbca-ejb.lib}"/>
 		<pathelement location="${mod.ejbca-util.lib}"/>

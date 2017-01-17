@@ -488,6 +488,7 @@
                 <include name="json-simple-*.jar" />
             </zipfileset>
             <zipfileset prefix="lib" dir="${lib}/batik" includes="*.jar" excludes="${bundle-xerces-exclude}"/>
+            <zipfileset prefix="lib" dir="${lib}/thymeleaf" includes="*.jar" excludes="${bundle-xerces-exclude}"/>
             <zipfileset prefix="lib" dir="${lib}/xmlsign" includes="*.jar" excludes="${bundle-xalan-exclude},${bundle-serializer-exclude}"/>	<!-- XKMS -->
             <fileset dir="${dist.dir}" includes="doc.war"/>
             <fileset dir="${ejbca.home}/modules/dist">
