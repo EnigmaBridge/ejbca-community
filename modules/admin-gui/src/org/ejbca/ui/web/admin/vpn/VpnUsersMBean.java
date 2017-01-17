@@ -589,15 +589,15 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 currentVpnUserId = newVpnUser.getId();
                 msg = "VpnUser regenerated successfully.";
-
-                flushCaches();
             }
+
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
         } catch (VpnUserNameInUseException | IOException | VpnMailSendException e) {
             msg = e.getMessage();
         }
 
+        flushCaches();
         if (msg != null) {
             log.info("Message displayed to user: " + msg);
             super.addNonTranslatedErrorMessage(msg);
@@ -622,13 +622,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Delete VPN related crypto info
                 vpnUserManagementSession.revokeVpnUser(authenticationToken, vpnUserGuiInfo.getId());
-
-                flushCaches();
             }
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
         }
 
+        flushCaches();
         if (msg != null) {
             log.info("Message displayed to user: " + msg);
             super.addNonTranslatedErrorMessage(msg);
@@ -657,12 +656,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Delete VpnUser record itself
                 vpnUserManagementSession.deleteVpnUser(authenticationToken, vpnUserGuiInfo.getId());
-                flushCaches();
             }
         } catch (ApprovalException | WaitingForApprovalException | RemoveException e) {
             msg = e.getMessage();
         }
 
+        flushCaches();
         if (msg != null) {
             log.info("Message displayed to user: " + msg);
             super.addNonTranslatedErrorMessage(msg);
@@ -800,7 +799,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 msg = "VpnUser saved successfully.";
             }
 
-            flushCaches();
             setCurrentVpnUserEditMode(false);
 
         } catch (AuthorizationDeniedException e) {
@@ -812,6 +810,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             log.info("General exception in saving the user", e);
         }
 
+        flushCaches();
         if (msg != null) {
             log.info("Message displayed to user: " + msg);
             super.addNonTranslatedErrorMessage(msg);
