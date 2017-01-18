@@ -470,8 +470,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             VpnUtils.addKeyStoreToUser(user, ks, VpnConfig.getKeyStorePass().toCharArray());
 
             // Generate VPN configuration
-            final String vpnConfig = generateVpnConfig(authenticationToken, endEntity, user, ks);
-            user.setVpnConfig(vpnConfig);
             user.setOtpUsed(null);
             user.setLastMailSent(null);
             user.setOtpDownload(VpnUtils.genRandomPwd());
@@ -479,6 +477,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             final Integer prevVersion = user.getConfigVersion();
             user.setConfigVersion(prevVersion == null ? 1 : prevVersion + 1);
+
+            final String vpnConfig = generateVpnConfig(authenticationToken, endEntity, user, ks);
+            user.setVpnConfig(vpnConfig);
+
             final VpnUser mergedUser = vpnUserSession.mergeVpnUser(user);
 
             // Audit logging
@@ -539,7 +541,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             ctx.setVariable("vpn_ca", caCertPem);
             ctx.setVariable("vpn_cert", certPem);
             ctx.setVariable("vpn_key", keyPem);
-            ctx.setVariable("generated_time", new Date());
+            ctx.setVariable("generated_time", new Date(user.getConfigGenerated()));
 
             final String tpl = templateEngine.process(VpnCons.VPN_CONFIG_TEMPLATE, ctx);
             return tpl;
