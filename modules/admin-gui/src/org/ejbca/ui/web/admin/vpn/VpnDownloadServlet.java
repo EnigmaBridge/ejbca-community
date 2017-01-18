@@ -62,39 +62,10 @@ public class VpnDownloadServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace(">doGet()");
         try {
-            final String otp = request.getParameter("otp");
-            final String vpnUserIdTxt = request.getParameter("id");
-            final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
-
-            final Properties properties = new Properties();
-            final String xFwded = request.getHeader("X-Forwarded-For");
-            final String ip = request.getRemoteAddr();
-            final String sourceAddr = ip + ";" + xFwded;
-            final String ua = request.getHeader("User-Agent");
-            properties.setProperty("ip", ip+"");
-            properties.setProperty("fwded", xFwded+"");
-            properties.setProperty("ua", ua+"");
-
-            final VpnUser vpnUser = vpnUserManagementSession.downloadOtp(alwaysAllowAuthenticationToken, vpnUserId, otp, properties);
-            if (vpnUser == null){
-                // TODO: redirect to some nice looking page explaining what happened.
-                log.info(String.format("OTP auth failed with ID: %d, OTP[%s], src: %s, ua: %s", vpnUserId, otp, sourceAddr, ua));
-                response.setStatus(404);
-
-            } else {
-                String fileName = vpnUser.getEmail() + "_" + vpnUser.getDevice();
-                fileName = fileName.replaceAll("[^a-zA-Z0-9_\\-]", "_");
-                fileName = fileName.replaceAll("[_]+", "_");
-                fileName += ".ovpn";
-
-                response.setContentType("application/ovpn");
-                response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
-                response.getOutputStream().write(vpnUser.getVpnConfig().getBytes("UTF-8"));
-            }
-
+            response.setStatus(500);
             response.flushBuffer();
 
-        } catch (AuthorizationDeniedException e) {
+        } catch (Exception e) {
             throw new ServletException(e);
         }
         log.trace("<doGet()");
