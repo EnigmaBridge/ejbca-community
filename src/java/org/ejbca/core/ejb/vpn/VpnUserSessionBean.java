@@ -121,17 +121,14 @@ public class VpnUserSessionBean implements VpnUserSession {
                 throw new VpnUserNameInUseException(intres.getLocalizedMessage("token.nameisinuse", vpnUserId));
             }
 
-            vpnUserObj = new VpnUser(vpnUserEmail, vpnUserDevice);
-            vpnUserObj.setId(vpnUser.getId());
-            vpnUserObj.setDateCreated(lastUpdate);
-            vpnUserObj.setDateModified(lastUpdate);
-            vpnUserObj.setRevokedStatus(vpnUser.getRevokedStatus());
-            vpnUserObj.setCertificateId(vpnUser.getCertificateId());
-            vpnUserObj.setCertificate(vpnUser.getCertificate());
-            vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
-            vpnUserObj.setOtpUsed(vpnUser.getOtpUsed());
-            vpnUserObj.setKeyStore(vpnUser.getKeyStore());
-            vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
+            // Simple clone
+            try {
+                vpnUserObj = VpnUser.copy(vpnUser);
+            } catch (CloneNotSupportedException e) {
+                log.error("Clone exception", e);
+                throw new RuntimeException("Unexpected clone exception", e);
+            }
+
         } else {
             // It might be the case that the calling transaction has already loaded a reference to this vpn user
             // and hence we need to get the same one and perform updates on this object instead of trying to
@@ -144,6 +141,9 @@ public class VpnUserSessionBean implements VpnUserSession {
             vpnUserObj.setOtpUsed(vpnUser.getOtpUsed());
             vpnUserObj.setKeyStore(vpnUser.getKeyStore());
             vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
+            vpnUserObj.setLastMailSent(vpnUser.getLastMailSent());
+            vpnUserObj.setUsrLang(vpnUser.getUsrLang());
+            vpnUserObj.setConfigVersion(vpnUser.getConfigVersion());
         }
 
         vpnUserObj = createOrUpdateVpnUser(vpnUserObj);
