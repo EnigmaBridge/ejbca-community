@@ -455,11 +455,14 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             VpnUtils.addKeyStoreToUser(user, ks, VpnConfig.getKeyStorePass().toCharArray());
 
             // Generate VPN configuration
-            final String vpnConfig = generateVpnConfig(authenticationToken, endEntity, ks);
+            final String vpnConfig = generateVpnConfig(authenticationToken, endEntity, user, ks);
             user.setVpnConfig(vpnConfig);
             user.setOtpUsed(null);
             user.setLastMailSent(null);
             user.setOtpDownload(VpnUtils.genRandomPwd());
+
+            final Integer prevVersion = user.getConfigVersion();
+            user.setConfigVersion(prevVersion == null ? 1 : prevVersion + 1);
 
         } catch (AuthorizationDeniedException | CADoesntExistsException | IOException e){
             throw e;
@@ -469,16 +472,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     }
 
     /**
-     * Generates VPN configuration.
-     *
-     * @param authenticationToken
-     * @param endEntity
-     * @param ks
-     * @return
-     * @throws AuthorizationDeniedException
-     * @throws CADoesntExistsException
+     * Generates a new VPN configuration file given the key store, user and token.
+     * @param authenticationToken auth token
+     * @param user user end entity
+     * @param ks key store
+     * @return VPN configuration
+     * @throws AuthorizationDeniedException token invalid
+     * @throws CADoesntExistsException invalid CA in the end entity
      */
-    public String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation endEntity, KeyStore ks)
+    private String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user, KeyStore ks)
             throws AuthorizationDeniedException, CADoesntExistsException {
 
         try {
