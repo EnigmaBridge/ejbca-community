@@ -209,9 +209,12 @@ public class VpnUserSessionBean implements VpnUserSession {
     @Override
 
     public boolean isVpnUserNameUsed(final String email, final String device) {
-        final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE a.email=:email AND a.device=:device");
-        query.setParameter("email", email);
-        query.setParameter("device", device);
+        final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE " +
+                "LOWER(a.email)=:email AND LOWER(a.device)=:device");
+        final String qEmail = email == null ? "" : email.trim().toLowerCase();
+        final String qDevice = device == null ? "" : device.trim().toLowerCase();
+        query.setParameter("email", qEmail);
+        query.setParameter("device", qDevice);
         return !query.getResultList().isEmpty();
     }
 
