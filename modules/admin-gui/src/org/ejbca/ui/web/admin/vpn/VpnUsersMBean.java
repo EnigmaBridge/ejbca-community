@@ -788,8 +788,13 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             final String name = StringTools.stripUsername(getCurrentVpnUser().getName());
             final String email = getCurrentVpnUser().getEmail();
             final VpnUser vpnUser = fromGuiUser(getCurrentVpnUser());
+
             if (!VpnUtils.isEmailValid(email)){
-                throw new IllegalArgumentException("Invalid email");
+                throw new IllegalArgumentException("Invalid email"); //TODO: localised message
+            }
+
+            if (!vpnUserManagementSession.isUsernameAvailable(authenticationToken, vpnUser)){
+                throw new IllegalArgumentException("Name already taken"); //TODO: localised message
             }
 
             if (getCurrentVpnUserId() == null) {
@@ -820,7 +825,15 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 endEntityManagementSession.addUser(authenticationToken, uservo, false);
 
                 // Create user itself
-                VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
+                VpnUser newVpnUser = null;
+                try {
+                    newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
+
+                } catch(Exception e){
+                    endEntityManagementSession.revokeAndDeleteUser(authenticationToken, uservo.getUsername(), 0);
+                    throw new Exception("Exception in creating a new VPN user", e);
+                }
+
                 try {
                     // Create certificate
                     newVpnUser = generateKeyAndConfig(newVpnUser.getId(), Optional.ofNullable(uservo.getPassword()));
