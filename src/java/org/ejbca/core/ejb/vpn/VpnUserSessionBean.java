@@ -118,7 +118,7 @@ public class VpnUserSessionBean implements VpnUserSession {
         if (vpnUserObj == null) {
             // The vpnUser does not exist in the database, before we add it we want to check that the name is not in use
             if (isVpnUserNameUsed(vpnUserEmail, vpnUserDevice)) {
-                throw new VpnUserNameInUseException(intres.getLocalizedMessage("token.nameisinuse", vpnUserId));
+                throw new VpnUserNameInUseException(intres.getLocalizedMessage("vpn.nameisinuse", vpnUserId));
             }
 
             // Simple clone
