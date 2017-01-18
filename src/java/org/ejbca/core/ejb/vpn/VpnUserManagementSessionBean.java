@@ -478,7 +478,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
      * @throws AuthorizationDeniedException
      * @throws CADoesntExistsException
      */
-    @Override
     public String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation endEntity, KeyStore ks)
             throws AuthorizationDeniedException, CADoesntExistsException {
 

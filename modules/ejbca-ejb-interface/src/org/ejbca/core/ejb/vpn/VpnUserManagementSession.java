@@ -115,16 +115,4 @@ public interface VpnUserManagementSession {
      */
     void newVpnCredentials(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException;
-
-    /**
-     * Generates a new VPN configuration file given the key store, user and token.
-     * @param authenticationToken auth token
-     * @param user user end entity
-     * @param ks key store
-     * @return VPN configuration
-     * @throws AuthorizationDeniedException token invalid
-     * @throws CADoesntExistsException invalid CA in the end entity
-     */
-    String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation user, KeyStore ks)
-            throws AuthorizationDeniedException, CADoesntExistsException;
 }
