@@ -117,12 +117,15 @@ public class VpnUser implements Serializable, Cloneable {
     /**
      * Makes a shallow copy of the source vpn user.
      * @param src
-     * @return
-     * @throws CloneNotSupportedException
+     * @return VpnUser, not connected to the persistence context.
      */
-    public static VpnUser copy(VpnUser src) throws CloneNotSupportedException {
-        final VpnUser vpnUser = (VpnUser) src.clone();
-        return vpnUser;
+    public static VpnUser copy(VpnUser src) {
+        try {
+            final VpnUser vpnUser = (VpnUser) src.clone();
+            return vpnUser;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Unexpected clone exception", e);
+        }
     }
 
     public int getRowVersion() {

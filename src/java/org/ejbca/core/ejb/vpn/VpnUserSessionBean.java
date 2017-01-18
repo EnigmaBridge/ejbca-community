@@ -122,12 +122,7 @@ public class VpnUserSessionBean implements VpnUserSession {
             }
 
             // Simple clone
-            try {
-                vpnUserObj = VpnUser.copy(vpnUser);
-            } catch (CloneNotSupportedException e) {
-                log.error("Clone exception", e);
-                throw new RuntimeException("Unexpected clone exception", e);
-            }
+            vpnUserObj = VpnUser.copy(vpnUser);
 
         } else {
             // It might be the case that the calling transaction has already loaded a reference to this vpn user
@@ -192,13 +187,7 @@ public class VpnUserSessionBean implements VpnUserSession {
         }
 
         // Copy, detach from the persistence context
-        VpnUser userCopy = null;
-        try {
-            userCopy = VpnUser.copy(vpnUser);
-        } catch (CloneNotSupportedException e) {
-            log.error("Clone not supported for VpnUser", e);
-            return null;
-        }
+        final VpnUser userCopy = VpnUser.copy(vpnUser);
 
         // save config, update db (reset config)
         vpnUser.setDateModified(System.currentTimeMillis());
