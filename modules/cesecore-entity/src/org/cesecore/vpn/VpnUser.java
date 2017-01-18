@@ -64,6 +64,11 @@ public class VpnUser implements Serializable, Cloneable {
     private String keyStore;
     private String vpnConfig;
 
+    /**
+     * VPN config version sequence number.
+     */
+    private Integer configVersion=1;
+
     public VpnUser() {
     }
 
@@ -72,12 +77,13 @@ public class VpnUser implements Serializable, Cloneable {
         this.device = device;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, int configVersion) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
         this.email = email;
         this.device = device;
+        this.usrLang = usrLang;
         this.dateCreated = dateCreated;
         this.dateModified = dateModified;
         this.revokedStatus = revokedStatus;
@@ -88,6 +94,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.certificate = certificate;
         this.keyStore = keyStore;
         this.vpnConfig = vpnConfig;
+        this.configVersion = configVersion;
     }
 
     @Override
@@ -232,5 +239,13 @@ public class VpnUser implements Serializable, Cloneable {
 
     public void setUsrLang(String language) {
         this.usrLang = language;
+    }
+
+    public Integer getConfigVersion() {
+        return configVersion;
+    }
+
+    public void setConfigVersion(Integer configVersion) {
+        this.configVersion = configVersion;
     }
 }

@@ -419,6 +419,7 @@
             <basic fetch="EAGER" name="keyStore"><column name="keyStore" column-definition="LONGTEXT"/></basic>
             <basic fetch="EAGER" name="vpnConfig"><column name="vpnConfig" column-definition="LONGTEXT"/></basic>
             <basic fetch="EAGER" name="usrLang"><column name="usrLang" column-definition="VARCHAR(16)"/></basic>
+            <basic fetch="EAGER" name="configVersion"><column name="configVersion" column-definition="INTEGER"/></basic>
             <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="VARCHAR"/><lob/></basic>
             <version name="rowVersion"><column name="rowVersion" column-definition="INTEGER" nullable="false"/></version>
         </attributes>
