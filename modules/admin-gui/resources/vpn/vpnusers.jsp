@@ -228,6 +228,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<br/>
 
 	<h:panelGroup>
+		<h:commandButton value="#{web.text.VPNUSER_REFRESH}" action="#{vpnUsersMBean.refreshPage}"/>
+
 		<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
 						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_DELETE}')"/>
 

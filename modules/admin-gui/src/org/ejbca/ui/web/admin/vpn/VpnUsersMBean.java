@@ -528,6 +528,11 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return vpnUserGuiList;
     }
 
+    /** Flushes caches, reloads the page */
+    public void refreshPage() {
+        flushCaches();
+    }
+
     /** Invoked when admin requests a new VpnUser credentials, revoking the old ones. */
     public void regenerateVpnUsers() throws AuthorizationDeniedException {
         if (vpnUserGuiList == null) {
