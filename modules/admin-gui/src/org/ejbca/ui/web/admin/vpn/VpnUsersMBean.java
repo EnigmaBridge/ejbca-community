@@ -679,16 +679,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         flushCaches();
     }
 
-    /** @return true if admin may create new or modify existing CryptoTokens. */
+    /** @return true if admin may create new or modify existing VpnUsers. */
     public boolean isAllowedToModify() {
-        //TODO: Migrate to VPN user auth
-        return accessControlSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.MODIFY_CRYPTOTOKEN.resource());
+        return accessControlSession.isAuthorizedNoLogging(authenticationToken, VpnRules.USER_MODIFY.resource());
     }
     
-    /** @return true if admin may delete CryptoTokens. */
+    /** @return true if admin may delete VpnUsers. */
     public boolean isAllowedToDelete() {
-        //TODO: Migrate to VPN user auth
-        return accessControlSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.DELETE_CRYPTOTOKEN.resource());
+        return accessControlSession.isAuthorizedNoLogging(authenticationToken, VpnRules.USER_DELETE.resource());
     }
 
     private VpnUser fromGuiUser(CurrentVpnUserGuiInfo guiUser){
