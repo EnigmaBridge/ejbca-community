@@ -324,6 +324,7 @@
 		<include name="org/ejbca/core/ejb/vpn/VpnUtils.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnConfig.java"/>
 		<include name="org/ejbca/core/ejb/vpn/P12toPEM.java"/>
+		<include name="org/ejbca/core/ejb/vpn/Optional.java"/>
 		<include name="org/ejbca/core/ejb/vpn/LanguageHelper.java"/>
 		<include name="org/ejbca/core/ejb/vpn/AuthenticationTokenProvider.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnBaseHelper.java"/>
