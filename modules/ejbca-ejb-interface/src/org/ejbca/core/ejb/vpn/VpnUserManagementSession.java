@@ -108,6 +108,7 @@ public interface VpnUserManagementSession {
      *
      * @param authenticationToken auth token
      * @param vpnUserId user entity ID
+     * @param password password to use, optional. If not set, the one from entity is used.
      * @param properties optional properties
      * @throws AuthorizationDeniedException token invalid
      * @throws CADoesntExistsException invalid CA in the end entity
@@ -115,6 +116,6 @@ public interface VpnUserManagementSession {
      * @throws VpnException Generic exception encapsulating many internal exceptions
      *      (e.g., UserDoesntFullfillEndEntityProfile)
      */
-    VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Properties properties)
+    VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Optional<String> password, Properties properties)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException;
 }

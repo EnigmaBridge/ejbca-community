@@ -558,7 +558,10 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Regenerate certificate
                 try {
-                    generateKeyAndConfig(vpnUser.getId());
+                    // The password is taken from end entity.
+                    // In the current setting we use auto-generated passwords in cleartext.
+                    // The new password is generated after a new certificate is generated.
+                    generateKeyAndConfig(vpnUser.getId(), Optional.<String>empty());
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
@@ -766,10 +769,11 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
      * resets OTP download.
      *
      * @param userId vpn user id
+     * @param password optional password to use for end entity auth
      * @throws Exception
      */
-    private VpnUser generateKeyAndConfig(int userId) throws Exception {
-        return vpnUserManagementSession.newVpnCredentials(authenticationToken, userId, null);
+    private VpnUser generateKeyAndConfig(int userId, Optional<String> password) throws Exception {
+        return vpnUserManagementSession.newVpnCredentials(authenticationToken, userId, password, null);
     }
 
     /** Invoked when admin requests a VPNUser creation. */
@@ -806,13 +810,15 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Password will be generated automatically and sent via email to the end entity.
                 uservo.setPassword(null);
                 uservo.setCardNumber(null);
+
+                // The new auto-generated password is generated now, stored to uservo end entity.
                 endEntityManagementSession.addUser(authenticationToken, uservo, false);
 
                 // Create user itself
                 VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
                 try {
                     // Create certificate
-                    newVpnUser = generateKeyAndConfig(newVpnUser.getId());
+                    newVpnUser = generateKeyAndConfig(newVpnUser.getId(), Optional.ofNullable(uservo.getPassword()));
 
                     // Send an email.
                     if (getCurrentVpnUser().isSendConfigEmail()) {
@@ -915,7 +921,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             this.currentVpnUser = new CurrentVpnUserGuiInfo();
 
             // If the id is non-zero we try to load an existing user
-            if (vpnUserId!=null) {
+            if (vpnUserId != null) {
                 final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserId);
                 if (vpnUser == null) {
                     throw new RuntimeException("Could not load VpnUser with vpnUserId " + vpnUserId);

@@ -49,6 +49,12 @@ public class VpnCertGenerator extends VpnBaseHelper {
     private SignSession signSession;
 
     /**
+     * Optional password for generating new credentials.
+     * If not set, password from end entity is used.
+     */
+    private Optional<String> password = Optional.empty();
+
+    /**
      * Recovers or generates new keys for the user and generates keystore.
      *
      * @param data
@@ -71,12 +77,17 @@ public class VpnCertGenerator extends VpnBaseHelper {
             IllegalValidityException, CADoesntExistsException, InvalidAlgorithmParameterException
     {
         X509Certificate orgCert = null;
-        KeyPair rsaKeys = KeyTools.genKeys(VpnConfig.getKeySize(), VpnConfig.getKeySpec());
+        final KeyPair rsaKeys = KeyTools.genKeys(VpnConfig.getKeySize(), VpnConfig.getKeySpec());
 
         // Get certificate for user and create keystore
         if (rsaKeys != null) {
-            return createKeysForUser(data.getUsername(), data.getPassword(), data.getCAId(), rsaKeys, createJKS, createPEM,
-                    !keyrecoverflag && data.getKeyRecoverable(), orgCert);
+            return createKeysForUser(
+                    data.getUsername(),
+                    password.orElse(data.getPassword()),
+                    data.getCAId(),
+                    rsaKeys, createJKS, createPEM,
+                    !keyrecoverflag && data.getKeyRecoverable(),
+                    orgCert);
         }
 
         return null;
@@ -260,4 +271,18 @@ public class VpnCertGenerator extends VpnBaseHelper {
         this.fetchRemoteSessions = fetchRemoteSessions;
     }
 
+    public Optional<String> getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets optional password to use for creating a new keys - end entity authorisation.
+     * @param password
+     */
+    public void setPassword(Optional<String> password) {
+        if (password == null){
+            password = Optional.empty();
+        }
+        this.password = password;
+    }
 }
