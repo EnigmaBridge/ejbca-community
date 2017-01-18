@@ -689,10 +689,24 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return accessControlSession.isAuthorizedNoLogging(authenticationToken, VpnRules.USER_DELETE.resource());
     }
 
-    private VpnUser fromGuiUser(CurrentVpnUserGuiInfo guiUser){
-        final VpnUser user = new VpnUser();
+    /**
+     * Constructs valid non-managed VpnUser from the current representation.
+     * If the current user has non-null ID, the user is loaded from database,
+     * changes are applied onto its clone.
+     *
+     * @param guiUser
+     * @return detached VpnUser.
+     */
+    private VpnUser fromGuiUser(CurrentVpnUserGuiInfo guiUser) throws AuthorizationDeniedException, CloneNotSupportedException {
+        VpnUser user = new VpnUser();
+        if (guiUser.getId() != null){
+            final VpnUser dbUser = vpnUserManagementSession.getVpnUser(authenticationToken, guiUser.getId());
+            user = VpnUser.copy(dbUser);
 
-        user.setId(guiUser.getId());
+        } else {
+            user.setId(guiUser.getId());
+        }
+
         user.setEmail(guiUser.getEmail());
         user.setDevice(guiUser.getDevice());
         user.setDateModified(guiUser.getDateModified());
@@ -702,10 +716,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setCertificate(guiUser.getCertificate());
         user.setKeyStore(guiUser.getKey());
         user.setVpnConfig(guiUser.getConfig());
-
         return user;
     }
 
+    /**
+     * Converts VpnUser to the user info for global listing
+     * @param vpnUser
+     * @return
+     */
     private VpnUserGuiInfo toGuiUser(VpnUser vpnUser){
         final VpnUserGuiInfo user = new VpnUserGuiInfo();
 
@@ -719,6 +737,31 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         user.setOtpUsed(dateOrNull(vpnUser.getOtpUsed()));
         user.setLastMailSent(dateOrNull(vpnUser.getLastMailSent()));
         return user;
+    }
+
+    /**
+     * Creates CurrentVpnUserGuiInfo from the VpnUser entity.
+     * @param vpnUser
+     * @return
+     */
+    private CurrentVpnUserGuiInfo toCurrentGuiUser(VpnUser vpnUser){
+        final CurrentVpnUserGuiInfo currentVpnUser = new CurrentVpnUserGuiInfo();
+        currentVpnUser.setId(vpnUser.getId());
+        currentVpnUser.setEmail(vpnUser.getEmail());
+        currentVpnUser.setDevice(vpnUser.getDevice());
+        currentVpnUser.setDateCreated(vpnUser.getDateCreated());
+        currentVpnUser.setDateModified(vpnUser.getDateModified());
+        currentVpnUser.setDateCreatedDate(new Date(vpnUser.getDateCreated()));
+        currentVpnUser.setDateModifiedDate(new Date(vpnUser.getDateModified()));
+        currentVpnUser.setRevokedStatus(vpnUser.getRevokedStatus());
+        currentVpnUser.setOtpDownload(vpnUser.getOtpDownload());
+        currentVpnUser.setCertificateId(vpnUser.getCertificateId());
+        currentVpnUser.setCertificate(vpnUser.getCertificate());
+        currentVpnUser.setKey(vpnUser.getKeyStore());
+        currentVpnUser.setConfig(vpnUser.getVpnConfig());
+        currentVpnUser.setDateOtpDownloaded(dateOrNull(vpnUser.getOtpUsed()));
+        currentVpnUser.setDateMailSent(dateOrNull(vpnUser.getLastMailSent()));
+        return currentVpnUser;
     }
 
     /**
@@ -873,31 +916,17 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     public CurrentVpnUserGuiInfo getCurrentVpnUser() throws AuthorizationDeniedException {
         if (this.currentVpnUser == null) {
             final Integer vpnUserId = getCurrentVpnUserId();
-            final CurrentVpnUserGuiInfo currentVpnUser = new CurrentVpnUserGuiInfo();
-            // If the id is non-zero we try to load an existing token
+            this.currentVpnUser = new CurrentVpnUserGuiInfo();
+
+            // If the id is non-zero we try to load an existing user
             if (vpnUserId!=null) {
                 final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserId);
                 if (vpnUser == null) {
                     throw new RuntimeException("Could not load VpnUser with vpnUserId " + vpnUserId);
                 } else {
-                    currentVpnUser.setId(vpnUser.getId());
-                    currentVpnUser.setEmail(vpnUser.getEmail());
-                    currentVpnUser.setDevice(vpnUser.getDevice());
-                    currentVpnUser.setDateCreated(vpnUser.getDateCreated());
-                    currentVpnUser.setDateModified(vpnUser.getDateModified());
-                    currentVpnUser.setDateCreatedDate(new Date(vpnUser.getDateCreated()));
-                    currentVpnUser.setDateModifiedDate(new Date(vpnUser.getDateModified()));
-                    currentVpnUser.setRevokedStatus(vpnUser.getRevokedStatus());
-                    currentVpnUser.setOtpDownload(vpnUser.getOtpDownload());
-                    currentVpnUser.setCertificateId(vpnUser.getCertificateId());
-                    currentVpnUser.setCertificate(vpnUser.getCertificate());
-                    currentVpnUser.setKey(vpnUser.getKeyStore());
-                    currentVpnUser.setConfig(vpnUser.getVpnConfig());
-                    currentVpnUser.setDateOtpDownloaded(dateOrNull(vpnUser.getOtpUsed()));
-                    currentVpnUser.setDateMailSent(dateOrNull(vpnUser.getLastMailSent()));
+                    this.currentVpnUser = toCurrentGuiUser(vpnUser);
                 }
             }
-            this.currentVpnUser = currentVpnUser;
         }
         return this.currentVpnUser;
     }
