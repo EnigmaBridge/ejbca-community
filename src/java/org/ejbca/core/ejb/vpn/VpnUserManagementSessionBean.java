@@ -469,6 +469,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final Integer prevVersion = user.getConfigVersion();
             user.setConfigVersion(prevVersion == null ? 1 : prevVersion + 1);
 
+            // Audit logging
+            final Map<String, Object> details = new LinkedHashMap<String, Object>();
+            details.put("msg", "VPNUser new credentials");
+            details.put("id", user.getId());
+            details.put("email", user.getEmail());
+            details.put("device", user.getDevice());
+            securityEventsLoggerSession.log(EventTypes.VPN_MAIL_SENT, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                    authenticationToken.toString(), String.valueOf(user.getId()), null, null, details);
+
         } catch (AuthorizationDeniedException | CADoesntExistsException | IOException e){
             throw e;
         } catch(Exception e){
@@ -493,7 +502,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
                     VpnRules.USER_VIEW.resource())) {
                 throw new AuthorizationDeniedException();
             }
-            // TODO: logging
 
             final CA ca = caSession.getCA(authenticationToken, endEntity.getCAId());
             final java.security.cert.Certificate caCert = ca.getCACertificate();
