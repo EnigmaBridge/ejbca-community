@@ -211,6 +211,15 @@ public class VpnConfig {
     }
 
     /**
+     * Returns server hostname from the settings.
+     * @return
+     */
+    public static String getServerHostname(){
+        final String settingHostName = EjbcaConfigurationHolder.getString("httpsserver.hostname");
+        return settingHostName;
+    }
+
+    /**
      * Returns fromAddress to put on emails sent by the VPN module.
      * By default tries to load CONFIG_VPN_EMAIL_FROM, if that is empty / null,
      * tries general one mail.from.

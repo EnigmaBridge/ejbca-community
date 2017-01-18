@@ -20,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -191,4 +193,41 @@ public class VpnUtils {
         return CertTools.getPartFromDN(certDn, "CN");
     }
 
+    /**
+     * Returns top hostname domain, e.g., from blackburn.enigmabridge.com -> blackburn
+     * @param hostname hostname to process or null.
+     * @return domain or null
+     */
+    public static String getHostnameId(String hostname){
+        if (hostname == null){
+            return hostname;
+        }
+
+        final String[] parts = hostname.split("\\.", 2);
+        return parts[0];
+    }
+
+    /**
+     * Generates a file name for the ovpn file
+     * @param user
+     * @return
+     */
+    public static String genVpnConfigFileName(VpnUser user){
+        final String settingHostname = VpnConfig.getServerHostname();
+        final String hostPart = getHostnameId(settingHostname);
+
+        String fileName = String.format("%s_%s", user.getEmail(), user.getDevice());
+        if (hostPart != null){
+            fileName += "_" + hostPart;
+        }
+
+        final SimpleDateFormat formatter = new SimpleDateFormat("YYYYMMMdd");
+        final String dateFmted = formatter.format(new Date(user.getConfigGenerated()));
+        fileName += "_" + dateFmted;
+        fileName += "_v" + user.getConfigVersion();
+        fileName += ".ovpn";
+
+        fileName = VpnUtils.sanitizeFileName(fileName);
+        return fileName;
+    }
 }

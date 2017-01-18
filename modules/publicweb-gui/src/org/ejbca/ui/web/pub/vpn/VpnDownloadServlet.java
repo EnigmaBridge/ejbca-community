@@ -21,6 +21,7 @@ import org.cesecore.configuration.GlobalConfigurationSessionLocal;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.ejbca.config.GlobalConfiguration;
 import org.ejbca.core.ejb.vpn.VpnUtils;
@@ -91,10 +92,7 @@ public class VpnDownloadServlet extends HttpServlet {
                 response.setStatus(404);
 
             } else {
-                String fileName = vpnUser.getEmail() + "_" + vpnUser.getDevice();
-                fileName = VpnUtils.sanitizeFileName(fileName);
-                fileName += ".ovpn";
-
+                final String fileName = VpnUtils.genVpnConfigFileName(vpnUser);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
                 response.getOutputStream().write(vpnUser.getVpnConfig().getBytes("UTF-8"));
