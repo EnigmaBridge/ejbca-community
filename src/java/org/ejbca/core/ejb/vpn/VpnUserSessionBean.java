@@ -139,6 +139,8 @@ public class VpnUserSessionBean implements VpnUserSession {
             vpnUserObj.setLastMailSent(vpnUser.getLastMailSent());
             vpnUserObj.setUsrLang(vpnUser.getUsrLang());
             vpnUserObj.setConfigVersion(vpnUser.getConfigVersion());
+            vpnUserObj.setOtpUsedDescriptor(vpnUser.getOtpUsedDescriptor());
+            vpnUserObj.setConfigGenerated(vpnUser.getConfigGenerated());
         }
 
         vpnUserObj = createOrUpdateVpnUser(vpnUserObj);

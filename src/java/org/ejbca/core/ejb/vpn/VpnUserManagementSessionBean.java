@@ -465,6 +465,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             user.setOtpUsed(null);
             user.setLastMailSent(null);
             user.setOtpDownload(VpnUtils.genRandomPwd());
+            user.setConfigGenerated(System.currentTimeMillis());
 
             final Integer prevVersion = user.getConfigVersion();
             user.setConfigVersion(prevVersion == null ? 1 : prevVersion + 1);
