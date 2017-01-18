@@ -825,8 +825,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
     }
 
-    /** Invoked when admin cancels a CryptoToken create or edit. */
-    public void cancelCurrentCryptoToken() {
+    /** Invoked when admin cancels a VpnUser create or edit. */
+    public void cancelEdit() {
         setCurrentVpnUserEditMode(false);
         flushCaches();
     }
@@ -858,7 +858,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     }
 
                 } catch (NumberFormatException e) {
-                    log.info("Bad 'cryptoTokenId' parameter value.. set, but not a number..");
+                    log.info("Bad 'vpnUserId' parameter value.. set, but not a number..");
                 }
             }
 
@@ -912,16 +912,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
     public void toggleCurrentCryptoTokenEditMode() {
         currentVpnUserEditMode ^= true;
-    }
-
-    /** @return true if admin may generate keys in the current CryptoTokens. */
-    public boolean isAllowedToKeyGeneration() {
-        return accessControlSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.GENERATE_KEYS.resource() + '/' + getCurrentVpnUserId());
-    }
-
-    /** @return true if admin may test keys from the current CryptoTokens. */
-    public boolean isAllowedToKeyTest() {
-        return accessControlSession.isAuthorizedNoLogging(authenticationToken, CryptoTokenRules.TEST_KEYS.resource() + '/' + getCurrentVpnUserId());
     }
 
 }

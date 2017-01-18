@@ -151,7 +151,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<h:panelGroup/>
 		<h:panelGroup>
-			<h:commandButton action="#{vpnUsersMBean.cancelCurrentCryptoToken}" value="#{web.text.CRYPTOTOKEN_CANCEL}"
+			<h:commandButton action="#{vpnUsersMBean.cancelEdit}" value="#{web.text.CRYPTOTOKEN_CANCEL}"
 							 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
 			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}"
 							 rendered="#{vpnUsersMBean.currentVpnUserEditMode}"/>
