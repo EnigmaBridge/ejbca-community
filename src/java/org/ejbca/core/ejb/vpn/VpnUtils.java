@@ -21,10 +21,7 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Misc VPN utils.
@@ -221,8 +218,9 @@ public class VpnUtils {
             fileName += "_" + hostPart;
         }
 
-        final SimpleDateFormat formatter = new SimpleDateFormat("YYYYMMMdd");
-        final String dateFmted = formatter.format(new Date(user.getConfigGenerated()));
+        final SimpleDateFormat formatter = new SimpleDateFormat("YYYYMMdd", Locale.getDefault());
+        final String dateFmted = formatter.format(
+                new Date(user.getConfigGenerated() == null ? System.currentTimeMillis() : user.getConfigGenerated()));
         fileName += "_" + dateFmted;
         fileName += "_v" + user.getConfigVersion();
         fileName += ".ovpn";
