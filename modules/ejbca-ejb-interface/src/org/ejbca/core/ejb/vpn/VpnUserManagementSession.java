@@ -40,6 +40,13 @@ public interface VpnUserManagementSession {
     List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken);
 
     /**
+     * Returns true if the given user name is available
+     * @param user vpn user
+     * @return true if available and VpnUser can be stored
+     */
+    boolean isUsernameAvailable(AuthenticationToken authenticationToken, VpnUser user) throws AuthorizationDeniedException;
+
+    /**
      * Returns end entity user name generated from the VPN record.
      * @param user VPN user entity
      * @return unique VPN user identifier (email + device).

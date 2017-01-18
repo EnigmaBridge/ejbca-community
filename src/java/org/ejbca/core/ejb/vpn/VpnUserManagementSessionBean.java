@@ -107,6 +107,16 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     }
 
     @Override
+    public boolean isUsernameAvailable(AuthenticationToken authenticationToken, VpnUser user) throws AuthorizationDeniedException {
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER.resource())) {
+            throw new AuthorizationDeniedException();
+        }
+
+        return !vpnUserSession.isVpnUserNameUsed(user.getEmail(), user.getDevice());
+    }
+
+    @Override
     public String getUserName(VpnUser user){
         return VpnUtils.getUserName(user);
     }
