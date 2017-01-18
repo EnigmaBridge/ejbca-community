@@ -104,18 +104,17 @@ public interface VpnUserManagementSession {
 
     /**
      * Generates new VPN credentials - new certificate, VPN configuration. Resets OTP state.
-     * The interface does not persist the user as it may not yet exist in time of generating a new
-     * credential. It is caller responsibility to persist the modified user object.
+     * The user state is changed accordingly, resulting VpnUser after merge is returned.
      *
      * @param authenticationToken auth token
-     * @param endEntity user end entity
-     * @param user VPN user DB entity - will be modified.
+     * @param vpnUserId user entity ID
+     * @param properties optional properties
      * @throws AuthorizationDeniedException token invalid
      * @throws CADoesntExistsException invalid CA in the end entity
      * @throws IOException IO exception in key gen / templates
      * @throws VpnException Generic exception encapsulating many internal exceptions
      *      (e.g., UserDoesntFullfillEndEntityProfile)
      */
-    void newVpnCredentials(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+    VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Properties properties)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException;
 }

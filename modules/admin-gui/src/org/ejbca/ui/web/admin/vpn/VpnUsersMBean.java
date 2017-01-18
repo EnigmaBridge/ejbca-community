@@ -558,7 +558,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Regenerate certificate
                 try {
-                    generateKeyAndConfig(endEntity, vpnUser);
+                    generateKeyAndConfig(vpnUser.getId());
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
@@ -574,19 +574,16 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     throw new RuntimeException(errMsg, e);
                 }
 
-                // Update the user itself
-                final VpnUser newVpnUser = vpnUserManagementSession.saveVpnUser(authenticationToken, vpnUser);
-
                 // Send email.
                 vpnUserManagementSession.sendConfigurationEmail(authenticationToken, vpnUserGuiInfo.getId(), null);
 
-                currentVpnUserId = newVpnUser.getId();
+                currentVpnUserId = vpnUser.getId();
                 msg = "VpnUser regenerated successfully.";
             }
 
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
-        } catch (VpnUserNameInUseException | IOException | VpnMailSendException e) {
+        } catch (IOException | VpnMailSendException e) {
             msg = e.getMessage();
         }
 
@@ -768,12 +765,11 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
      * Generates a new key store for the end entity, generates new VPN configuration and
      * resets OTP download.
      *
-     * @param uservo
-     * @param vpnUser
+     * @param userId vpn user id
      * @throws Exception
      */
-    private void generateKeyAndConfig(EndEntityInformation uservo, VpnUser vpnUser) throws Exception {
-        vpnUserManagementSession.newVpnCredentials(authenticationToken, uservo, vpnUser);
+    private VpnUser generateKeyAndConfig(int userId) throws Exception {
+        return vpnUserManagementSession.newVpnCredentials(authenticationToken, userId, null);
     }
 
     /** Invoked when admin requests a VPNUser creation. */
@@ -812,9 +808,17 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 uservo.setCardNumber(null);
                 endEntityManagementSession.addUser(authenticationToken, uservo, false);
 
-                // Create certificate
+                // Create user itself
+                VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
                 try {
-                    generateKeyAndConfig(uservo, vpnUser);
+                    // Create certificate
+                    newVpnUser = generateKeyAndConfig(newVpnUser.getId());
+
+                    // Send an email.
+                    if (getCurrentVpnUser().isSendConfigEmail()) {
+                        vpnUserManagementSession.sendConfigurationEmail(authenticationToken, newVpnUser.getId(), null);
+                    }
+
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
                     final String newStatusString;
@@ -832,14 +836,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                         final String errMsg = InternalEjbcaResources.getInstance().getLocalizedMessage("vpn.erroruser", uservo.getUsername());
                         throw new Exception(errMsg, e);
                     }
-                }
-
-                // Create user itself
-                final VpnUser newVpnUser = vpnUserManagementSession.createVpnUser(authenticationToken, vpnUser);
-
-                // Send email.
-                if (getCurrentVpnUser().isSendConfigEmail()) {
-                    vpnUserManagementSession.sendConfigurationEmail(authenticationToken, vpnUser.getId(), null);
                 }
 
                 currentVpnUserId = newVpnUser.getId();

@@ -328,6 +328,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             // Update VpnUser record.
             user.setLastMailSent(System.currentTimeMillis());
+            vpnUserSession.mergeVpnUser(user);
 
             // Audit logging
             final Map<String, Object> details = new LinkedHashMap<String, Object>();
@@ -446,16 +447,25 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
      * Generates new VPN creds.
      *
      * @param authenticationToken auth token
-     * @param endEntity user end entity
-     * @param user VPN user DB entity
+     * @param vpnUserId user entity ID
+     * @param properties optional properties
      * @throws AuthorizationDeniedException
      * @throws CADoesntExistsException
      * @throws IOException
      * @throws VpnException
      */
-    public void newVpnCredentials(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user)
+    public VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Properties properties)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException {
         try {
+            if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                    VpnRules.USER_GENERATE.resource() + "/" + vpnUserId)) {
+                throw new AuthorizationDeniedException();
+            }
+
+            final VpnUser user = vpnUserSession.getVpnUser(vpnUserId);
+            final String userName = VpnUtils.getUserName(user);
+            final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, userName);
+
             final KeyStore ks = createKeys(authenticationToken, endEntity);
             VpnUtils.addKeyStoreToUser(user, ks, VpnConfig.getKeyStorePass().toCharArray());
 
@@ -469,6 +479,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             final Integer prevVersion = user.getConfigVersion();
             user.setConfigVersion(prevVersion == null ? 1 : prevVersion + 1);
+            final VpnUser mergedUser = vpnUserSession.mergeVpnUser(user);
 
             // Audit logging
             final Map<String, Object> details = new LinkedHashMap<String, Object>();
@@ -479,6 +490,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             securityEventsLoggerSession.log(EventTypes.VPN_MAIL_SENT, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                     authenticationToken.toString(), String.valueOf(user.getId()), null, null, details);
 
+            return mergedUser;
         } catch (AuthorizationDeniedException | CADoesntExistsException | IOException e){
             throw e;
         } catch(Exception e){
