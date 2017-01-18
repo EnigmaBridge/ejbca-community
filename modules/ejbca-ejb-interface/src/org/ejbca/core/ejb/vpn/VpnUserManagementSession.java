@@ -104,9 +104,12 @@ public interface VpnUserManagementSession {
 
     /**
      * Generates new VPN credentials - new certificate, VPN configuration. Resets OTP state.
+     * The interface does not persist the user as it may not yet exist in time of generating a new
+     * credential. It is caller responsibility to persist the modified user object.
+     *
      * @param authenticationToken auth token
      * @param endEntity user end entity
-     * @param user VPN user DB entity
+     * @param user VPN user DB entity - will be modified.
      * @throws AuthorizationDeniedException token invalid
      * @throws CADoesntExistsException invalid CA in the end entity
      * @throws IOException IO exception in key gen / templates
