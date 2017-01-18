@@ -1,8 +1,28 @@
+#
+# OpenVPN configuration file
+#   The configuration file contains your credentials for the VPN access.
+#   Please make sure it is kept private. Do not share this configuration
+#   file with anybody else.
+#
+# For opening the file you need an appropriate VPN client.
+#   Mac OS:  Tunnelblick ( https://tunnelblick.net/ )
+#   Windows: OpenVPN ( https://openvpn.net )
+#   Linux:   OpenVPN ( https://openvpn.net ) - sudo yum install openvpn OR sudo apt-get install openvpn
+#   iOS:     OpenVPN Connect
+#   Android: OpenVPN Connect
+#
+# ----------------------------------------------------------------------------------------------------------------------
+#  Generated:  [(${generated_time})]
+#  User ID:    [(${entity.username})]
+#  VPN server: [(${vpn_hostname})]
+#  Version:    [(${user.configVersion})]
+#
+
 client
 dev tun
 proto udp
 
-remote [[${vpnhost}]] 1194
+remote [(${vpn_hostname})] 1194
 resolv-retry infinite
 nobind
 persist-key
@@ -14,11 +34,11 @@ cipher AES-256-CBC
 keepalive 5 60
 
 <ca>
-[[${vpn_ca}]]
+[(${vpn_ca})]
 </ca>
 <cert>
-[[${vpn_cert}]]
+[(${vpn_cert})]
 </cert>
 <key>
-[[${vpn_key}]]
+[(${vpn_key})]
 </key>

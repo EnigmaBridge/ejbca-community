@@ -288,16 +288,19 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         }
 
         final String userLang = user.getUsrLang();
-
         final ResourceBundle langBundle = LanguageHelper.loadLanguageResource(userLang);
         final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine(userLang);
-
         final String receiverAddress = user.getEmail();
         final String senderAddress = VpnConfig.getEmailFromAddress();
 
+        String hostname = null;
         String downloadLink = null;
         try {
             downloadLink = genConfigDownloadLink(authenticationToken, endEntity, user);
+            final CA ca = caSession.getCA(authenticationToken, endEntity.getCAId());
+            final java.security.cert.Certificate caCert = ca.getCACertificate();
+            hostname = VpnUtils.extractCN(caCert);
+
         } catch(CADoesntExistsException e){
             throw new VpnMailSendException("Cannot generate the link", e);
         }
@@ -308,6 +311,8 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         ctx.setVariable("user", user);
         ctx.setVariable("entity", endEntity);
         ctx.setVariable("vpn_link", downloadLink);
+        ctx.setVariable("vpn_hostname", hostname);
+        ctx.setVariable("generated_time", new Date());
 
         final String messageBody = templateEngine.process(VpnCons.VPN_EMAIL_TEMPLATE, ctx);
         try {
@@ -507,11 +512,13 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine();
             final Context ctx = new Context();
-            ctx.setVariable("vpnhost", hostname);
+            ctx.setVariable("vpn_hostname", hostname);
             ctx.setVariable("entity", endEntity);
+            ctx.setVariable("user", user);
             ctx.setVariable("vpn_ca", caCertPem);
             ctx.setVariable("vpn_cert", certPem);
             ctx.setVariable("vpn_key", keyPem);
+            ctx.setVariable("generated_time", new Date());
 
             final String tpl = templateEngine.process(VpnCons.VPN_CONFIG_TEMPLATE, ctx);
             return tpl;
