@@ -414,6 +414,7 @@
             <basic fetch="EAGER" name="revokedStatus"><column name="revokedStatus" column-definition="TINYINT(4)" nullable="false"/></basic>
             <basic fetch="EAGER" name="otpDownload"><column name="otpDownload" column-definition="VARCHAR(256)" nullable="true"/></basic>
             <basic fetch="EAGER" name="otpUsed"><column name="otpUsed" column-definition="BIGINT(20)" nullable="true"/></basic>
+            <basic fetch="EAGER" name="otpUsedDescriptor"><column name="otpUsedDescriptor" column-definition="LONGTEXT" nullable="true"/></basic>
             <basic fetch="EAGER" name="lastMailSent"><column name="lastMailSent" column-definition="BIGINT(20)" nullable="true"/></basic>
             <basic fetch="EAGER" name="certificateId"><column name="certificateId" column-definition="VARCHAR(256)"/></basic>
             <basic fetch="EAGER" name="certificate"><column name="certificate" column-definition="LONGTEXT"/></basic>
@@ -421,6 +422,7 @@
             <basic fetch="EAGER" name="vpnConfig"><column name="vpnConfig" column-definition="LONGTEXT"/></basic>
             <basic fetch="EAGER" name="usrLang"><column name="usrLang" column-definition="VARCHAR(16)"/></basic>
             <basic fetch="EAGER" name="configVersion"><column name="configVersion" column-definition="INT(11)"/></basic>
+            <basic fetch="EAGER" name="configGenerated"><column name="configGenerated" column-definition="BIGINT(20)"/></basic>
             <basic fetch="EAGER" name="rowProtection"><column name="rowProtection" column-definition="LONGTEXT"/><lob/></basic>
             <version name="rowVersion"><column name="rowVersion" column-definition="INT(11)" nullable="false"/></version>
         </attributes>

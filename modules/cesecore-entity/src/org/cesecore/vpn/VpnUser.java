@@ -51,6 +51,11 @@ public class VpnUser implements Serializable, Cloneable {
     private Long otpUsed;
 
     /**
+     * Json encoded descriptor of the agent which downloaded the configuration with OTP (e.g., IP, useragent)
+     */
+    private String otpUsedDescriptor;
+
+    /**
      * Last configuration email send to the user.
      * If null, no configuration email for the current key/config has been sent.
      */
@@ -65,6 +70,11 @@ public class VpnUser implements Serializable, Cloneable {
     private String vpnConfig;
 
     /**
+     * Timestamp when the config was generated
+     */
+    private Long configGenerated;
+
+    /**
      * VPN config version sequence number.
      */
     private Integer configVersion=1;
@@ -77,7 +87,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.device = device;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, int configVersion) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, String otpUsedDescriptor, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -89,11 +99,13 @@ public class VpnUser implements Serializable, Cloneable {
         this.revokedStatus = revokedStatus;
         this.otpDownload = otpDownload;
         this.otpUsed = otpUsed;
+        this.otpUsedDescriptor = otpUsedDescriptor;
         this.lastMailSent = lastMailSent;
         this.certificateId = certificateId;
         this.certificate = certificate;
         this.keyStore = keyStore;
         this.vpnConfig = vpnConfig;
+        this.configGenerated = configGenerated;
         this.configVersion = configVersion;
     }
 
@@ -247,5 +259,78 @@ public class VpnUser implements Serializable, Cloneable {
 
     public void setConfigVersion(Integer configVersion) {
         this.configVersion = configVersion;
+    }
+
+    public Long getConfigGenerated() {
+        return configGenerated;
+    }
+
+    public void setConfigGenerated(Long configGenerated) {
+        this.configGenerated = configGenerated;
+    }
+
+    public String getOtpUsedDescriptor() {
+        return otpUsedDescriptor;
+    }
+
+    public void setOtpUsedDescriptor(String otpUsedDescriptor) {
+        this.otpUsedDescriptor = otpUsedDescriptor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VpnUser vpnUser = (VpnUser) o;
+
+        if (rowVersion != vpnUser.rowVersion) return false;
+        if (dateCreated != vpnUser.dateCreated) return false;
+        if (dateModified != vpnUser.dateModified) return false;
+        if (revokedStatus != vpnUser.revokedStatus) return false;
+        if (rowProtection != null ? !rowProtection.equals(vpnUser.rowProtection) : vpnUser.rowProtection != null)
+            return false;
+        if (id != null ? !id.equals(vpnUser.id) : vpnUser.id != null) return false;
+        if (email != null ? !email.equals(vpnUser.email) : vpnUser.email != null) return false;
+        if (device != null ? !device.equals(vpnUser.device) : vpnUser.device != null) return false;
+        if (usrLang != null ? !usrLang.equals(vpnUser.usrLang) : vpnUser.usrLang != null) return false;
+        if (otpDownload != null ? !otpDownload.equals(vpnUser.otpDownload) : vpnUser.otpDownload != null) return false;
+        if (otpUsed != null ? !otpUsed.equals(vpnUser.otpUsed) : vpnUser.otpUsed != null) return false;
+        if (otpUsedDescriptor != null ? !otpUsedDescriptor.equals(vpnUser.otpUsedDescriptor) : vpnUser.otpUsedDescriptor != null)
+            return false;
+        if (lastMailSent != null ? !lastMailSent.equals(vpnUser.lastMailSent) : vpnUser.lastMailSent != null)
+            return false;
+        if (certificateId != null ? !certificateId.equals(vpnUser.certificateId) : vpnUser.certificateId != null)
+            return false;
+        if (certificate != null ? !certificate.equals(vpnUser.certificate) : vpnUser.certificate != null) return false;
+        if (keyStore != null ? !keyStore.equals(vpnUser.keyStore) : vpnUser.keyStore != null) return false;
+        if (vpnConfig != null ? !vpnConfig.equals(vpnUser.vpnConfig) : vpnUser.vpnConfig != null) return false;
+        if (configGenerated != null ? !configGenerated.equals(vpnUser.configGenerated) : vpnUser.configGenerated != null)
+            return false;
+        return configVersion != null ? configVersion.equals(vpnUser.configVersion) : vpnUser.configVersion == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = rowVersion;
+        result = 31 * result + (rowProtection != null ? rowProtection.hashCode() : 0);
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (device != null ? device.hashCode() : 0);
+        result = 31 * result + (usrLang != null ? usrLang.hashCode() : 0);
+        result = 31 * result + (int) (dateCreated ^ (dateCreated >>> 32));
+        result = 31 * result + (int) (dateModified ^ (dateModified >>> 32));
+        result = 31 * result + revokedStatus;
+        result = 31 * result + (otpDownload != null ? otpDownload.hashCode() : 0);
+        result = 31 * result + (otpUsed != null ? otpUsed.hashCode() : 0);
+        result = 31 * result + (otpUsedDescriptor != null ? otpUsedDescriptor.hashCode() : 0);
+        result = 31 * result + (lastMailSent != null ? lastMailSent.hashCode() : 0);
+        result = 31 * result + (certificateId != null ? certificateId.hashCode() : 0);
+        result = 31 * result + (certificate != null ? certificate.hashCode() : 0);
+        result = 31 * result + (keyStore != null ? keyStore.hashCode() : 0);
+        result = 31 * result + (vpnConfig != null ? vpnConfig.hashCode() : 0);
+        result = 31 * result + (configGenerated != null ? configGenerated.hashCode() : 0);
+        result = 31 * result + (configVersion != null ? configVersion.hashCode() : 0);
+        return result;
     }
 }
