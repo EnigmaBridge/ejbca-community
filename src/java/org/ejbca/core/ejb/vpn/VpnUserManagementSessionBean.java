@@ -415,7 +415,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
      * @throws CAOfflineException
      * @throws UserDoesntFullfillEndEntityProfile
      */
-    private KeyStore createKeys(AuthenticationToken authenticationToken, EndEntityInformation endEntity, Optional<String> password)
+    private KeyStore createKeys(AuthenticationToken authenticationToken, EndEntityInformation endEntity, OptionalNull<String> password)
             throws CustomCertificateSerialNumberException, AuthStatusException, InvalidAlgorithmParameterException,
             CertificateSerialNumberException, CryptoTokenOfflineException, CertificateRevokeException,
             FinderException, OperatorCreationException, AuthLoginException, IllegalKeyException,
@@ -473,7 +473,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
      * @throws VpnException
      */
     @Override
-    public VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Optional<String> password, Properties properties)
+    public VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, OptionalNull<String> password, Properties properties)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException {
         try {
             if (!accessControlSessionSession.isAuthorized(authenticationToken,

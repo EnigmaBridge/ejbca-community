@@ -123,6 +123,6 @@ public interface VpnUserManagementSession {
      * @throws VpnException Generic exception encapsulating many internal exceptions
      *      (e.g., UserDoesntFullfillEndEntityProfile)
      */
-    VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Optional<String> password, Properties properties)
+    VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, OptionalNull<String> password, Properties properties)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException;
 }

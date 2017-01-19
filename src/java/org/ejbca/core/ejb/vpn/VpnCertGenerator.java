@@ -52,7 +52,7 @@ public class VpnCertGenerator extends VpnBaseHelper {
      * Optional password for generating new credentials.
      * If not set, password from end entity is used.
      */
-    private Optional<String> password = Optional.empty();
+    private OptionalNull<String> password = OptionalNull.empty();
 
     /**
      * Recovers or generates new keys for the user and generates keystore.
@@ -271,7 +271,7 @@ public class VpnCertGenerator extends VpnBaseHelper {
         this.fetchRemoteSessions = fetchRemoteSessions;
     }
 
-    public Optional<String> getPassword() {
+    public OptionalNull<String> getPassword() {
         return password;
     }
 
@@ -279,10 +279,7 @@ public class VpnCertGenerator extends VpnBaseHelper {
      * Sets optional password to use for creating a new keys - end entity authorisation.
      * @param password
      */
-    public void setPassword(Optional<String> password) {
-        if (password == null){
-            password = Optional.empty();
-        }
+    public void setPassword(OptionalNull<String> password) {
         this.password = password;
     }
 }
