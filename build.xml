@@ -477,6 +477,7 @@
                 <include name="ldap.jar" />
                 <include name="commons-*.jar" />
                 <include name="libidn.jar" />	<!-- XKMS -->
+                <include name="json-*.jar" />
             </zipfileset>
             <zipfileset prefix="lib" dir="${lib}/ct" erroronmissingdir="false">
                 <!-- Certificate Transparency -->

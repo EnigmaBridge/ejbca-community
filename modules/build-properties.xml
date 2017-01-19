@@ -218,6 +218,7 @@
 		<fileset dir="${ejbca.home}/lib/xmlsign" includes="xmlsec-1.4.3.jar"/>
 		<path refid="lib.xml.classpath"/>
 	</path>
+	<path id="lib.org.json.classpath"><fileset dir="${ejbca.home}/lib" includes="json-*.jar"/></path>
 	<path id="lib.thymeleaf.classpath"><fileset dir="${ejbca.home}/lib/thymeleaf" includes="*.jar"/></path>
 
 	<path id="lib.utils.classpath">
