@@ -70,9 +70,10 @@ public interface VpnUserSession {
      *
      * @param vpnUserId
      * @param otpToken
+     * @param downloadSpec - string descriptor of an agent downloading the configuration
      * @return detached copy of the vpnUser - before cleaning.
      */
-    VpnUser downloadOtp(int vpnUserId, String otpToken);
+    VpnUser downloadOtp(int vpnUserId, String otpToken, String downloadSpec);
 
     /** @return a list of all VPNUser identifiers in the database. */
     List<Integer> getVpnUserIds();

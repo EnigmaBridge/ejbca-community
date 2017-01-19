@@ -14,7 +14,6 @@ package org.ejbca.core.ejb.vpn;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.cesecore.CesecoreException;
 import org.cesecore.audit.enums.EventStatus;
 import org.cesecore.audit.enums.EventTypes;
 import org.cesecore.audit.enums.ModuleTypes;
@@ -34,22 +33,18 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.keys.token.CryptoTokenOfflineException;
-import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUser;
-import org.ejbca.config.EjbcaConfigurationHolder;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionLocal;
-import org.ejbca.core.ejb.ca.sign.SignSession;
 import org.ejbca.core.ejb.ca.sign.SignSessionLocal;
-import org.ejbca.core.ejb.ra.EndEntityAccessSession;
 import org.ejbca.core.ejb.ra.EndEntityAccessSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityManagementSessionLocal;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.core.model.SecConst;
 import org.ejbca.core.model.ca.AuthLoginException;
 import org.ejbca.core.model.ca.AuthStatusException;
-import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.core.model.ra.raadmin.UserDoesntFullfillEndEntityProfile;
 import org.ejbca.util.mail.MailSender;
+import org.json.JSONObject;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -60,6 +55,8 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.*;
+
+import static org.ejbca.core.ejb.vpn.VpnUtils.properties2json;
 
 /**
  * Management session bean for VPN functionality. Top level.
@@ -162,10 +159,15 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         return vpnUserSession.getVpnUser(vpnUserId);
     }
 
+    @Override
     public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties)
             throws AuthorizationDeniedException {
-        // TODO: auth
-        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
+
+        // Build download spec.
+        final JSONObject json = VpnUtils.properties2json(properties);
+        final String downloadSpec = json.toString();
+
+        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken, downloadSpec);
         if (user != null){
             final Map<String, Object> details = new LinkedHashMap<String, Object>();
             details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
@@ -281,6 +283,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     /**
      * Send email with configuration.
      */
+    @Override
     public void sendConfigurationEmail(AuthenticationToken authenticationToken, int vpnUserId, Properties properties)
             throws AuthorizationDeniedException, VpnMailSendException, IOException {
 
@@ -469,6 +472,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
      * @throws IOException
      * @throws VpnException
      */
+    @Override
     public VpnUser newVpnCredentials(AuthenticationToken authenticationToken, int vpnUserId, Optional<String> password, Properties properties)
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException {
         try {

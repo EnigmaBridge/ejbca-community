@@ -10,6 +10,7 @@ import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.util.passgen.IPasswordGenerator;
 import org.ejbca.util.passgen.PasswordGeneratorFactory;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
@@ -227,5 +228,30 @@ public class VpnUtils {
 
         fileName = VpnUtils.sanitizeFileName(fileName);
         return fileName;
+    }
+
+    /**
+     * Converts properties to a JSON.
+     * @param properties
+     * @return
+     */
+    public static JSONObject properties2json(Properties properties){
+        final JSONObject ret = new JSONObject();
+        if (properties == null || properties.isEmpty()) {
+            return ret;
+        }
+
+        Enumeration<?> enumProperties = properties.propertyNames();
+        while(enumProperties.hasMoreElements()) {
+            final Object keyObj = enumProperties.nextElement();
+            if (!(keyObj instanceof String)){
+                continue;
+            }
+
+            String name = (String) keyObj;
+            ret.put(name, properties.getProperty(name));
+        }
+
+        return ret;
     }
 }

@@ -178,7 +178,7 @@ public class VpnUserSessionBean implements VpnUserSession {
     }
 
     @Override
-    public VpnUser downloadOtp(int vpnUserId, String otpToken) {
+    public VpnUser downloadOtp(int vpnUserId, String otpToken, String downloadSpec) {
         final TypedQuery<VpnUser> query = entityManager.createQuery(
                 "SELECT a FROM VpnUser a WHERE a.id=:id AND a.otpDownload=:otp", VpnUser.class);
         query.setParameter("id", vpnUserId);
@@ -190,7 +190,7 @@ public class VpnUserSessionBean implements VpnUserSession {
 
         // Copy, detach from the persistence context
         final VpnUser userCopy = VpnUser.copy(vpnUser);
-
+        vpnUser.setOtpUsedDescriptor(downloadSpec);
         // save config, update db (reset config)
         vpnUser.setDateModified(System.currentTimeMillis());
         vpnUser.setOtpDownload(null);
