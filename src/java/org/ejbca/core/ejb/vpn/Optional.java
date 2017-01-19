@@ -6,7 +6,7 @@ package org.ejbca.core.ejb.vpn;
  * Created by dusanklinec on 18.01.17.
  */
 public class Optional<T> {
-    private T value;
+    private final T value;
     private final boolean empty;
 
     /**
@@ -49,6 +49,7 @@ public class Optional<T> {
     }
 
     private Optional() {
+        this.value = null;
         this.empty = true;
     }
 
