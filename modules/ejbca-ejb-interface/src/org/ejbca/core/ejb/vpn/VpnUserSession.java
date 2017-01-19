@@ -65,15 +65,14 @@ public interface VpnUserSession {
     boolean revokeVpnUser(final int vpnUserId);
 
     /**
-     * Loads VpnUser via OTP token. If token matches, user is returned
-     * and VPN config is removed from database.
+     * Loads VpnUser via OTP token. If token matches, user is returned.
+     * Configuration is not changed.
      *
-     * @param vpnUserId
-     * @param otpToken
-     * @param downloadSpec - string descriptor of an agent downloading the configuration
-     * @return detached copy of the vpnUser - before cleaning.
+     * @param vpnUserId vpn user id
+     * @param otpToken OTP token
+     * @return VpnUser is returned, attached to persistence context
      */
-    VpnUser downloadOtp(int vpnUserId, String otpToken, String downloadSpec);
+    VpnUser downloadOtp(int vpnUserId, String otpToken);
 
     /** @return a list of all VPNUser identifiers in the database. */
     List<Integer> getVpnUserIds();

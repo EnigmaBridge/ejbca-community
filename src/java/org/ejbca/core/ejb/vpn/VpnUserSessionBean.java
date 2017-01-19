@@ -181,26 +181,12 @@ public class VpnUserSessionBean implements VpnUserSession {
     }
 
     @Override
-    public VpnUser downloadOtp(int vpnUserId, String otpToken, String downloadSpec) {
+    public VpnUser downloadOtp(int vpnUserId, String otpToken) {
         final TypedQuery<VpnUser> query = entityManager.createQuery(
                 "SELECT a FROM VpnUser a WHERE a.id=:id AND a.otpDownload=:otp", VpnUser.class);
         query.setParameter("id", vpnUserId);
         query.setParameter("otp", otpToken);
-        final VpnUser vpnUser = QueryResultWrapper.getSingleResult(query);
-        if (vpnUser == null){
-            return null;
-        }
-
-        // Copy, detach from the persistence context
-        final VpnUser userCopy = VpnUser.copy(vpnUser);
-        vpnUser.setOtpUsedDescriptor(downloadSpec);
-        // save config, update db (reset config)
-        vpnUser.setDateModified(System.currentTimeMillis());
-        vpnUser.setOtpDownload(null);
-        vpnUser.setOtpUsed(System.currentTimeMillis());
-        vpnUser.setVpnConfig(null);
-        createOrUpdateVpnUser(vpnUser);
-        return userCopy;
+        return QueryResultWrapper.getSingleResult(query);
     }
 
     @Override

@@ -160,26 +160,88 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     }
 
     @Override
-    public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties)
-            throws AuthorizationDeniedException {
+    public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
+            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException {
 
         // Build download spec.
-        final JSONObject json = VpnUtils.properties2json(properties);
-        final String downloadSpec = json.toString();
+        final JSONObject specJson = VpnUtils.properties2json(properties);
+        final String downloadSpec = specJson.toString();
 
-        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken, downloadSpec);
-        if (user != null){
-            final Map<String, Object> details = new LinkedHashMap<String, Object>();
-            details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
-            details.put("otpToken", otpToken);
-            details.put("ip", properties.getProperty("ip"));
-            details.put("fwded", properties.getProperty("fwded"));
-            details.put("UA", properties.getProperty("ua"));
-            securityEventsLoggerSession.log(EventTypes.VPN_OTP_DOWNLOADED, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
-                    authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
+        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
+        if (user == null) {
+            throw new VpnOtpInvalidException();
         }
 
-        return user;
+        // Multiple times download is possible in several cases.
+        //
+        // If OTP was used already check if it was not too long time ago.
+        final long timeNow = System.currentTimeMillis();
+        final Long otpFirstUsed = user.getOtpFirstUsed();
+        if (otpFirstUsed != null && otpFirstUsed > 0) {
+            if ((timeNow - otpFirstUsed) > 60000L) {
+                clearOtp(user);
+                tryMergeUser(user);
+                throw new VpnOtpOldException();
+            }
+        } else {
+            // First OTP download.
+            user.setOtpFirstUsed(timeNow);
+        }
+
+        // Check if the OTP was not used too many times. Max 5.
+        final int otpUsedCount = user.getOtpUsedCount();
+        if (otpUsedCount >= 5){
+            clearOtp(user);
+            tryMergeUser(user);
+            throw new VpnOtpTooManyException();
+        }
+
+        // If cookie is set in the database, require the same cookie.
+        // Using Chrome on iOS the cookies are not working so we are relaxing
+        // this condition just in case there is any cookie. Thus this precaution
+        // can be easily circumvented. Anyway, such attempts would be logged.
+        final String otpCookie = user.getOtpCookie();
+        if (otpCookie != null && cookie != null && !otpCookie.equals(cookie)){
+            clearOtp(user);
+            tryMergeUser(user);
+            throw new VpnOtpCookieException();
+        }
+
+        // Check descriptors.
+        final String otpUsedDescriptor = user.getOtpUsedDescriptor();
+        if (otpUsedDescriptor != null) {
+            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
+            if (!dbDescriptor.similar(specJson)){
+                clearOtp(user);
+                tryMergeUser(user);
+                throw new VpnOtpDescriptorException();
+            }
+        }
+
+        // Vpn seems valid. Update fields.
+        user.setDateModified(timeNow);
+        user.setOtpUsed(timeNow);
+        user.setOtpUsedCount(user.getOtpUsedCount()+1);
+        user.setOtpUsedDescriptor(downloadSpec);
+        user.setOtpCookie(VpnUtils.genRandomPwd());     // Generate a new cookie all the time
+        tryMergeUser(user);
+
+        // Copy, detach from the persistence context
+        final VpnUser userCopy = VpnUser.copy(user);
+
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
+        details.put("otpToken", otpToken);
+        details.put("ip", properties.getProperty("ip"));
+        details.put("fwded", properties.getProperty("fwded"));
+        details.put("UA", properties.getProperty("ua"));
+        if (cookie != null) {
+            details.put("cookie", cookie);
+        }
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_DOWNLOADED, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
+
+        return userCopy;
     }
 
     @Override
@@ -240,6 +302,28 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             final String msg = INTRES.getLocalizedMessage("authorization.notuathorizedtoresource", VpnRules.USER_MODIFY.resource(),
                     authenticationToken.toString());
             throw new AuthorizationDeniedException(msg);
+        }
+    }
+
+    /**
+     * Clears OTP related data
+     * @param user vpn user to clear OTP data.
+     */
+    private void clearOtp(VpnUser user){
+        user.setOtpDownload(null);
+        user.setVpnConfig(null);
+        user.setDateModified(System.currentTimeMillis());
+    }
+
+    /**
+     * Tries to merge VPN user. Runtime exception is thrown in case of an error.
+     * @param user vpn user to merge
+     */
+    private void tryMergeUser(VpnUser user){
+        try {
+            vpnUserSession.mergeVpnUser(user);
+        } catch (VpnUserNameInUseException e) {
+            throw new RuntimeException("VpnUser update failed", e);
         }
     }
 
@@ -490,8 +574,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
 
             // Generate VPN configuration
             user.setOtpUsed(null);
-            user.setLastMailSent(null);
+            user.setOtpFirstUsed(null);
+            user.setOtpCookie(null);
+            user.setOtpUsedCount(0);
+            user.setOtpUsedDescriptor(null);
             user.setOtpDownload(VpnUtils.genRandomPwd());
+            user.setLastMailSent(null);
             user.setConfigGenerated(System.currentTimeMillis());
 
             final Integer prevVersion = user.getConfigVersion();

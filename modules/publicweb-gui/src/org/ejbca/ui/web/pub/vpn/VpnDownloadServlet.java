@@ -21,16 +21,15 @@ import org.cesecore.configuration.GlobalConfigurationSessionLocal;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
-import org.ejbca.core.ejb.vpn.VpnConfig;
-import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
+import org.ejbca.core.ejb.vpn.*;
 import org.ejbca.config.GlobalConfiguration;
-import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.ui.web.RequestHelper;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +46,7 @@ public class VpnDownloadServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(VpnDownloadServlet.class);
     private static final InternalEjbcaResources intres = InternalEjbcaResources.getInstance();
+    private static final String OTP_COOKIE = "ebvpn_otp_cookie";
 
     @EJB
     private VpnUserManagementSession vpnUserManagementSession;
@@ -68,27 +68,66 @@ public class VpnDownloadServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         log.trace(">doGet()");
         try {
-            AuthenticationToken admin = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("VpnDownloadServlet: "+request.getRemoteAddr()));
-            GlobalConfiguration globalConfiguration = (GlobalConfiguration) globalConfigurationSession.getCachedConfiguration(GlobalConfiguration.GLOBAL_CONFIGURATION_ID);
+            final AuthenticationToken admin = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("VpnDownloadServlet: "+request.getRemoteAddr()));
+            final GlobalConfiguration globalConfiguration = (GlobalConfiguration) globalConfigurationSession.getCachedConfiguration(GlobalConfiguration.GLOBAL_CONFIGURATION_ID);
             RequestHelper.setDefaultCharacterEncoding(request);
 
             final String otp = request.getParameter("otp");
             final String vpnUserIdTxt = request.getParameter("id");
             final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
+            final String cookie_name = OTP_COOKIE;
+
+            Cookie cookie = null;
+            final Cookie[] cookies = request.getCookies();
+            if (cookies != null){
+                for (Cookie curCookie : cookies) {
+                    if (cookie_name.equals(curCookie.getName())){
+                        cookie = curCookie;
+                        break;
+                    }
+                }
+            }
 
             final Properties properties = new Properties();
             final String xFwded = request.getHeader("X-Forwarded-For");
             final String ip = request.getRemoteAddr();
             final String sourceAddr = ip + ";" + xFwded;
             final String ua = request.getHeader("User-Agent");
+            final String method = request.getMethod();
+            final String cookieValue = cookie == null ? null : cookie.getValue();
+
             properties.setProperty("ip", ip+"");
             properties.setProperty("fwded", xFwded+"");
             properties.setProperty("ua", ua+"");
 
-            final VpnUser vpnUser = vpnUserManagementSession.downloadOtp(admin, vpnUserId, otp, properties);
+            VpnUser vpnUser = null;
+            try {
+                vpnUser = vpnUserManagementSession.downloadOtp(admin, vpnUserId, otp, cookieValue, properties);
+
+                final Cookie newCookie = new Cookie(cookie_name, vpnUser.getOtpCookie());
+                newCookie.setMaxAge(600);  // 10 minutes validity
+                newCookie.setSecure(true);
+                response.addCookie(newCookie);
+
+            } catch (VpnOtpOldException e) {
+                log.info(String.format("OTP failed - too old. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+            } catch (VpnOtpTooManyException e) {
+                log.info(String.format("OTP failed - too many. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+            } catch (VpnOtpCookieException e) {
+                log.info(String.format("OTP failed - cookie. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+            } catch (VpnOtpDescriptorException e) {
+                log.info(String.format("OTP failed - descriptor. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+            } catch (VpnOtpInvalidException e) {
+                log.info(String.format("OTP failed - invalid. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+            }
+
             if (vpnUser == null){
                 // TODO: redirect to some nice looking page explaining what happened.
-                log.info(String.format("OTP auth failed with ID: %d, OTP[%s], src: %s, ua: %s", vpnUserId, otp, sourceAddr, ua));
                 response.setStatus(404);
 
             } else {
@@ -96,6 +135,9 @@ public class VpnDownloadServlet extends HttpServlet {
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
                 response.getOutputStream().write(vpnUser.getVpnConfig().getBytes("UTF-8"));
+
+                log.info(String.format("OTP download OK ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             }
 
             response.flushBuffer();

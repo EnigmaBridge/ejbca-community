@@ -79,17 +79,19 @@ public interface VpnUserManagementSession {
     VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
     /**
-     * Loads VpnUser via OTP token. If token matches, user is returned
-     * and VPN config is removed from database.
+     * Loads VpnUser via OTP token. If token matches and multiple criteria are met user is returned.
+     * If check criteria are invalid a corresponding exception is thrown.
      *
      * @param authenticationToken auth token
      * @param vpnUserId VPN user id
      * @param otpToken OTP token
+     * @param cookie OTP cokie - if downloaded previously
+     * @param properties user identification
      * @return vpn user
      * @throws AuthorizationDeniedException token invalid
      */
-    VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties)
-            throws AuthorizationDeniedException;
+    VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
+            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException;
 
     VpnUser createVpnUser(final AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;
