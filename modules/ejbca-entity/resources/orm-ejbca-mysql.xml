@@ -414,7 +414,10 @@
             <basic fetch="EAGER" name="revokedStatus"><column name="revokedStatus" column-definition="TINYINT(4)" nullable="false"/></basic>
             <basic fetch="EAGER" name="otpDownload"><column name="otpDownload" column-definition="VARCHAR(256)" nullable="true"/></basic>
             <basic fetch="EAGER" name="otpUsed"><column name="otpUsed" column-definition="BIGINT(20)" nullable="true"/></basic>
+            <basic fetch="EAGER" name="otpFirstUsed"><column name="otpFirstUsed" column-definition="BIGINT(20)" nullable="true"/></basic>
             <basic fetch="EAGER" name="otpUsedDescriptor"><column name="otpUsedDescriptor" column-definition="LONGTEXT" nullable="true"/></basic>
+            <basic fetch="EAGER" name="otpCookie"><column name="otpCookie" column-definition="VARCHAR(256)" nullable="true"/></basic>
+            <basic fetch="EAGER" name="otpUsedCount"><column name="otpUsedCount" column-definition="INT(11)" nullable="false"/></basic>
             <basic fetch="EAGER" name="lastMailSent"><column name="lastMailSent" column-definition="BIGINT(20)" nullable="true"/></basic>
             <basic fetch="EAGER" name="certificateId"><column name="certificateId" column-definition="VARCHAR(256)"/></basic>
             <basic fetch="EAGER" name="certificate"><column name="certificate" column-definition="LONGTEXT"/></basic>

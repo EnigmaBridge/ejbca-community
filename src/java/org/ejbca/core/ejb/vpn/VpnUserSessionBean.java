@@ -134,12 +134,15 @@ public class VpnUserSessionBean implements VpnUserSession {
             vpnUserObj.setCertificate(vpnUser.getCertificate());
             vpnUserObj.setOtpDownload(vpnUser.getOtpDownload());
             vpnUserObj.setOtpUsed(vpnUser.getOtpUsed());
+            vpnUserObj.setOtpFirstUsed(vpnUser.getOtpFirstUsed());
+            vpnUserObj.setOtpUsedDescriptor(vpnUser.getOtpUsedDescriptor());
+            vpnUserObj.setOtpCookie(vpnUser.getOtpCookie());
+            vpnUserObj.setOtpUsedCount(vpnUser.getOtpUsedCount());
             vpnUserObj.setKeyStore(vpnUser.getKeyStore());
             vpnUserObj.setVpnConfig(vpnUser.getVpnConfig());
             vpnUserObj.setLastMailSent(vpnUser.getLastMailSent());
             vpnUserObj.setUsrLang(vpnUser.getUsrLang());
             vpnUserObj.setConfigVersion(vpnUser.getConfigVersion());
-            vpnUserObj.setOtpUsedDescriptor(vpnUser.getOtpUsedDescriptor());
             vpnUserObj.setConfigGenerated(vpnUser.getConfigGenerated());
         }
 

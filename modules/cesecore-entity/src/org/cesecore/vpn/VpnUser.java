@@ -46,6 +46,11 @@ public class VpnUser implements Serializable, Cloneable {
     private String otpDownload;
 
     /**
+     * UTCmilli encoded time of first OTP download of the same token. Null if OTP has not been used yet.
+     */
+    private Long otpFirstUsed;
+
+    /**
      * UTCmilli encoded time of last OTP download. Null if OTP has not been used yet.
      */
     private Long otpUsed;
@@ -54,6 +59,16 @@ public class VpnUser implements Serializable, Cloneable {
      * Json encoded descriptor of the agent which downloaded the configuration with OTP (e.g., IP, useragent)
      */
     private String otpUsedDescriptor;
+
+    /**
+     * OTP cookie set on the client, to allow more requests.
+     */
+    private String otpCookie;
+
+    /**
+     * Number of times the OTP token was authorised and content was provided.
+     */
+    private int otpUsedCount;
 
     /**
      * Last configuration email send to the user.
@@ -87,7 +102,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.device = device;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpUsed, String otpUsedDescriptor, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -98,8 +113,11 @@ public class VpnUser implements Serializable, Cloneable {
         this.dateModified = dateModified;
         this.revokedStatus = revokedStatus;
         this.otpDownload = otpDownload;
+        this.otpFirstUsed = otpFirstUsed;
         this.otpUsed = otpUsed;
         this.otpUsedDescriptor = otpUsedDescriptor;
+        this.otpCookie = otpCookie;
+        this.otpUsedCount = otpUsedCount;
         this.lastMailSent = lastMailSent;
         this.certificateId = certificateId;
         this.certificate = certificate;
@@ -280,6 +298,30 @@ public class VpnUser implements Serializable, Cloneable {
         this.otpUsedDescriptor = otpUsedDescriptor;
     }
 
+    public Long getOtpFirstUsed() {
+        return otpFirstUsed;
+    }
+
+    public void setOtpFirstUsed(Long otpFirstUsed) {
+        this.otpFirstUsed = otpFirstUsed;
+    }
+
+    public String getOtpCookie() {
+        return otpCookie;
+    }
+
+    public void setOtpCookie(String otpCookie) {
+        this.otpCookie = otpCookie;
+    }
+
+    public int getOtpUsedCount() {
+        return otpUsedCount;
+    }
+
+    public void setOtpUsedCount(int otpUsedCount) {
+        this.otpUsedCount = otpUsedCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -291,6 +333,7 @@ public class VpnUser implements Serializable, Cloneable {
         if (dateCreated != vpnUser.dateCreated) return false;
         if (dateModified != vpnUser.dateModified) return false;
         if (revokedStatus != vpnUser.revokedStatus) return false;
+        if (otpUsedCount != vpnUser.otpUsedCount) return false;
         if (rowProtection != null ? !rowProtection.equals(vpnUser.rowProtection) : vpnUser.rowProtection != null)
             return false;
         if (id != null ? !id.equals(vpnUser.id) : vpnUser.id != null) return false;
@@ -298,9 +341,12 @@ public class VpnUser implements Serializable, Cloneable {
         if (device != null ? !device.equals(vpnUser.device) : vpnUser.device != null) return false;
         if (usrLang != null ? !usrLang.equals(vpnUser.usrLang) : vpnUser.usrLang != null) return false;
         if (otpDownload != null ? !otpDownload.equals(vpnUser.otpDownload) : vpnUser.otpDownload != null) return false;
+        if (otpFirstUsed != null ? !otpFirstUsed.equals(vpnUser.otpFirstUsed) : vpnUser.otpFirstUsed != null)
+            return false;
         if (otpUsed != null ? !otpUsed.equals(vpnUser.otpUsed) : vpnUser.otpUsed != null) return false;
         if (otpUsedDescriptor != null ? !otpUsedDescriptor.equals(vpnUser.otpUsedDescriptor) : vpnUser.otpUsedDescriptor != null)
             return false;
+        if (otpCookie != null ? !otpCookie.equals(vpnUser.otpCookie) : vpnUser.otpCookie != null) return false;
         if (lastMailSent != null ? !lastMailSent.equals(vpnUser.lastMailSent) : vpnUser.lastMailSent != null)
             return false;
         if (certificateId != null ? !certificateId.equals(vpnUser.certificateId) : vpnUser.certificateId != null)
@@ -325,8 +371,11 @@ public class VpnUser implements Serializable, Cloneable {
         result = 31 * result + (int) (dateModified ^ (dateModified >>> 32));
         result = 31 * result + revokedStatus;
         result = 31 * result + (otpDownload != null ? otpDownload.hashCode() : 0);
+        result = 31 * result + (otpFirstUsed != null ? otpFirstUsed.hashCode() : 0);
         result = 31 * result + (otpUsed != null ? otpUsed.hashCode() : 0);
         result = 31 * result + (otpUsedDescriptor != null ? otpUsedDescriptor.hashCode() : 0);
+        result = 31 * result + (otpCookie != null ? otpCookie.hashCode() : 0);
+        result = 31 * result + otpUsedCount;
         result = 31 * result + (lastMailSent != null ? lastMailSent.hashCode() : 0);
         result = 31 * result + (certificateId != null ? certificateId.hashCode() : 0);
         result = 31 * result + (certificate != null ? certificate.hashCode() : 0);
