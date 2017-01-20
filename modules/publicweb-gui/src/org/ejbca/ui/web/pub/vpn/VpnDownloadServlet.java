@@ -96,17 +96,18 @@ public class VpnDownloadServlet extends HttpServlet {
             final String method = request.getMethod();
             final String cookieValue = cookie == null ? null : cookie.getValue();
 
-            properties.setProperty("ip", ip+"");
-            properties.setProperty("fwded", xFwded+"");
-            properties.setProperty("ua", ua+"");
+            properties.setProperty(VpnCons.KEY_IP, ip+"");
+            properties.setProperty(VpnCons.KEY_FORWARDED, xFwded+"");
+            properties.setProperty(VpnCons.KEY_USER_AGENT, ua+"");
+            properties.setProperty(VpnCons.KEY_METHOD, method+"");
 
             VpnUser vpnUser = null;
             try {
                 vpnUser = vpnUserManagementSession.downloadOtp(admin, vpnUserId, otp, cookieValue, properties);
 
                 final Cookie newCookie = new Cookie(cookie_name, vpnUser.getOtpCookie());
-                newCookie.setMaxAge(600);  // 10 minutes validity
-                newCookie.setSecure(true);
+                newCookie.setMaxAge(300);   // 5 minutes validity
+                newCookie.setSecure(true);  // cookie should be sent only over a secure channel
                 response.addCookie(newCookie);
 
             } catch (VpnOtpOldException e) {
@@ -134,7 +135,9 @@ public class VpnDownloadServlet extends HttpServlet {
                 final String fileName = VpnUtils.genVpnConfigFileName(vpnUser);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
-                response.getOutputStream().write(vpnUser.getVpnConfig().getBytes("UTF-8"));
+                final byte[] bytes2send = vpnUser.getVpnConfig().getBytes("UTF-8");
+                response.setContentLength(bytes2send.length);
+                response.getOutputStream().write(bytes2send);
 
                 log.info(String.format("OTP download OK ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));

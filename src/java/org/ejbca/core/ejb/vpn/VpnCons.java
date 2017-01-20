@@ -25,4 +25,9 @@ public class VpnCons {
     public static final String VPN_EMAIL_TEMPLATE = "emailconfig";
     public static final String VPN_CONFIG_TEMPLATE = "vpnconfig";
 
+    public static final String KEY_METHOD = "method";
+    public static final String KEY_USER_AGENT = "ua";
+    public static final String KEY_IP = "ip";
+    public static final String KEY_FORWARDED = "fwded";
+
 }

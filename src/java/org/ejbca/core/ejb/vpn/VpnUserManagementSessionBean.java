@@ -163,6 +163,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
     public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
             throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException {
 
+        // Analyse request method. If HEAD, cookie is not mandatory.
+        final String requestMethod = properties.getProperty(VpnCons.KEY_METHOD);
+        properties.remove(VpnCons.KEY_METHOD);
+
         // Build download spec.
         final JSONObject specJson = VpnUtils.properties2json(properties);
         final String downloadSpec = specJson.toString();
@@ -196,17 +200,6 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
             throw new VpnOtpTooManyException();
         }
 
-        // If cookie is set in the database, require the same cookie.
-        // Using Chrome on iOS the cookies are not working so we are relaxing
-        // this condition just in case there is any cookie. Thus this precaution
-        // can be easily circumvented. Anyway, such attempts would be logged.
-        final String otpCookie = user.getOtpCookie();
-        if (otpCookie != null && cookie != null && !otpCookie.equals(cookie)){
-            clearOtp(user);
-            tryMergeUser(user);
-            throw new VpnOtpCookieException();
-        }
-
         // Check descriptors.
         final String otpUsedDescriptor = user.getOtpUsedDescriptor();
         if (otpUsedDescriptor != null) {
@@ -216,6 +209,17 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
                 tryMergeUser(user);
                 throw new VpnOtpDescriptorException();
             }
+        }
+
+        // If cookie is set in the database, require the same cookie.
+        // Chrome on iOS does not send cookies with HEAD request. So in
+        // that case we relax this condition - cookie has to match only if non-null.
+        final boolean isHead = requestMethod.equalsIgnoreCase("head");
+        final String otpCookie = user.getOtpCookie();
+        if (otpCookie != null && (!isHead || cookie != null) && !otpCookie.equals(cookie)){
+            clearOtp(user);
+            tryMergeUser(user);
+            throw new VpnOtpCookieException();
         }
 
         // Vpn seems valid. Update fields.
@@ -232,9 +236,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         final Map<String, Object> details = new LinkedHashMap<String, Object>();
         details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
         details.put("otpToken", otpToken);
-        details.put("ip", properties.getProperty("ip"));
-        details.put("fwded", properties.getProperty("fwded"));
-        details.put("UA", properties.getProperty("ua"));
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
         if (cookie != null) {
             details.put("cookie", cookie);
         }
