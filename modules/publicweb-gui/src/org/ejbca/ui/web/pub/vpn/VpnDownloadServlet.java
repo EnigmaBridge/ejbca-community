@@ -106,24 +106,24 @@ public class VpnDownloadServlet extends HttpServlet {
                 vpnUser = vpnUserManagementSession.downloadOtp(admin, vpnUserId, otp, cookieValue, properties);
 
                 final Cookie newCookie = new Cookie(cookie_name, vpnUser.getOtpCookie());
-                newCookie.setMaxAge(300);   // 5 minutes validity
+                newCookie.setMaxAge(600);   // 10 minutes validity
                 newCookie.setSecure(true);  // cookie should be sent only over a secure channel
                 response.addCookie(newCookie);
 
             } catch (VpnOtpOldException e) {
-                log.info(String.format("OTP failed - too old. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                log.info(String.format("OTP failed - too old. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             } catch (VpnOtpTooManyException e) {
-                log.info(String.format("OTP failed - too many. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                log.info(String.format("OTP failed - too many. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             } catch (VpnOtpCookieException e) {
-                log.info(String.format("OTP failed - cookie. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                log.info(String.format("OTP failed - cookie. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             } catch (VpnOtpDescriptorException e) {
-                log.info(String.format("OTP failed - descriptor. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                log.info(String.format("OTP failed - descriptor. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             } catch (VpnOtpInvalidException e) {
-                log.info(String.format("OTP failed - invalid. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, val: %s",
+                log.info(String.format("OTP failed - invalid. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             }
 

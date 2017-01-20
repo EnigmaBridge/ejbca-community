@@ -182,7 +182,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         final long timeNow = System.currentTimeMillis();
         final Long otpFirstUsed = user.getOtpFirstUsed();
         if (otpFirstUsed != null && otpFirstUsed > 0) {
-            if ((timeNow - otpFirstUsed) > 60000L) {
+            if ((timeNow - otpFirstUsed) > 3L * 60L * 1000L) {
                 clearOtp(user);
                 tryMergeUser(user);
                 throw new VpnOtpOldException();
@@ -212,11 +212,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         }
 
         // If cookie is set in the database, require the same cookie.
-        // Chrome on iOS does not send cookies with HEAD request. So in
-        // that case we relax this condition - cookie has to match only if non-null.
+        // Chrome on iOS does two concurrent requests. The one with HEAD does
+        // not have cookie set correctly.
+        // In that case we relax this condition - no cookie check.
         final boolean isHead = requestMethod.equalsIgnoreCase("head");
         final String otpCookie = user.getOtpCookie();
-        if (otpCookie != null && (!isHead || cookie != null) && !otpCookie.equals(cookie)){
+        if (otpCookie != null && !isHead && !otpCookie.equals(cookie)){
             clearOtp(user);
             tryMergeUser(user);
             throw new VpnOtpCookieException();
@@ -227,7 +228,13 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSession {
         user.setOtpUsed(timeNow);
         user.setOtpUsedCount(user.getOtpUsedCount()+1);
         user.setOtpUsedDescriptor(downloadSpec);
-        user.setOtpCookie(VpnUtils.genRandomPwd());     // Generate a new cookie all the time
+
+        // Generate cookie on the first GET request.
+        // Cookie rotation is disabled due to fishy behavior of the mobile browsers.
+        if (user.getOtpCookie() == null) {
+            user.setOtpCookie(VpnUtils.genRandomPwd());
+        }
+
         tryMergeUser(user);
 
         // Copy, detach from the persistence context
