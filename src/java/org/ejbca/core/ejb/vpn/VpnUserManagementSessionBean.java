@@ -160,6 +160,14 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     }
 
     @Override
+    public VpnUser getVpnUser(AuthenticationToken authenticationToken, String email, String device) throws AuthorizationDeniedException {
+        if (!accessControlSessionSession.isAuthorized(authenticationToken, VpnRules.USER_VIEW.resource())) {
+            throw new AuthorizationDeniedException();
+        }
+        return vpnUserSession.getVpnUser(email, device);
+    }
+
+    @Override
     public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
             throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException {
 

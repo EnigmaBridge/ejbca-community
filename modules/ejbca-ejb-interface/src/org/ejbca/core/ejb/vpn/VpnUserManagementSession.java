@@ -78,6 +78,16 @@ public interface VpnUserManagementSession {
     VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
     /**
+     * Loads VpnUser from the database using the email + device.
+     * @param authenticationToken auth token
+     * @param email VPN user email
+     * @param device VPN user device
+     * @return VPN user
+     * @throws AuthorizationDeniedException token invalid
+     */
+    VpnUser getVpnUser(AuthenticationToken authenticationToken, String email, String device) throws AuthorizationDeniedException;
+
+    /**
      * Loads VpnUser via OTP token. If token matches and multiple criteria are met user is returned.
      * If check criteria are invalid a corresponding exception is thrown.
      *
