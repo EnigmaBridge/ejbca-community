@@ -1,12 +1,14 @@
 package org.ejbca.core.ejb.vpn;
 
+import java.io.Serializable;
+
 /**
  * Simple Optional allowing null value.
  * Just used to detect if field was set.
  *
  * Created by dusanklinec on 18.01.17.
  */
-public class OptionalNull<T> {
+public class OptionalNull<T> implements Serializable {
     private final T value;
     private final boolean empty;
 

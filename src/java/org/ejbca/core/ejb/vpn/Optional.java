@@ -1,11 +1,13 @@
 package org.ejbca.core.ejb.vpn;
 
+import java.io.Serializable;
+
 /**
  * Simple Optional - if there is no guava and java8, we use this.
  *
  * Created by dusanklinec on 18.01.17.
  */
-public class Optional<T> {
+public class Optional<T> implements Serializable {
     private final T value;
     private final boolean empty;
 
