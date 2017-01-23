@@ -401,7 +401,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     private CurrentVpnUserGuiInfo currentVpnUser = null;
     private boolean currentVpnUserEditMode = true;  // currentVpnUserId==0 from start
 
-    private final VpnUserManagementSession vpnUserManagementSession = getEjbcaWebBean().getEjb().getVpnUserManagementSession();
+    private final VpnUserManagementSessionLocal vpnUserManagementSession = getEjbcaWebBean().getEjb().getVpnUserManagementSession();
     private final EndEntityProfileSessionLocal endEntityProfileSession = getEjbcaWebBean().getEjb().getEndEntityProfileSession();
     private final CertificateProfileSession certificateProfileSession = getEjbcaWebBean().getEjb().getCertificateProfileSession();
     private final EndEntityManagementSession endEntityManagementSession = getEjbcaWebBean().getEjb().getEndEntityManagementSession();

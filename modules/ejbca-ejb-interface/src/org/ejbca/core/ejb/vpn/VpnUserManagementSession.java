@@ -29,7 +29,6 @@ import java.util.Properties;
  *
  * @author ph4r05
  */
-@Local
 public interface VpnUserManagementSession {
     /**
      * Fetches list of VPN users.

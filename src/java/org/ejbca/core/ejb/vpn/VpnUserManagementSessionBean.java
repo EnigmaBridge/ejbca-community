@@ -63,9 +63,9 @@ import static org.ejbca.core.ejb.vpn.VpnUtils.properties2json;
  *
  * @author ph4r05
  */
-@Stateless(mappedName = JndiConstants.APP_JNDI_PREFIX + "VpnUserManagement")
+@Stateless(mappedName = JndiConstants.APP_JNDI_PREFIX + "VpnUserManagementRemote")
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
-public class VpnUserManagementSessionBean implements VpnUserManagementSession {
+public class VpnUserManagementSessionBean implements VpnUserManagementSessionLocal, VpnUserManagementSessionRemote {
 
     private static final Logger log = Logger.getLogger(VpnUserManagementSessionBean.class);
 

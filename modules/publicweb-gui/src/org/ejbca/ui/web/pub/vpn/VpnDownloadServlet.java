@@ -49,7 +49,7 @@ public class VpnDownloadServlet extends HttpServlet {
     private static final String OTP_COOKIE = "ebvpn_otp_cookie";
 
     @EJB
-    private VpnUserManagementSession vpnUserManagementSession;
+    private VpnUserManagementSessionLocal vpnUserManagementSession;
     @EJB
     private GlobalConfigurationSessionLocal globalConfigurationSession;
 

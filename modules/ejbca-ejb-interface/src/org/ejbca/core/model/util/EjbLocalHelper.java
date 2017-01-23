@@ -60,6 +60,7 @@ import org.ejbca.core.ejb.ra.raadmin.AdminPreferenceSessionLocal;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
 import org.ejbca.core.ejb.ra.userdatasource.UserDataSourceSessionLocal;
 import org.ejbca.core.ejb.services.ServiceSessionLocal;
+import org.ejbca.core.ejb.vpn.VpnUserManagementSessionLocal;
 import org.ejbca.core.protocol.cmp.CmpMessageDispatcherSessionLocal;
 
 /**
@@ -157,7 +158,7 @@ public class EjbLocalHelper implements EjbBridgeSessionLocal {
 	@Override public UserDataSourceSessionLocal getUserDataSourceSession() { return getEjbLocal().getUserDataSourceSession(); }
 	@Override public WebAuthenticationProviderSessionLocal getWebAuthenticationProviderSession() { return getEjbLocal().getWebAuthenticationProviderSession(); }
 	@Override public CryptoTokenManagementSessionLocal getCryptoTokenManagementSession() { return getEjbLocal().getCryptoTokenManagementSession(); }
-	@Override public VpnUserManagementSession getVpnUserManagementSession() { return getEjbLocal().getVpnUserManagementSession(); }
+	@Override public VpnUserManagementSessionLocal getVpnUserManagementSession() { return getEjbLocal().getVpnUserManagementSession(); }
     @Override public InternalKeyBindingMgmtSessionLocal getInternalKeyBindingMgmtSession() { return getEjbLocal().getInternalKeyBindingMgmtSession(); }
     @Override public PublishingCrlSessionLocal getPublishingCrlSession() { return getEjbLocal().getPublishingCrlSession(); }
 }

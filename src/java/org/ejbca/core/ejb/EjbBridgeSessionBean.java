@@ -57,6 +57,7 @@ import org.ejbca.core.ejb.ra.raadmin.AdminPreferenceSessionLocal;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
 import org.ejbca.core.ejb.ra.userdatasource.UserDataSourceSessionLocal;
 import org.ejbca.core.ejb.services.ServiceSessionLocal;
+import org.ejbca.core.ejb.vpn.VpnUserManagementSessionLocal;
 import org.ejbca.core.protocol.cmp.CmpMessageDispatcherSessionLocal;
 
 /**
@@ -113,7 +114,7 @@ public class EjbBridgeSessionBean implements EjbBridgeSessionLocal {
 	@EJB AccessUserAspectManagerSessionLocal accessUserAspectSession;
 	@EJB CryptoTokenManagementSessionLocal cryptoTokenManagementSession;
 	@EJB PublishingCrlSessionLocal publishingCrlSessionLocal;
-	@EJB VpnUserManagementSession vpnUserManagementSessionLocal;
+	@EJB VpnUserManagementSessionLocal vpnUserManagementSessionLocal;
 
 	@Override public ApprovalExecutionSessionLocal getApprovalExecutionSession() { return approvalExecutionSession; }
 	@Override public ApprovalSessionLocal getApprovalSession() { return approvalSession; }
@@ -154,5 +155,5 @@ public class EjbBridgeSessionBean implements EjbBridgeSessionLocal {
 	@Override public EndEntityAccessSessionLocal getEndEntityAccessSession() { return endEntityAccessSession; }
     @Override public CryptoTokenManagementSessionLocal getCryptoTokenManagementSession() { return cryptoTokenManagementSession; }
     @Override public PublishingCrlSessionLocal getPublishingCrlSession() { return publishingCrlSessionLocal; }
-	@Override public VpnUserManagementSession getVpnUserManagementSession() { return vpnUserManagementSessionLocal; }
+	@Override public VpnUserManagementSessionLocal getVpnUserManagementSession() { return vpnUserManagementSessionLocal; }
 }

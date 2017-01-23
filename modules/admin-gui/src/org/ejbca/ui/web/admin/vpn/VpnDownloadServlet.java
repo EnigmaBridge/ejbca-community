@@ -21,6 +21,7 @@ import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
+import org.ejbca.core.ejb.vpn.VpnUserManagementSessionLocal;
 import org.ejbca.core.model.InternalEjbcaResources;
 
 import javax.ejb.EJB;
@@ -45,7 +46,7 @@ public class VpnDownloadServlet extends HttpServlet {
     private static final AuthenticationToken alwaysAllowAuthenticationToken = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("VpnDownloadServlet"));
 
     @EJB
-    private VpnUserManagementSession vpnUserManagementSession;
+    private VpnUserManagementSessionLocal vpnUserManagementSession;
 
     // org.cesecore.keys.util.KeyTools.getAsPem(PublicKey)
     public void init(ServletConfig config) throws ServletException {

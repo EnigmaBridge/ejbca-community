@@ -54,6 +54,7 @@ import org.ejbca.core.ejb.ra.raadmin.AdminPreferenceSessionLocal;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
 import org.ejbca.core.ejb.ra.userdatasource.UserDataSourceSessionLocal;
 import org.ejbca.core.ejb.services.ServiceSessionLocal;
+import org.ejbca.core.ejb.vpn.VpnUserManagementSessionLocal;
 import org.ejbca.core.protocol.cmp.CmpMessageDispatcherSessionLocal;
 
 /**
@@ -107,7 +108,7 @@ public interface EjbBridgeSessionLocal {
 	EndEntityManagementSessionLocal getEndEntityManagementSession();
 	WebAuthenticationProviderSessionLocal getWebAuthenticationProviderSession();
     CryptoTokenManagementSessionLocal getCryptoTokenManagementSession();
-	VpnUserManagementSession getVpnUserManagementSession();
+	VpnUserManagementSessionLocal getVpnUserManagementSession();
     InternalKeyBindingMgmtSessionLocal getInternalKeyBindingMgmtSession();
     PublishingCrlSessionLocal getPublishingCrlSession();
 }
