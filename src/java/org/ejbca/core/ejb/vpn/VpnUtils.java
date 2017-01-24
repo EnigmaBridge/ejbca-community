@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -253,5 +254,18 @@ public class VpnUtils {
         }
 
         return ret;
+    }
+
+    /**
+     * Sets file to read only for the owner
+     * @param file file to set parameters to.
+     */
+    public static boolean readOwnerOnly(File file){
+        boolean result = file.setReadable(false);
+        result &= file.setExecutable(false);
+        result &= file.setWritable(false);
+        result &= file.setReadable(true, true);
+        result &= file.setWritable(true, true);
+        return result;
     }
 }

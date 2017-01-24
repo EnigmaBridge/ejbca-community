@@ -213,13 +213,11 @@ public class P12toPEM {
 
         // Readable & writable only by the owner.
         tmpFile.createNewFile();
-        tmpFile.setReadable(false);
-        tmpFile.setExecutable(false);
-        tmpFile.setWritable(false);
-        tmpFile.setReadable(true, true);
-        tmpFile.setWritable(true, true);
+        VpnUtils.readOwnerOnly(tmpFile);
 
         out = new FileOutputStream(tmpFile);
+        VpnUtils.readOwnerOnly(tmpFile);
+        
         out.write(beginPrivateKey);
         out.write(NL);
         out.write(Base64.encode(privKeyEncoded));
