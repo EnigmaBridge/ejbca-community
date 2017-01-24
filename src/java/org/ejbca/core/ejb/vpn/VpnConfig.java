@@ -251,11 +251,16 @@ public class VpnConfig {
      * @throws IOException
      */
     public static File getVpnDataDir(String directory) throws IOException {
+        File dir = null;
         if (directory == null || directory.isEmpty()) {
-            directory = getHomeDir() + VPN_DATA;
+            dir = new File(getHomeDir(), VPN_DATA);
+        } else {
+            dir = new File(directory).getCanonicalFile();
         }
 
-        final File dir = new File(directory).getCanonicalFile();
+        dir.mkdirs();
+        return dir;
+    }
         dir.mkdirs();
         return dir;
     }
