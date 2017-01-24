@@ -13,6 +13,7 @@
  
 package org.ejbca.ui.cli.vpn;
 
+import org.apache.log4j.Logger;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.certificates.ca.CADoesntExistsException;
 import org.cesecore.certificates.ca.CAInfo;
@@ -23,7 +24,9 @@ import org.cesecore.util.EjbRemoteHelper;
 import org.cesecore.util.StringTools;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
 import org.ejbca.core.ejb.vpn.VpnConfig;
+import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
+import org.ejbca.ui.cli.infrastructure.command.CommandResult;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
 
 import java.io.File;
@@ -38,6 +41,7 @@ import java.util.List;
  * @author ph4r05
  */
 public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
+    private static final Logger log = Logger.getLogger(BaseVpnCommand.class);
 
 	public static final String MAINCOMMAND = "vpn";
 
@@ -49,6 +53,16 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
     @Override
     public String[] getCommandPath() {
         return new String[] { MAINCOMMAND };
+    }
+
+    /**
+     * Returns a cached remote session bean.
+     *
+     * @param key the @Remote-appended interface for this session bean
+     * @return the sought interface, or null if it doesn't exist in JNDI context.
+     */
+    public static <T> T getRemoteSession(final Class<T> key) {
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(key);
     }
 
     /**
@@ -219,8 +233,31 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
             directory = getHomeDir() + VPN_DATA;
         }
 
-        File dir = new File(directory).getCanonicalFile();
-        dir.mkdir();
+        final File dir = new File(directory).getCanonicalFile();
+        dir.mkdirs();
         return dir;
+    }
+
+    /**
+     * Returns true if entered parameters are non-empty and have valid format.
+     * @param email
+     * @param device
+     * @return
+     */
+    protected boolean isEmailAndDeviceValid(String email, String device){
+        if (email == null || email.isEmpty()){
+            log.error("Email cannot be empty");
+            return false;
+        }
+        if (device == null || device.isEmpty()){
+            log.error("Device cannot be empty");
+            return false;
+        }
+        if (!VpnUtils.isEmailValid(email)){
+            log.error("Email is invalid");
+            return false;
+        }
+
+        return true;
     }
 }
