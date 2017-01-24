@@ -20,6 +20,8 @@ public class VpnCons {
     public static final String DEFAULT_LANGUAGE = "en";
     public static final long DEFAULT_VPN_OVERLAP = 60L * 60L * 1000L;
     public static final boolean DEFAULT_VPN_CRL_MOVE = true;
+    public static final boolean DEFAULT_VPN_CRL_REFRESH_ON_REVOKE = true;
+    public static final boolean DEFAULT_VPN_CRL_REFRESH_FILE_ON_REVOKE = true;
 
     public static final String VPN_SERVER_USERNAME = "VPN Server";
     public static final String VPN_LANGUAGE_FILE = "languagefile";

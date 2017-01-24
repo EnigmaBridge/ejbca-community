@@ -30,6 +30,8 @@ public class VpnConfig {
     public static final String CONFIG_VPN_CRL_OVERLAP_MILLI = "vpn.crl.overlapmilli";
     public static final String CONFIG_VPN_CRL_DIR = "vpn.crl.dir";
     public static final String CONFIG_VPN_CRL_MOVE = "vpn.crl.move";
+    public static final String CONFIG_VPN_CRL_REFRESH_ON_REVOKE = "vpn.crl.refresh_on_revoke";
+    public static final String CONFIG_VPN_CRL_REFRESH_FILE_ON_REVOKE = "vpn.crl.refresh_file_on_revoke";
 
     public static String getDefaultIfEmpty(String src, String defaultValue){
         return (src == null || src.isEmpty()) ? defaultValue : src;
@@ -320,5 +322,53 @@ public class VpnConfig {
         }
 
         return VpnCons.DEFAULT_VPN_CRL_MOVE;
+    }
+
+    /**
+     * Returns whether to generate a new CRL on VPN change.
+     * If shouldRefreshFileCrlOnRevoke() returns true this call also returns true.
+     *
+     * @return true if new CRL should be generated on VPN revoke operation
+     */
+    public static boolean shouldRefreshCrlOnRevoke(){
+        final boolean regenerateFile = shouldRefreshFileCrlOnRevoke();
+        if (regenerateFile){
+            return true;
+        }
+
+        // This particular setting.
+        final String pref = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CRL_REFRESH_ON_REVOKE);
+        if (pref == null){
+            return VpnCons.DEFAULT_VPN_CRL_REFRESH_ON_REVOKE;
+        }
+
+        try{
+            return Boolean.parseBoolean(pref);
+        } catch(Exception e){
+            log.error("Exception in parsing " + CONFIG_VPN_CRL_REFRESH_ON_REVOKE, e);
+        }
+
+        return VpnCons.DEFAULT_VPN_CRL_REFRESH_ON_REVOKE;
+    }
+
+    /**
+     * Returns whether to generate a new CRL file on VPN change.
+     * If true the shouldRefreshCrlOnRevoke() returns also true.
+     *
+     * @return true if new CRL should be generated on VPN revoke operation
+     */
+    public static boolean shouldRefreshFileCrlOnRevoke(){
+        final String pref = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CRL_REFRESH_FILE_ON_REVOKE);
+        if (pref == null){
+            return VpnCons.DEFAULT_VPN_CRL_REFRESH_FILE_ON_REVOKE;
+        }
+
+        try{
+            return Boolean.parseBoolean(pref);
+        } catch(Exception e){
+            log.error("Exception in parsing " + CONFIG_VPN_CRL_REFRESH_FILE_ON_REVOKE, e);
+        }
+
+        return VpnCons.DEFAULT_VPN_CRL_REFRESH_FILE_ON_REVOKE;
     }
 }
