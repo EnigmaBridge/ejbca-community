@@ -3,7 +3,9 @@ package org.cesecore.vpn;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
+import java.security.KeyStore;
 
 /**
  * VpnUser DB entity.
@@ -93,6 +95,13 @@ public class VpnUser implements Serializable, Cloneable {
      * VPN config version sequence number.
      */
     private Integer configVersion=1;
+
+    /**
+     * Raw key store object for transfer from the create routines.
+     * Not stored nor serialized.
+     */
+    @Transient
+    private KeyStore keyStoreRaw;
 
     public VpnUser() {
     }
@@ -320,6 +329,16 @@ public class VpnUser implements Serializable, Cloneable {
 
     public void setOtpUsedCount(int otpUsedCount) {
         this.otpUsedCount = otpUsedCount;
+    }
+
+    @Transient
+    public KeyStore getKeyStoreRaw() {
+        return keyStoreRaw;
+    }
+
+    @Transient
+    public void setKeyStoreRaw(KeyStore keyStoreRaw) {
+        this.keyStoreRaw = keyStoreRaw;
     }
 
     @Override

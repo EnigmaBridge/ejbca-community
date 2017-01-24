@@ -30,4 +30,6 @@ public class VpnCons {
     public static final String KEY_IP = "ip";
     public static final String KEY_FORWARDED = "fwded";
 
+    public static final String KEY_RETURN_KEY_STORE = "returnKeyStore";
+
 }

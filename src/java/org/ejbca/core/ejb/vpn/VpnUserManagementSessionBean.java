@@ -608,6 +608,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             user.setVpnConfig(vpnConfig);
 
             final VpnUser mergedUser = vpnUserSession.mergeVpnUser(user);
+            final boolean returnKeyStore = properties != null && !properties.getProperty(VpnCons.KEY_RETURN_KEY_STORE).isEmpty();
+            if (returnKeyStore){
+                mergedUser.setKeyStoreRaw(ks);
+            }
 
             // Audit logging
             final Map<String, Object> details = new LinkedHashMap<String, Object>();
@@ -615,6 +619,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             details.put("id", user.getId());
             details.put("email", user.getEmail());
             details.put("device", user.getDevice());
+            details.put("returnKeyStore", returnKeyStore);
             securityEventsLoggerSession.log(EventTypes.VPN_MAIL_SENT, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                     authenticationToken.toString(), String.valueOf(user.getId()), null, null, details);
 
