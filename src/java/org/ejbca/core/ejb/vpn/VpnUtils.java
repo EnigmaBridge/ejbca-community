@@ -12,16 +12,10 @@ import org.ejbca.util.passgen.IPasswordGenerator;
 import org.ejbca.util.passgen.PasswordGeneratorFactory;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.CharArrayWriter;
-import java.io.File;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
+import java.io.*;
+import java.security.*;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -73,6 +67,41 @@ public class VpnUtils {
         writer.writeObject(generator);
         writer.close();
 
+        return charWriter.toString();
+    }
+
+    /**
+     * Builds CRL object from the DER representation.
+     *
+     * @param crlData der encoded CRL
+     * @return X509CRL
+     * @throws CertificateException
+     * @throws NoSuchProviderException
+     * @throws CRLException
+     */
+    public static X509CRL buildCrl(byte[] crlData) throws CertificateException, NoSuchProviderException, CRLException {
+        final CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+        return (X509CRL) cf.generateCRL(new ByteArrayInputStream(crlData));
+    }
+
+    /**
+     * Converts DER encoded CRL to PEM encoded CRL
+     * @param crlData der encoded CRL
+     * @return PEM encoded CRL
+     * @throws CertificateException
+     * @throws NoSuchProviderException
+     * @throws CRLException
+     * @throws IOException
+     */
+    public static String crlDerToPem(byte[] crlData) throws CertificateException, NoSuchProviderException, CRLException, IOException {
+        final X509CRL x509CRL = buildCrl(crlData);
+
+        final CharArrayWriter charWriter = new CharArrayWriter();
+        final JcaMiscPEMGenerator generator = new JcaMiscPEMGenerator(x509CRL, null);
+        final PemWriter writer = new PemWriter(charWriter);
+
+        writer.writeObject(generator);
+        writer.close();
         return charWriter.toString();
     }
 
