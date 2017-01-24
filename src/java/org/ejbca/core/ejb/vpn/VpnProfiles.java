@@ -41,7 +41,7 @@ public class VpnProfiles {
         profile.setModifyable(EndEntityProfile.PASSWORD,0 ,true);
         profile.setValue(EndEntityProfile.AUTOGENPASSWORDTYPE,0, PasswordGeneratorFactory.PASSWORDTYPE_NOTALIKEENLD);
         profile.setValue(EndEntityProfile.AUTOGENPASSWORDLENGTH, 0, "16");
-        profile.setUse(EndEntityProfile.AUTOGENPASSWORDTYPE, 0, true);
+        profile.setUse(EndEntityProfile.AUTOGENPASSWORDTYPE, 0, false);
 
         // Cert settings
         profile.setRequired(DnComponents.COMMONNAME,0,true);

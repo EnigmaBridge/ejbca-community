@@ -13,6 +13,7 @@
 package org.ejbca.ui.web.admin.vpn;
 
 import org.apache.log4j.Logger;
+import org.cesecore.CesecoreException;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
@@ -27,6 +28,7 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.certificates.endentity.EndEntityTypes;
 import org.cesecore.keybind.InternalKeyBindingMgmtSessionLocal;
 import org.cesecore.util.StringTools;
+import org.ejbca.core.EjbcaException;
 import org.ejbca.core.ejb.vpn.*;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
@@ -39,6 +41,7 @@ import org.ejbca.core.model.approval.ApprovalException;
 import org.ejbca.core.model.approval.WaitingForApprovalException;
 import org.ejbca.core.model.ra.AlreadyRevokedException;
 import org.ejbca.core.model.ra.NotFoundException;
+import org.ejbca.core.model.ra.raadmin.UserDoesntFullfillEndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
@@ -556,10 +559,13 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserGuiInfo.getId());
                 final String endEntityId = getEndEntityId(vpnUser);
 
+                // Update password, set status to new.
+                final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, endEntityId);
+                endEntity.setPassword(VpnUtils.genRandomPwd());
+                endEntity.setTimeModified(new Date());
+                endEntityManagementSession.changeUser(authenticationToken, endEntity, false);
                 endEntityManagementSession.setUserStatus(authenticationToken, vpnUserGuiInfo.getUserDesc(),
                         EndEntityConstants.STATUS_NEW);
-
-                final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, endEntityId);
 
                 // Regenerate certificate
                 try {
@@ -591,7 +597,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
-        } catch (IOException | VpnMailSendException e) {
+        } catch (IOException | EjbcaException | CesecoreException | UserDoesntFullfillEndEntityProfile e) {
             msg = e.getMessage();
         }
 
