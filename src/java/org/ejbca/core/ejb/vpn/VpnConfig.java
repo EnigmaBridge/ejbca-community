@@ -29,6 +29,7 @@ public class VpnConfig {
     public static final String CONFIG_VPN_EMAIL_FROM = "vpn.email.from";
     public static final String CONFIG_VPN_CRL_OVERLAP_MILLI = "vpn.crl.overlapmilli";
     public static final String CONFIG_VPN_CRL_DIR = "vpn.crl.dir";
+    public static final String CONFIG_VPN_CRL_MOVE = "vpn.crl.move";
 
     public static String getDefaultIfEmpty(String src, String defaultValue){
         return (src == null || src.isEmpty()) ? defaultValue : src;
@@ -297,5 +298,27 @@ public class VpnConfig {
         final File dir = new File(crlDirPrefs);
         dir.mkdirs();
         return dir;
+    }
+
+
+    /**
+     * Returns if CRL generation should use generate-to-temporary-file-then-move strategy or open
+     * directly the configured CRL file and pverwrite that.
+     *
+     * @return true if move strategy should be used.
+     */
+    public static boolean shouldUseMoveForCrlGeneration(){
+        final String movePref = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CRL_MOVE);
+        if (movePref == null){
+            return VpnCons.DEFAULT_VPN_CRL_MOVE;
+        }
+
+        try{
+            return Boolean.parseBoolean(movePref);
+        } catch(Exception e){
+            log.error("Exception in parsing VPN move CRL", e);
+        }
+
+        return VpnCons.DEFAULT_VPN_CRL_MOVE;
     }
 }
