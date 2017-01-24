@@ -30,7 +30,6 @@ import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Date;
-import java.util.Properties;
 
 /**
  * Adds a new VPN user / generates a new key set for the client.

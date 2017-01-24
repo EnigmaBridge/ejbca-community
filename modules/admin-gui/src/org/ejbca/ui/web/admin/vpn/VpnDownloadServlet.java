@@ -16,11 +16,7 @@ import org.apache.log4j.Logger;
 import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
-import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.util.CryptoProviderTools;
-import org.cesecore.util.StringTools;
-import org.cesecore.vpn.VpnUser;
-import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSessionLocal;
 import org.ejbca.core.model.InternalEjbcaResources;
 
@@ -31,7 +27,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Servlet for download of VPN configuration files and VPN related files.

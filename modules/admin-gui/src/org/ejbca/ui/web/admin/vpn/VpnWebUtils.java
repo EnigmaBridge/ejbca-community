@@ -1,8 +1,5 @@
 package org.ejbca.ui.web.admin.vpn;
 
-import org.cesecore.util.Base64;
-import org.cesecore.util.CertTools;
-import org.cesecore.vpn.VpnUser;
 import org.ejbca.ui.web.admin.cainterface.CAInterfaceBean;
 import org.ejbca.ui.web.admin.configuration.EjbcaWebBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
@@ -12,13 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.beans.Beans;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 
 /**
  * Simple utilities for VPN beans.

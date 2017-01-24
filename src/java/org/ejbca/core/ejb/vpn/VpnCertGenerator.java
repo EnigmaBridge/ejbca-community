@@ -2,7 +2,6 @@ package org.ejbca.core.ejb.vpn;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.certificates.ca.*;
 import org.cesecore.certificates.certificate.CertificateCreateException;
@@ -15,7 +14,6 @@ import org.cesecore.certificates.util.AlgorithmConstants;
 import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.keys.util.KeyTools;
 import org.cesecore.util.CertTools;
-import org.cesecore.util.EjbRemoteHelper;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionRemote;
 import org.ejbca.core.ejb.ca.sign.SignSession;

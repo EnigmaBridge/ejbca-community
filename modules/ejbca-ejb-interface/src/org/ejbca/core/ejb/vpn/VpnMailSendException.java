@@ -1,6 +1,5 @@
 package org.ejbca.core.ejb.vpn;
 
-import org.cesecore.CesecoreException;
 import org.cesecore.ErrorCode;
 
 /**

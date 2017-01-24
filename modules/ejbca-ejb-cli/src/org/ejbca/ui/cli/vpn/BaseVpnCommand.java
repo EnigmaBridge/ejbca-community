@@ -28,8 +28,6 @@ import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

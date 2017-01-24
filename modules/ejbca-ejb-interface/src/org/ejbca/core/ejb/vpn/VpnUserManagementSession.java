@@ -15,12 +15,9 @@ package org.ejbca.core.ejb.vpn;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.certificates.ca.CADoesntExistsException;
-import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.vpn.VpnUser;
 
-import javax.ejb.Local;
 import java.io.IOException;
-import java.security.KeyStore;
 import java.util.List;
 import java.util.Properties;
 

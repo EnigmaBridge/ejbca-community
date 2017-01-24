@@ -1,7 +1,6 @@
 package org.ejbca.core.ejb.vpn;
 
 import org.cesecore.authentication.tokens.AuthenticationToken;
-import org.cesecore.certificates.ca.CaSessionRemote;
 import org.cesecore.util.EjbRemoteHelper;
 
 /**

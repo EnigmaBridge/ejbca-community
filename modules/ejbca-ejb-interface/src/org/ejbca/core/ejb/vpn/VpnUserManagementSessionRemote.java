@@ -1,7 +1,5 @@
 package org.ejbca.core.ejb.vpn;
 
-import org.ejbca.core.ejb.ra.EndEntityAccessSession;
-
 import javax.ejb.Remote;
 
 /**
