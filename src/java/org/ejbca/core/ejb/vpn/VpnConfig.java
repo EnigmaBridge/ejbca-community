@@ -27,6 +27,8 @@ public class VpnConfig {
     public static final String CONFIG_VPN_LANGUAGE_DIR = "vpn.languagedir";
     public static final String CONFIG_VPN_DEFAULT_LANG = "vpn.defaultlang";
     public static final String CONFIG_VPN_EMAIL_FROM = "vpn.email.from";
+    public static final String CONFIG_VPN_CRL_OVERLAP_MILLI = "vpn.crl.overlapmilli";
+    public static final String CONFIG_VPN_CRL_DIR = "vpn.crl.dir";
 
     public static String getDefaultIfEmpty(String src, String defaultValue){
         return (src == null || src.isEmpty()) ? defaultValue : src;
@@ -261,6 +263,38 @@ public class VpnConfig {
         dir.mkdirs();
         return dir;
     }
+
+    /**
+     * Returns configured overlap for the VPN CRL.
+     * @return time in milliseconds the CRL should be generated before the previous one expires.
+     */
+    public static long getDefaultCRLOverlapMilli(){
+        final String milliPrefs = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CRL_OVERLAP_MILLI);
+        if (milliPrefs == null){
+            return VpnCons.DEFAULT_VPN_OVERLAP;
+        }
+
+        try{
+            return Long.parseLong(milliPrefs);
+        } catch(Exception e){
+            log.error("Exception in parsing VPN CRL verlap milli number", e);
+        }
+
+        return VpnCons.DEFAULT_VPN_OVERLAP;
+    }
+
+    /**
+     * Returns configured directory for the CRL.
+     * If the CRL directory is not defined, default VPN directory is used.
+     * @return CRL data directory
+     */
+    public static File getCrlDirectory() throws IOException {
+        final String crlDirPrefs = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_DEFAULT_LANG);
+        if (crlDirPrefs == null){
+            return getVpnDataDir(null);
+        }
+
+        final File dir = new File(crlDirPrefs);
         dir.mkdirs();
         return dir;
     }

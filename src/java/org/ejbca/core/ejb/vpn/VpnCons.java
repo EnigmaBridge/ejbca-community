@@ -18,6 +18,7 @@ public class VpnCons {
     public static final String DEFAULT_TEMPLATE_DIR = "vpn_templates";
     public static final String DEFAULT_LANGUAGE_DIR = "vpn_lang";
     public static final String DEFAULT_LANGUAGE = "en";
+    public static final long DEFAULT_VPN_OVERLAP = 60L * 60L * 1000L;
 
     public static final String VPN_SERVER_USERNAME = "VPN Server";
     public static final String VPN_LANGUAGE_FILE = "languagefile";
