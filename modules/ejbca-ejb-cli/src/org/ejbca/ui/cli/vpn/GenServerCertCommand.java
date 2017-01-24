@@ -44,7 +44,7 @@ import java.util.Date;
  * Created by dusanklinec on 11.01.17.
  */
 public class GenServerCertCommand extends BaseVpnCommand {
-    private static final Logger log = Logger.getLogger(InitEntityProfilesCommand.class);
+    private static final Logger log = Logger.getLogger(GenServerCertCommand.class);
 
     private static final String PASSWORD_KEY = "--password";
     private static final String DIRECTORY_KEY = "--directory";
@@ -99,7 +99,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
             // Regenerate ? Fetch user entity.
             try {
                 if (regenerate){
-                    uservo = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAccessSessionRemote.class)
+                    uservo = getRemoteSession(EndEntityAccessSessionRemote.class)
                             .findUser(getAuthenticationToken(), VpnCons.VPN_SERVER_USERNAME);
 
                     if (uservo == null && !createIfMissing){
@@ -108,21 +108,20 @@ public class GenServerCertCommand extends BaseVpnCommand {
 
                     } else if (uservo != null) {
                         // Revoke existing certificate
-                        EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                        getRemoteSession(EndEntityManagementSessionRemote.class)
                                 .revokeUser(getAuthenticationToken(), uservo.getUsername(), 0);
 
                         // Update password.
                         uservo.setPassword(password);
                         uservo.setTimeModified(new Date());
-                        EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                        getRemoteSession(EndEntityManagementSessionRemote.class)
                                 .changeUser(getAuthenticationToken(), uservo, false);
 
                         // Set status to new
-                        EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                        getRemoteSession(EndEntityManagementSessionRemote.class)
                                 .setUserStatus(getAuthenticationToken(), uservo.getUsername(),
                                         EndEntityConstants.STATUS_NEW);
                     }
-
                 }
 
                 // User is null - create a new one
@@ -141,7 +140,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
                             0, null);
                     uservo.setPassword(password);
 
-                    EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                    getRemoteSession(EndEntityManagementSessionRemote.class)
                             .addUser(getAuthenticationToken(), uservo, false);
                 }
 
@@ -180,17 +179,17 @@ public class GenServerCertCommand extends BaseVpnCommand {
             // If status is still NEW, FAILED or KEYRECOVER though, it means we
             // should set it back to what it was before, probably it had a equest counter
             // meaning that we should not reset the clear text password yet.
-            EndEntityInformation vo = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityAccessSessionRemote.class)
+            EndEntityInformation vo = getRemoteSession(EndEntityAccessSessionRemote.class)
                     .findUser(getAuthenticationToken(), uservo.getUsername());
 
             if ((vo.getStatus() == EndEntityConstants.STATUS_NEW) || (vo.getStatus() == EndEntityConstants.STATUS_FAILED)
                     || (vo.getStatus() == EndEntityConstants.STATUS_KEYRECOVERY)) {
-                EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class).
+                getRemoteSession(EndEntityManagementSessionRemote.class).
                         setClearTextPassword(getAuthenticationToken(), uservo.getUsername(), uservo.getPassword());
             } else {
                 // Delete clear text password, if we are not letting status be
                 // the same as originally
-                EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityManagementSessionRemote.class)
+                getRemoteSession(EndEntityManagementSessionRemote.class)
                         .setClearTextPassword(getAuthenticationToken(), uservo.getUsername(), null);
             }
 
