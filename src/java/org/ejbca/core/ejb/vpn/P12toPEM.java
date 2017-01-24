@@ -150,14 +150,15 @@ public class P12toPEM {
 
         while (e.hasMoreElements()) {
             o = e.nextElement();
+            if (o == null){
+                continue;
+            }
 
-            if (o instanceof String) {
-                if ((ks.isKeyEntry((String) o)) &&
-                        ((serverPrivKey = (PrivateKey) ks.getKey((String) o, password.toCharArray())) != null)) {
-                    log.debug("Aliases " + o + " is KeyEntry.");
+            if ((ks.isKeyEntry((String) o)) &&
+                    ((serverPrivKey = (PrivateKey) ks.getKey((String) o, password.toCharArray())) != null)) {
+                log.debug("Aliases " + o + " is KeyEntry.");
 
-                    break;
-                }
+                break;
             }
         }
 
