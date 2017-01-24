@@ -120,6 +120,9 @@ public class GenServerCertCommand extends BaseVpnCommand {
                         getRemoteSession(EndEntityManagementSessionRemote.class)
                                 .setUserStatus(getAuthenticationToken(), uservo.getUsername(),
                                         EndEntityConstants.STATUS_NEW);
+
+                        // CRL
+                        checkCrl(null, null);
                     }
                 }
 

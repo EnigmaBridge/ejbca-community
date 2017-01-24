@@ -14,6 +14,7 @@
 package org.ejbca.ui.cli.vpn;
 
 import org.apache.log4j.Logger;
+import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.certificates.ca.CADoesntExistsException;
 import org.cesecore.certificates.ca.CAInfo;
@@ -23,7 +24,9 @@ import org.cesecore.certificates.certificateprofile.CertificateProfileSessionRem
 import org.cesecore.util.EjbRemoteHelper;
 import org.cesecore.util.StringTools;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
+import org.ejbca.core.ejb.vpn.AuthenticationTokenProvider;
 import org.ejbca.core.ejb.vpn.VpnConfig;
+import org.ejbca.core.ejb.vpn.VpnCrlGenerator;
 import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
@@ -216,5 +219,38 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
         }
 
         return true;
+    }
+
+    /**
+     * Called when some revocation was performed.
+     * Generates CRL if the configuration is set so.
+     */
+    protected void checkCrl(Boolean updateCrl, Boolean updateCrlFile){
+        final boolean updateCrlConf = updateCrl != null ? updateCrl : VpnConfig.shouldRefreshCrlOnRevoke();
+        final boolean updateCrlFileConf = updateCrlFile != null ? updateCrlFile : VpnConfig.shouldRefreshFileCrlOnRevoke();
+        if (!updateCrlConf && !updateCrlFileConf){
+            return;
+        }
+
+        try {
+            final VpnCrlGenerator crlGen = new VpnCrlGenerator();
+            crlGen.setWrite(updateCrlFileConf);
+            crlGen.setForce(true);
+            crlGen.setDer(false);
+            crlGen.setCrlDirectory(VpnConfig.getCrlDirectory());
+            crlGen.setFetchRemoteSessions(true);
+            crlGen.setAuthenticationTokenProvider(new AuthenticationTokenProvider() {
+                @Override
+                public AuthenticationToken getAuthenticationToken() {
+                    return BaseVpnCommand.this.getAuthenticationToken();
+                }
+            });
+
+            crlGen.generate();
+            log.info(String.format("CRL generation. ID: %s, file: %s", crlGen.getCrlId(), crlGen.getCrlPath()));
+
+        } catch(Exception e){
+            log.error("Exception in CRL update", e);
+        }
     }
 }

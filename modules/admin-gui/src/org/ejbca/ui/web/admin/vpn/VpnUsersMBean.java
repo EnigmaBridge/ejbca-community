@@ -540,6 +540,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         String msg = null;
         try {
+            int revokedCnt = 0;
             for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
                 if (!vpnUserGuiInfo.isSelected()) {
                     continue;
@@ -550,6 +551,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Delete VPN related crypto info
                 vpnUserManagementSession.revokeVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+                revokedCnt += 1;
 
                 // Load fresh VPN user view
                 final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, vpnUserGuiInfo.getId());
@@ -591,6 +593,10 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 msg = "VpnUser regenerated successfully.";
             }
 
+            if (revokedCnt > 0){
+                checkCrl();
+            }
+
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
         } catch (IOException | EjbcaException | CesecoreException | UserDoesntFullfillEndEntityProfile e) {
@@ -612,6 +618,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         String msg = null;
         try {
+            int revokedCnt = 0;
             for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
                 if (!vpnUserGuiInfo.isSelected()) {
                     continue;
@@ -622,6 +629,11 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 // Delete VPN related crypto info
                 vpnUserManagementSession.revokeVpnUser(authenticationToken, vpnUserGuiInfo.getId());
+                revokedCnt += 1;
+            }
+
+            if (revokedCnt > 0) {
+                checkCrl();
             }
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
             msg = e.getMessage();
@@ -642,6 +654,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         String msg = null;
         try {
+            int revokedCnt = 0;
             for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
                 if (!vpnUserGuiInfo.isSelected()){
                     continue;
@@ -650,6 +663,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Revocation first. TODO: revocation reason parametrisation
                 try {
                     endEntityManagementSession.revokeAndDeleteUser(authenticationToken, vpnUserGuiInfo.getUserDesc(), 0);
+                    revokedCnt += 1;
                 } catch(NotFoundException e){
                     log.warn("End entity not found");
                 }
@@ -657,6 +671,12 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 // Delete VpnUser record itself
                 vpnUserManagementSession.deleteVpnUser(authenticationToken, vpnUserGuiInfo.getId());
             }
+
+            // CRL update
+            if (revokedCnt > 0) {
+                checkCrl();
+            }
+
         } catch (ApprovalException | WaitingForApprovalException | RemoveException e) {
             msg = e.getMessage();
         }
@@ -783,6 +803,35 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return vpnUserManagementSession.newVpnCredentials(authenticationToken, userId, password, null);
     }
 
+    /**
+     * Called when some revocation was performed.
+     * Generates CRL if the configuration is set so.
+     */
+    private void checkCrl(){
+        final boolean updateCrl = VpnConfig.shouldRefreshCrlOnRevoke();
+        final boolean updateCrlFile = VpnConfig.shouldRefreshFileCrlOnRevoke();
+        if (!updateCrlFile && !updateCrl){
+            return;
+        }
+
+        try {
+            final VpnCrlGenerator crlGen = new VpnCrlGenerator();
+            crlGen.setWrite(updateCrlFile);
+            crlGen.setForce(true);
+            crlGen.setDer(false);
+            crlGen.setCrlDirectory(VpnConfig.getCrlDirectory());
+            crlGen.setFetchRemoteSessions(false);
+            crlGen.setCaSession(caSession);
+            crlGen.setVpnSession(vpnUserManagementSession);
+            crlGen.setAuthenticationToken(authenticationToken);
+            crlGen.generate();
+            log.info(String.format("CRL generation. ID: %s, file: %s", crlGen.getCrlId(), crlGen.getCrlPath()));
+
+        } catch(Exception e){
+            log.error("Exception in CRL update", e);
+        }
+    }
+
     /** Invoked when admin requests a VPNUser creation. */
     public void saveCurrentVpnUser() throws AuthorizationDeniedException {
         String msg = null;
@@ -816,6 +865,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
                 } catch(Exception e){
                     endEntityManagementSession.revokeAndDeleteUser(authenticationToken, uservo.getUsername(), 0);
+                    checkCrl();
                     throw new Exception("Exception in creating a new VPN user", e);
                 }
 

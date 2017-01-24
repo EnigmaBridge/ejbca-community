@@ -160,6 +160,9 @@ public class GenClientCommand extends BaseVpnCommand {
 
                 getRemoteSession(VpnUserManagementSessionRemote.class)
                         .revokeVpnUser(getAuthenticationToken(), vpnUser.getId());
+
+                // CRL
+                checkCrl(null, null);
             }
 
             try {
