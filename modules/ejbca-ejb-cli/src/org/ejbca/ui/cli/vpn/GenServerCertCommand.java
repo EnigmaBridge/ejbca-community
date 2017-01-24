@@ -127,7 +127,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
                 if (uservo == null) {
                     uservo = new EndEntityInformation(
                             VpnCons.VPN_SERVER_USERNAME,
-                            String.format("CN=%s,OU=VPN", cn),
+                            CertTools.stringToBCDNString(String.format("CN=%s,OU=VPN", cn)),
                             vpnCA.getCAId(),
                             null, null,
                             EndEntityConstants.STATUS_NEW,
