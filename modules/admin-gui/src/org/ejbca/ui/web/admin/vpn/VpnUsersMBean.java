@@ -572,7 +572,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                     // The password is taken from end entity.
                     // In the current setting we use auto-generated passwords in cleartext.
                     // The new password is generated after a new certificate is generated.
-                    generateKeyAndConfig(vpnUser.getId(), OptionalNull.<String>empty());
+                    generateKeyAndConfig(vpnUser.getId(), OptionalNull.ofNullable(endEntity.getPassword()));
 
                 } catch (Exception e) {
                     // If things went wrong set status to FAILED
