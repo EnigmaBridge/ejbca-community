@@ -32,4 +32,9 @@ public class VpnCons {
 
     public static final String KEY_RETURN_KEY_STORE = "returnKeyStore";
 
+    /**
+     * VPN data dir - default one.
+     */
+    public static final String VPN_DATA = "vpn";
+
 }

@@ -6,6 +6,8 @@ import org.ejbca.config.EjbcaConfigurationHolder;
 import java.io.File;
 import java.io.IOException;
 
+import static org.ejbca.core.ejb.vpn.VpnCons.VPN_DATA;
+
 /**
  * VPN related configuration.
  *
@@ -237,5 +239,24 @@ public class VpnConfig {
         }
 
         return null;
+    }
+
+    /**
+     * Returns VPN data directory to store VPN related files (e.g., certificates, p12, ...).
+     * If directory does not exist, it will be created.
+     * If null/empty string is given, EJBCA_HOME/vpn is used.
+     *
+     * @param directory directory
+     * @return File representing the directory.
+     * @throws IOException
+     */
+    public static File getVpnDataDir(String directory) throws IOException {
+        if (directory == null || directory.isEmpty()) {
+            directory = getHomeDir() + VPN_DATA;
+        }
+
+        final File dir = new File(directory).getCanonicalFile();
+        dir.mkdirs();
+        return dir;
     }
 }

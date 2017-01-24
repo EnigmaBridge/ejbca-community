@@ -11,7 +11,6 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.certificates.endentity.EndEntityTypes;
 import org.cesecore.util.CertTools;
 import org.cesecore.util.CryptoProviderTools;
-import org.cesecore.util.EjbRemoteHelper;
 import org.ejbca.core.EjbcaException;
 import org.ejbca.core.ejb.ra.EndEntityAccessSessionRemote;
 import org.ejbca.core.ejb.ra.EndEntityExistsException;
@@ -56,7 +55,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
         registerParameter(new Parameter(PASSWORD_KEY, "Password", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.ARGUMENT,
                 "Password for the new end entity. Will be prompted for if not set."));
         registerParameter(new Parameter(DIRECTORY_KEY, "Directory", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.ARGUMENT,
-                "The name of the directory to store the keys to. If not specified, the current EJBCA_HOME/"+VPN_DATA+" directory will be used."));
+                "The name of the directory to store the keys to. If not specified, the current EJBCA_HOME/"+VpnCons.VPN_DATA+" directory will be used."));
         registerParameter(new Parameter(PEM_KEY, "PEM", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.FLAG,
                 "If parameter is used, PEM files are dumped together with P12."));
         registerParameter(new Parameter(REGENERATE_KEY, "Regenerate", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.FLAG,
@@ -86,7 +85,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
         StringBuilder errorString = new StringBuilder();
         try {
             // Dir if does not exist.
-            final File vpnDataDir = getVpnDataDir(argDirectory);
+            final File vpnDataDir = VpnConfig.getVpnDataDir(argDirectory);
             setMainStoreDir(vpnDataDir.getAbsolutePath());
 
             // 1. Create a new End Entity

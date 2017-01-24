@@ -26,7 +26,6 @@ import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionRemote;
 import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnUtils;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfileNotFoundException;
-import org.ejbca.ui.cli.infrastructure.command.CommandResult;
 import org.ejbca.ui.cli.infrastructure.command.EjbcaCliUserCommandBase;
 
 import java.io.File;
@@ -44,11 +43,6 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
     private static final Logger log = Logger.getLogger(BaseVpnCommand.class);
 
 	public static final String MAINCOMMAND = "vpn";
-
-    /**
-     * VPN data dir - default one.
-     */
-    public static final String VPN_DATA = "vpn";
 	
     @Override
     public String[] getCommandPath() {
@@ -187,22 +181,6 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
     }
 
     /**
-     * Return environment variable EJBCA_HOME or an empty string if the variable
-     * isn't set.
-     *
-     * @return Environment variable EJBCA_HOME
-     */
-    protected static String getHomeDir() {
-        String ejbcaHomeDir = System.getenv("EJBCA_HOME");
-        if (ejbcaHomeDir == null) {
-            ejbcaHomeDir = "";
-        } else if (!ejbcaHomeDir.endsWith("/") && !ejbcaHomeDir.endsWith("\\")) {
-            ejbcaHomeDir += File.separatorChar;
-        }
-        return ejbcaHomeDir;
-    }
-
-    /**
      * Prompts for the password if not set on command line
      * @param commandLineArgument
      * @return
@@ -217,25 +195,6 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
             authenticationCode = StringTools.passwordDecryption(commandLineArgument, "End Entity Password");
         }
         return authenticationCode;
-    }
-
-    /**
-     * Returns VPN data directory to store VPN related files (e.g., certificates, p12, ...).
-     * If directory does not exist, it will be created.
-     * If null/empty string is given, EJBCA_HOME/vpn is used.
-     *
-     * @param directory directory
-     * @return File representing the directory.
-     * @throws IOException
-     */
-    protected File getVpnDataDir(String directory) throws IOException {
-        if (directory == null || directory.isEmpty()) {
-            directory = getHomeDir() + VPN_DATA;
-        }
-
-        final File dir = new File(directory).getCanonicalFile();
-        dir.mkdirs();
-        return dir;
     }
 
     /**
