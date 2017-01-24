@@ -28,6 +28,7 @@ import org.cesecore.certificates.certificate.CertificateRevokeException;
 import org.cesecore.certificates.certificate.IllegalKeyException;
 import org.cesecore.certificates.certificate.exception.CertificateSerialNumberException;
 import org.cesecore.certificates.certificate.exception.CustomCertificateSerialNumberException;
+import org.cesecore.certificates.crl.CrlStoreSessionLocal;
 import org.cesecore.certificates.endentity.EndEntityConstants;
 import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.internal.InternalResources;
@@ -36,6 +37,7 @@ import org.cesecore.keys.token.CryptoTokenOfflineException;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionLocal;
 import org.ejbca.core.ejb.ca.sign.SignSessionLocal;
+import org.ejbca.core.ejb.crl.PublishingCrlSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityAccessSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityManagementSessionLocal;
 import org.ejbca.core.model.InternalEjbcaResources;
@@ -55,8 +57,6 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.*;
-
-import static org.ejbca.core.ejb.vpn.VpnUtils.properties2json;
 
 /**
  * Management session bean for VPN functionality. Top level.
@@ -89,6 +89,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     private EndEntityAccessSessionLocal endEntityAccessSession;
     @EJB
     private SignSessionLocal signSession;
+    @EJB
+    private CrlStoreSessionLocal crlStoreSession;
+    @EJB
+    private PublishingCrlSessionLocal publishingCrlSession;
 
     @Override
     public List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken) {
@@ -690,5 +694,52 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         }
 
         return null;
+    }
+
+    @Override
+    public int generateCRL(AuthenticationToken authenticationToken, boolean force, Long overlapMilli) throws AuthorizationDeniedException, CADoesntExistsException, VpnException {
+        try {
+            if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                    VpnRules.CRL_GEN.resource())) {
+                throw new AuthorizationDeniedException();
+            }
+
+            final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
+            if (force){
+                publishingCrlSession.forceCRL(authenticationToken, vpnCA.getCAId());
+            } else {
+                final long overlapMilliArg = overlapMilli != null ? overlapMilli : VpnConfig.getDefaultCRLOverlapMilli();
+                publishingCrlSession.createDeltaCRLnewTransactionConditioned(authenticationToken, vpnCA.getCAId(), overlapMilliArg);
+            }
+
+            // Get the newest CRL number.
+            final int number = crlStoreSession.getLastCRLNumber(vpnCA.getSubjectDN(), false);
+            log.info("CRL with number " + number + " generated.");
+            return number;
+
+        } catch (AuthorizationDeniedException | CADoesntExistsException e){
+            throw e;
+        } catch(Exception e){
+            throw new VpnException("Exception in loading CRL", e);
+        }
+    }
+
+    @Override
+    public byte[] getCRL(AuthenticationToken authenticationToken) throws AuthorizationDeniedException, CADoesntExistsException, VpnException {
+        try {
+            if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                    VpnRules.CRL_GET.resource())) {
+                throw new AuthorizationDeniedException();
+            }
+
+            final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
+            final byte[] crl = crlStoreSession.getLastCRL(vpnCA.getSubjectDN(), false);
+            return crl;
+
+        } catch (AuthorizationDeniedException | CADoesntExistsException e){
+            throw e;
+        } catch(Exception e){
+            throw new VpnException("Exception in loading CRL", e);
+        }
     }
 }

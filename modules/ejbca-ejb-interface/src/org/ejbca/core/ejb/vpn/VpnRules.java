@@ -25,6 +25,8 @@ public enum VpnRules {
     DELETE(BASE.resource() + "/delete"),
     VIEW(BASE.resource() + "/view"),
     USE(BASE.resource() + "/use"),
+    CRL_GET(BASE.resource() + "/crl/get"),
+    CRL_GEN(BASE.resource() + "/crl/gen"),
 
     USER_VIEW(USER.resource() + "/view"),
     USER_NEW(USER.resource() + "/new"),
