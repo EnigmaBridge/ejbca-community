@@ -270,11 +270,12 @@ public class GenClientCommand extends BaseVpnCommand {
             VpnUtils.readOwnerOnly(vpnConfigFile);
 
             final BufferedOutputStream ovpnOs = new BufferedOutputStream(new FileOutputStream(vpnConfigFile));
-            VpnUtils.readOwnerOnly(vpnConfigFile);
+            VpnUtils.readOwnerOnly(new File(vpnConfigFile.getAbsolutePath()));
 
             ovpnOs.write(vpnUser.getVpnConfig().getBytes("UTF-8"));
             ovpnOs.flush();
             ovpnOs.close();
+            VpnUtils.readOwnerOnly(new File(vpnConfigFile.getAbsolutePath()));
         }
 
         if (log.isTraceEnabled()) {

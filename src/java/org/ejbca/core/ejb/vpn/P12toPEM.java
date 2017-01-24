@@ -216,14 +216,15 @@ public class P12toPEM {
         VpnUtils.readOwnerOnly(tmpFile);
 
         out = new FileOutputStream(tmpFile);
-        VpnUtils.readOwnerOnly(tmpFile);
-        
+        VpnUtils.readOwnerOnly(new File(tmpFile.getAbsolutePath()));
+
         out.write(beginPrivateKey);
         out.write(NL);
         out.write(Base64.encode(privKeyEncoded));
         out.write(NL);
         out.write(endPrivateKey);
         out.close();
+        VpnUtils.readOwnerOnly(new File(tmpFile.getAbsolutePath()));
 
         tmpFile = new File(path, userFile + "-CA" + filetype);
         if (!overwrite && tmpFile.exists()) {
