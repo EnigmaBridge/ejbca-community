@@ -697,25 +697,31 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     }
 
     @Override
-    public int generateCRL(AuthenticationToken authenticationToken, boolean force, Long overlapMilli) throws AuthorizationDeniedException, CADoesntExistsException, VpnException {
+    public Integer generateCRL(AuthenticationToken authenticationToken, boolean force, Long overlapMilli) throws AuthorizationDeniedException, CADoesntExistsException, VpnException {
         try {
             if (!accessControlSessionSession.isAuthorized(authenticationToken,
                     VpnRules.CRL_GEN.resource())) {
                 throw new AuthorizationDeniedException();
             }
 
+            boolean wasGenerated = false;
             final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
             if (force){
-                publishingCrlSession.forceCRL(authenticationToken, vpnCA.getCAId());
+                wasGenerated = publishingCrlSession.forceCRL(authenticationToken, vpnCA.getCAId());
             } else {
                 final long overlapMilliArg = overlapMilli != null ? overlapMilli : VpnConfig.getDefaultCRLOverlapMilli();
-                publishingCrlSession.createDeltaCRLnewTransactionConditioned(authenticationToken, vpnCA.getCAId(), overlapMilliArg);
+                wasGenerated = publishingCrlSession.createDeltaCRLnewTransactionConditioned(
+                        authenticationToken, vpnCA.getCAId(), overlapMilliArg);
             }
 
             // Get the newest CRL number.
-            final int number = crlStoreSession.getLastCRLNumber(vpnCA.getSubjectDN(), false);
-            log.info("CRL with number " + number + " generated.");
-            return number;
+            if (wasGenerated) {
+                final int number = crlStoreSession.getLastCRLNumber(vpnCA.getSubjectDN(), false);
+                log.info("CRL with number " + number + " generated.");
+                return number;
+            }
+
+            return null;
 
         } catch (AuthorizationDeniedException | CADoesntExistsException e){
             throw e;
