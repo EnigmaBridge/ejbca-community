@@ -415,6 +415,7 @@
 		<!-- Files not included in utils and common-web will be included in ejbca-ejb -->
 		<!-- VPN stuff -->
 		<include name="org/ejbca/core/ejb/vpn/VpnCertGenerator.java"/>
+		<include name="org/ejbca/core/ejb/vpn/VpnUserHelper.java"/>
 	</fileset>
 
 	<pathconvert refid="source.fileset.ejbca-common-web" pathsep=" " property="source.fileset.ejbca-common-web.files">

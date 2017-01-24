@@ -801,25 +801,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 final int endProfileId = endEntityProfileSession.getEndEntityProfileId(VpnConfig.getClientEndEntityProfile());
                 final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
                 final CAInfo vpnCA = caSession.getCAInfo(authenticationToken, VpnConfig.getCA());
-                final String dn = VpnUtils.genUserCN(name);
-                final EndEntityInformation uservo = new EndEntityInformation(
-                        name,
-                        dn,
-                        vpnCA.getCAId(),
-                        VpnUtils.genUserAltName(vpnUser),
-                        email,
-                        EndEntityConstants.STATUS_NEW,
-                        EndEntityTypes.ENDUSER.toEndEntityType(),
-                        endProfileId,
-                        certProfileId,
-                        new Date(), new Date(),
-                        SecConst.TOKEN_SOFT_P12,
-                        0, null);
-
-                // If auto-generated password is used in end entity profile, this password has to be null.
-                // Password will be generated automatically and sent via email to the end entity.
-                uservo.setPassword(null);
-                uservo.setCardNumber(null);
+                final EndEntityInformation uservo = VpnUserHelper.newEndEntity(
+                        vpnUser, vpnCA.getCAId(), endProfileId, certProfileId);
 
                 // The new auto-generated password is generated now, stored to uservo end entity.
                 endEntityManagementSession.addUser(authenticationToken, uservo, false);
