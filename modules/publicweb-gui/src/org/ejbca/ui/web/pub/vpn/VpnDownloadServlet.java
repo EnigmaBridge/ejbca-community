@@ -25,6 +25,7 @@ import org.ejbca.core.ejb.vpn.*;
 import org.ejbca.config.GlobalConfiguration;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.ui.web.RequestHelper;
+import org.ejbca.ui.web.pub.ServletUtils;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -133,6 +134,7 @@ public class VpnDownloadServlet extends HttpServlet {
 
             } else {
                 final String fileName = VpnUtils.genVpnConfigFileName(vpnUser);
+                ServletUtils.removeCacheHeaders(response);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
                 final byte[] bytes2send = vpnUser.getVpnConfig().getBytes("UTF-8");
