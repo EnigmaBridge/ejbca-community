@@ -261,9 +261,9 @@ public class VpnUtils {
      * @param file file to set parameters to.
      */
     public static boolean readOwnerOnly(File file){
-        boolean result = file.setReadable(false);
-        result &= file.setExecutable(false);
-        result &= file.setWritable(false);
+        boolean result = file.setReadable(false, false);
+        result &= file.setWritable(false, false);
+        result &= file.setExecutable(false, false);
         result &= file.setReadable(true, true);
         result &= file.setWritable(true, true);
         return result;
