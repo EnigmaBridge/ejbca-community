@@ -271,7 +271,7 @@ public class VpnConfig {
      * Returns configured overlap for the VPN CRL.
      * @return time in milliseconds the CRL should be generated before the previous one expires.
      */
-    public static long getDefaultCRLOverlapMilli(){
+    public static long getDefaultCrlOverlapMilli(){
         final String milliPrefs = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CRL_OVERLAP_MILLI);
         if (milliPrefs == null){
             return VpnCons.DEFAULT_VPN_OVERLAP;
@@ -292,7 +292,7 @@ public class VpnConfig {
      * @return CRL data directory
      */
     public static File getCrlDirectory() throws IOException {
-        final String crlDirPrefs = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_DEFAULT_LANG);
+        final String crlDirPrefs = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CRL_DIR);
         if (crlDirPrefs == null){
             return getVpnDataDir(null);
         }
