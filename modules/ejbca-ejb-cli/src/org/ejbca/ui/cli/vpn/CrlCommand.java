@@ -58,8 +58,6 @@ public class CrlCommand extends BaseVpnCommand {
         // Test if CA exists
         // Test if the server end entity profile exists.
         try {
-            final CAInfo vpnCA = this.getVpnCA();
-
             // Key & config export directory.
             String mainStoreDir;
             if (argDirectory != null && !argDirectory.isEmpty()){
