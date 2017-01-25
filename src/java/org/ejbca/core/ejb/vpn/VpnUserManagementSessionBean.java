@@ -172,8 +172,48 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     }
 
     @Override
+    public VpnUser checkOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnNoConfigException, VpnOtpDescriptorException {
+        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
+        if (user == null) {
+            throw new VpnOtpInvalidException();
+        }
+
+        // Build download spec.
+        final JSONObject specJson = VpnUtils.properties2json(properties);
+
+        // Checking basic OTP validity conditions.
+        checkOtpConditions(user);
+
+        // Check descriptors.
+        final String otpUsedDescriptor = user.getOtpUsedDescriptor();
+        if (otpUsedDescriptor != null) {
+            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
+            if (!dbDescriptor.similar(specJson)){
+                throw new VpnOtpDescriptorException();
+            }
+        }
+
+        // Copy, detach from the persistence context, reset sensitive fields.
+        final VpnUser userCopy = VpnUser.copy(user);
+        userCopy.setKeyStore(null);
+        userCopy.setKeyStoreRaw(null);
+        userCopy.setVpnConfig(null);
+
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPN OTP check: " + vpnUserId);
+        details.put("otpToken", otpToken);
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
+
+        return userCopy;
+    }
+
+    @Override
     public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
-            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException {
+            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException, VpnNoConfigException {
 
         // Analyse request method. If HEAD, cookie is not mandatory.
         final String requestMethod = properties.getProperty(VpnCons.KEY_METHOD);
@@ -188,29 +228,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             throw new VpnOtpInvalidException();
         }
 
-        // Multiple times download is possible in several cases.
-        //
-        // If OTP was used already check if it was not too long time ago.
+        // Checking basic OTP validity conditions.
         final long timeNow = System.currentTimeMillis();
-        final Long otpFirstUsed = user.getOtpFirstUsed();
-        if (otpFirstUsed != null && otpFirstUsed > 0) {
-            if ((timeNow - otpFirstUsed) > 3L * 60L * 1000L) {
-                clearOtp(user);
-                tryMergeUser(user);
-                throw new VpnOtpOldException();
-            }
-        } else {
-            // First OTP download.
-            user.setOtpFirstUsed(timeNow);
-        }
-
-        // Check if the OTP was not used too many times. Max 5.
-        final int otpUsedCount = user.getOtpUsedCount();
-        if (otpUsedCount >= 5){
-            clearOtp(user);
-            tryMergeUser(user);
-            throw new VpnOtpTooManyException();
-        }
+        checkOtpConditions(user);
 
         // Check descriptors.
         final String otpUsedDescriptor = user.getOtpUsedDescriptor();
@@ -233,6 +253,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             clearOtp(user);
             tryMergeUser(user);
             throw new VpnOtpCookieException();
+        }
+
+        // Check there is config to download
+        final String vpnConfig = user.getVpnConfig();
+        if (vpnConfig == null || vpnConfig.isEmpty()){
+            throw new VpnNoConfigException();
         }
 
         // Vpn seems valid. Update fields.
@@ -265,6 +291,39 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
                 authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
 
         return userCopy;
+    }
+
+    /**
+     * Checks OTP validity and used count.
+     * In case OTP token is invalid anymore it is cleared from the database.
+     *
+     * @param user vpn user to check OTP validity for,
+     * @throws VpnOtpOldException OTP token is too old
+     * @throws VpnOtpTooManyException OTP used too many times
+     */
+    private void checkOtpConditions(VpnUser user) throws VpnOtpOldException, VpnOtpTooManyException {
+        // Multiple times download is possible in several cases.
+        // If OTP was used already check if it was not too long time ago.
+        final long timeNow = System.currentTimeMillis();
+        final Long otpFirstUsed = user.getOtpFirstUsed();
+        if (otpFirstUsed != null && otpFirstUsed > 0) {
+            if ((timeNow - otpFirstUsed) > 3L * 60L * 1000L) {
+                clearOtp(user);
+                tryMergeUser(user);
+                throw new VpnOtpOldException();
+            }
+        } else {
+            // First OTP download.
+            user.setOtpFirstUsed(timeNow);
+        }
+
+        // Check if the OTP was not used too many times. Max 5.
+        final int otpUsedCount = user.getOtpUsedCount();
+        if (otpUsedCount >= 5){
+            clearOtp(user);
+            tryMergeUser(user);
+            throw new VpnOtpTooManyException();
+        }
     }
 
     @Override

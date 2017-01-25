@@ -85,19 +85,44 @@ public interface VpnUserManagementSession {
     VpnUser getVpnUser(AuthenticationToken authenticationToken, String email, String device) throws AuthorizationDeniedException;
 
     /**
+     * Checks if OTP for VPN config download is valid.
+     * Returns detached VpnUser copy detached from persistence context, with sensitive fields removed.
+     * Does not modify VpnUser like downloadOtp() call. If OTP is invalid, sensitive data is cleared.
+     *
+     * @param authenticationToken token invalid
+     * @param vpnUserId vpn user id
+     * @param otpToken OTP for download
+     * @param properties user identification and misc data
+     * @return Vpnser copy, with nulled sensitive data
+     * @throws VpnOtpInvalidException OTP is invalid
+     * @throws VpnOtpTooManyException OTP used too many times
+     * @throws VpnOtpOldException OTP is too old to use
+     * @throws VpnNoConfigException VPN configuration is empty
+     * @throws VpnOtpDescriptorException OTP descriptor does not match, different device & source fingerprint as required
+     */
+    VpnUser checkOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnNoConfigException, VpnOtpDescriptorException;
+
+    /**
      * Loads VpnUser via OTP token. If token matches and multiple criteria are met user is returned.
      * If check criteria are invalid a corresponding exception is thrown.
      *
      * @param authenticationToken auth token
      * @param vpnUserId VPN user id
      * @param otpToken OTP token
-     * @param cookie OTP cokie - if downloaded previously
-     * @param properties user identification
+     * @param cookie OTP cookie - if downloaded previously
+     * @param properties user identification and misc data
      * @return vpn user
-     * @throws AuthorizationDeniedException token invalid
+     *
+     * @throws AuthorizationDeniedException auth token invalid
+     * @throws VpnOtpOldException OTP is too old to use
+     * @throws VpnOtpTooManyException OTP used too many times
+     * @throws VpnOtpCookieException Cookie is invalid, does not match required cookie
+     * @throws VpnOtpDescriptorException OTP descriptor does not match, different device & source fingerprint as required
+     * @throws VpnOtpInvalidException OTP is invalid
+     * @throws VpnNoConfigException VPN configuration is empty
      */
     VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
-            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException;
+            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException, VpnNoConfigException;
 
     VpnUser createVpnUser(final AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;
