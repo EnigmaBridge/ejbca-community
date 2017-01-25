@@ -769,7 +769,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
                 wasGenerated = publishingCrlSession.forceCRL(authenticationToken, vpnCA.getCAId());
             } else {
                 final long overlapMilliArg = overlapMilli != null ? overlapMilli : VpnConfig.getDefaultCrlOverlapMilli();
-                wasGenerated = publishingCrlSession.createDeltaCRLnewTransactionConditioned(
+                wasGenerated = publishingCrlSession.createCRLNewTransactionConditioned(
                         authenticationToken, vpnCA.getCAId(), overlapMilliArg);
             }
 
