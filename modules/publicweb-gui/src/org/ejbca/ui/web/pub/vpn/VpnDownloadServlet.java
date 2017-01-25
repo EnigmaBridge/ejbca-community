@@ -126,6 +126,9 @@ public class VpnDownloadServlet extends HttpServlet {
             } catch (VpnOtpInvalidException e) {
                 log.info(String.format("OTP failed - invalid. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+            } catch (VpnNoConfigException e) {
+                log.info(String.format("OTP failed - config empty. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue));
             }
 
             if (vpnUser == null){
