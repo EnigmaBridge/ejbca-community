@@ -417,6 +417,7 @@
 		<include name="org/ejbca/core/ejb/vpn/VpnCertGenerator.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnUserHelper.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnCrlGenerator.java"/>
+		<include name="org/ejbca/core/ejb/vpn/useragent/*.java"/>
 	</fileset>
 
 	<pathconvert refid="source.fileset.ejbca-common-web" pathsep=" " property="source.fileset.ejbca-common-web.files">
