@@ -16,6 +16,8 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page pageEncoding="UTF-8"%>
 <% response.setContentType("text/html; charset="+org.ejbca.config.WebConfiguration.getWebContentEncoding()); %>
 <%@page errorPage="/errorpage.jsp" import="
@@ -28,7 +30,9 @@ org.cesecore.authorization.control.CryptoTokenRules
 <%@ page import="static org.ejbca.ui.web.admin.rainterface.ViewEndEntityHelper.USER_PARAMETER" %>
 
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
-<% GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource()); %>
+<%
+	GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource());
+%>
 <%!
 	static final String USER_PARAMETER           = "username";
 	static final String HIDDEN_USERNAME          = "hiddenusername";
@@ -44,6 +48,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 	final String VIEWHISTORY_LINK         = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewhistory.jsp";
 	final String VIEWTOKEN_LINK           = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "hardtoken/viewtoken.jsp";
 %>
+<jsp:useBean id="vpnUsersMBean" class="org.ejbca.ui.web.admin.vpn.VpnUsersMBean" scope="session" />
 
 <html>
 <f:view>
@@ -51,7 +56,11 @@ org.cesecore.authorization.control.CryptoTokenRules
   <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
+  <link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
   <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery.qrcode.min.js"></script>
+
 	<script>
         function viewuser(username){
             var link = "<%= VIEWUSER_LINK %>?<%= USER_PARAMETER %>="+username;
@@ -68,6 +77,26 @@ org.cesecore.authorization.control.CryptoTokenRules
             win_popup.focus();
             return false;
         }
+
+        function regenerateQrCode(link){
+            var divQrCode = $('#qrcode');
+            divQrCode.html("");
+
+            if (!link || 0 === link.length) {
+                return;
+            }
+
+            var qrCodeSettings = {
+                "render": "canvas",
+                "text": link,
+                "size": 300
+            };
+            divQrCode.qrcode(qrCodeSettings);
+        }
+
+        $(function() {
+            regenerateQrCode('${!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDownloadLink != null ? vpnUsersMBean.currentVpnUser.otpDownloadLink : ""}');
+        });
 	</script>
 </head>
 <body>
@@ -165,61 +194,10 @@ org.cesecore.authorization.control.CryptoTokenRules
 	</h:panelGrid>
 	</h:form>
 
-	<%--<h:outputText value="#{web.text.CRYPTOTOKEN_KPM_NA}" rendered="#{!vpnUsersMBean.currentVpnUser.active && vpnUsersMBean.currentVpnUserId!=null}"/>--%>
-	<%--<h:form rendered="#{vpnUsersMBean.currentVpnUser.active}">--%>
-	<%--<h:dataTable value="#{vpnUsersMBean.keyPairGuiList}" var="keyPairGuiInfo" rendered="#{!vpnUsersMBean.keyPairGuiListEmpty}"--%>
-		<%--styleClass="grid" style="border-collapse: collapse; right: auto; left: auto">--%>
-		<%--<h:column>--%>
-			<%--<h:selectBooleanCheckbox value="#{keyPairGuiInfo.selected}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_KPM_ALIAS}"/></f:facet>--%>
-			<%--<h:outputText value="#{keyPairGuiInfo.alias}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_KPM_ALGO}"/></f:facet>--%>
-			<%--<h:outputText value="#{keyPairGuiInfo.keyAlgorithm}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_KPM_SPEC}"/></f:facet>--%>
-			<%--<h:outputText value="#{keyPairGuiInfo.keySpecification}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_KPM_SKID}"/></f:facet>--%>
-			<%--<h:outputText style="font-family: monospace;" value="#{keyPairGuiInfo.subjectKeyID}" rendered="#{!keyPairGuiInfo.placeholder}"/>--%>
-			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_KPM_NOTGENERATED}" rendered="#{keyPairGuiInfo.placeholder}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_KPM_ACTION}"/></f:facet>--%>
-			<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_KPM_TEST}" action="#{vpnUsersMBean.testKeyPair}" rendered="#{vpnUsersMBean.allowedToKeyTest}" disabled="#{keyPairGuiInfo.placeholder}"/>--%>
-			<%--<h:commandButton value="#{web.text.CRYPTOTOKEN_KPM_REMOVE}" action="#{vpnUsersMBean.removeKeyPair}" rendered="#{vpnUsersMBean.allowedToKeyRemoval}"--%>
-				<%--onclick="return confirm('#{web.text.CRYPTOTOKEN_KPM_CONF_REM}')"/>--%>
-            <%--<h:commandButton value="#{web.text.CRYPTOTOKEN_KPM_GENFROMTEMPLATE}" action="#{vpnUsersMBean.generateFromTemplate}" rendered="#{keyPairGuiInfo.placeholder && vpnUsersMBean.allowedToKeyGeneration}"/>--%>
-			<%--<h:outputLink value="adminweb/cryptoTokenDownloads?cryptoTokenId=#{vpnUsersMBean.currentVpnUserId}&alias=#{keyPairGuiInfo.alias}" rendered="#{!keyPairGuiInfo.placeholder}">--%>
-				<%--<h:outputText value="#{web.text.CRYPTOTOKEN_KPM_DOWNPUB}"/>--%>
-			<%--</h:outputLink>--%>
-		<%--</h:column>--%>
-	<%--</h:dataTable>--%>
+	<div class="qrWrap">
+		<div id="qrcode" class="qr"></div>
+	</div>
 
-
-	<%--<h:panelGroup rendered="#{vpnUsersMBean.keyPairGuiListFailed}">--%>
-	    <%--<div class="message"><table><tr><td class="alert"><h:outputText value="#{vpnUsersMBean.keyPairGuiListError}"/></td></tr></table></div>--%>
-    <%--</h:panelGroup>--%>
-	<%--<h:outputText value="#{web.text.CRYPTOTOKEN_KPM_NOPAIRS}" rendered="#{vpnUsersMBean.keyPairGuiListEmpty && !vpnUsersMBean.keyPairGuiListFailed}"/>--%>
-	<%--<h:panelGrid columns="3">--%>
-		<%--<h:panelGroup rendered="#{!vpnUsersMBean.keyPairGuiListEmpty && vpnUsersMBean.allowedToKeyRemoval}"/>--%>
-		<%--<h:panelGroup rendered="#{!vpnUsersMBean.keyPairGuiListEmpty && vpnUsersMBean.allowedToKeyRemoval}"/>--%>
-	    <%--<h:commandButton value="#{web.text.CRYPTOTOKEN_KPM_REMOVESEL}" action="#{vpnUsersMBean.removeSelectedKeyPairs}"--%>
-	    	<%--rendered="#{!vpnUsersMBean.keyPairGuiListEmpty && vpnUsersMBean.allowedToKeyRemoval}" onclick="return confirm('#{web.text.CRYPTOTOKEN_KPM_CONF_REMS}')"/>--%>
-		<%--<h:inputText value="#{vpnUsersMBean.newKeyPairAlias}" rendered="#{vpnUsersMBean.allowedToKeyGeneration}">--%>
-			<%--<f:validator validatorId="legalCharsValidator"/>--%>
-		<%--</h:inputText>--%>
-		<%--<h:selectOneMenu value="#{vpnUsersMBean.newKeyPairSpec}" rendered="#{vpnUsersMBean.allowedToKeyGeneration}">--%>
-			<%--<f:selectItems value="#{vpnUsersMBean.availbleKeySpecs}"/>--%>
-		<%--</h:selectOneMenu>--%>
-	    <%--<h:commandButton value="#{web.text.CRYPTOTOKEN_KPM_GENNEW}" action="#{vpnUsersMBean.generateNewKeyPair}"/>--%>
-	<%--</h:panelGrid>--%>
-	<%--</h:form>--%>
 	<%	// Include Footer 
 	String footurl = globalconfiguration.getFootBanner(); %>
 	<jsp:include page="<%= footurl %>" />

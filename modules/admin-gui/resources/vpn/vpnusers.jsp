@@ -51,7 +51,7 @@ org.cesecore.authorization.control.CryptoTokenRules
   <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
-	<script src="<%= globalconfiguration.getAdminWebPath() %>jquery-1.12.4.min.js"></script>
+	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
 	<script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
   <script>
 	/** Prevent form submission if enter is pressed in form and instead clicks on the button right of the inputText instead..) */
