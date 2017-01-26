@@ -146,7 +146,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 		</h:outputLink>
 
 		<h:outputLabel for="downloadLink" value="#{web.text.VPNUSER_DOWNLOAD_LINK}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDownloadLink != null}"/>
-		<h:outputLink value="" id="downloadLink"
+		<h:outputLink value="#{vpnUsersMBean.currentVpnUser.otpDownloadLink}" id="downloadLink"
 					  rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDownloadLink != null}">
 			<h:outputText value="#{vpnUsersMBean.currentVpnUser.otpDownloadLink}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDownloadLink != null}"/>
 		</h:outputLink>
