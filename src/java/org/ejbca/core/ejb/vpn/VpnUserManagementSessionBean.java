@@ -182,7 +182,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final JSONObject specJson = VpnUtils.properties2json(properties);
 
         // Checking basic OTP validity conditions.
-        checkOtpConditions(user);
+        checkOtpConditions(user, false);
 
         // Check descriptors.
         final String otpUsedDescriptor = user.getOtpUsedDescriptor();
@@ -233,7 +233,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
 
         // Checking basic OTP validity conditions.
         final long timeNow = System.currentTimeMillis();
-        checkOtpConditions(user);
+        checkOtpConditions(user, true);
 
         // Check descriptors.
         final String otpUsedDescriptor = user.getOtpUsedDescriptor();
@@ -305,10 +305,11 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
      * In case OTP token is invalid anymore it is cleared from the database.
      *
      * @param user vpn user to check OTP validity for,
+     * @param saveFirstUsed if true the time is saved on the first use
      * @throws VpnOtpOldException OTP token is too old
      * @throws VpnOtpTooManyException OTP used too many times
      */
-    private void checkOtpConditions(VpnUser user) throws VpnOtpOldException, VpnOtpTooManyException {
+    private void checkOtpConditions(VpnUser user, boolean saveFirstUsed) throws VpnOtpOldException, VpnOtpTooManyException {
         // Multiple times download is possible in several cases.
         // If OTP was used already check if it was not too long time ago.
         final long timeNow = System.currentTimeMillis();
@@ -319,7 +320,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
                 tryMergeUser(user);
                 throw new VpnOtpOldException();
             }
-        } else {
+        } else if (saveFirstUsed) {
             // First OTP download.
             user.setOtpFirstUsed(timeNow);
         }
