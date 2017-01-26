@@ -741,6 +741,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         } else {
             user.setId(guiUser.getId());
+            user.setDateCreated(guiUser.getDateCreated() == 0 ? System.currentTimeMillis() : guiUser.getDateCreated());
         }
 
         user.setEmail(guiUser.getEmail());
