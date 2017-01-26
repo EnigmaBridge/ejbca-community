@@ -91,17 +91,14 @@ public class VpnDownloadServlet extends HttpServlet {
             }
 
             final Properties properties = new Properties();
+            VpnBean.buildDescriptorProperties(request, properties);
+
             final String xFwded = request.getHeader("X-Forwarded-For");
             final String ip = request.getRemoteAddr();
             final String sourceAddr = ip + ";" + xFwded;
             final String ua = request.getHeader("User-Agent");
             final String method = request.getMethod();
             final String cookieValue = cookie == null ? null : cookie.getValue();
-
-            properties.setProperty(VpnCons.KEY_IP, ip+"");
-            properties.setProperty(VpnCons.KEY_FORWARDED, xFwded+"");
-            properties.setProperty(VpnCons.KEY_USER_AGENT, ua+"");
-            properties.setProperty(VpnCons.KEY_METHOD, method+"");
 
             VpnLinkError vpnError = VpnLinkError.NONE;
             VpnUser vpnUser = null;
@@ -112,6 +109,12 @@ public class VpnDownloadServlet extends HttpServlet {
                 newCookie.setMaxAge(600);   // 10 minutes validity
                 newCookie.setSecure(true);  // cookie should be sent only over a secure channel
                 response.addCookie(newCookie);
+
+                final Cookie downloadCookie = new Cookie(VpnBean.DOWNLOADED_COOKIE, "true");
+                downloadCookie.setMaxAge(600);   // 10 minutes validity
+                downloadCookie.setSecure(true);  // cookie should be sent only over a secure channel
+                downloadCookie.setPath("/");     // universal path - reachable in the config.jsf
+                response.addCookie(downloadCookie);
 
             } catch (VpnOtpOldException e) {
                 vpnError = VpnLinkError.OTP_OLD;

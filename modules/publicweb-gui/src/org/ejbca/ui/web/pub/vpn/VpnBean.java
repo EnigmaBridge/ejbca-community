@@ -12,6 +12,7 @@ import org.ejbca.core.model.util.EjbLocalHelper;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Properties;
 
 /**
  * VPN managed bean for VPN config download
@@ -24,6 +25,7 @@ public class VpnBean implements Serializable {
 
     private static final Logger log = Logger.getLogger(VpnBean.class);
     public static final String LINK_ERROR_SESSION = "otpLinkError";
+    public static final String DOWNLOADED_COOKIE = "fileDownload";
 
     private boolean initialized;
     private AuthenticationToken authToken;
@@ -80,7 +82,9 @@ public class VpnBean implements Serializable {
         }
 
         try {
-            vpnUser = vpnUserManagementSession.checkOtp(authToken, vpnUserId, otp, null);
+            final Properties properties = VpnBean.buildDescriptorProperties(request, null);
+            vpnUser = vpnUserManagementSession.checkOtp(authToken, vpnUserId, otp, properties);
+
             otpValid = true;
             exception = null;
             linkError = VpnLinkError.NONE;
@@ -205,6 +209,36 @@ public class VpnBean implements Serializable {
      */
     public String getBrowser() {
         return browser;
+    }
+
+    /**
+     * Builds OVPN download link.
+     * @return link for the download
+     */
+    public String getDownloadLink(){
+        return String.format("getvpn?id=%s&otp=%s", vpnUserId, otp);
+    }
+
+    /**
+     * Builds properties descriptor
+     * @param request http request
+     * @return properties
+     */
+    public static Properties buildDescriptorProperties(HttpServletRequest request, Properties properties){
+        if (properties == null){
+            properties = new Properties();
+        }
+
+        final String xFwded = request.getHeader("X-Forwarded-For");
+        final String ip = request.getRemoteAddr();
+        final String ua = request.getHeader("User-Agent");
+        final String method = request.getMethod();
+
+        properties.setProperty(VpnCons.KEY_IP, ip+"");
+        properties.setProperty(VpnCons.KEY_FORWARDED, xFwded+"");
+        properties.setProperty(VpnCons.KEY_USER_AGENT, ua+"");
+        properties.setProperty(VpnCons.KEY_METHOD, method+"");
+        return properties;
     }
 
     public String getOtp() {

@@ -30,6 +30,24 @@
     <link rel="stylesheet" href="../scripts/vpnstyle.css" type="text/css" />
     <script type="text/javascript" src="../scripts/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="../scripts/bootstrap-3.3.7.min.js"></script>
+    <script type="text/javascript" src="../scripts/vpnfunctions.js"></script>
+    <script type="text/javascript">
+        $(document).on("click", "#btnDownload", function () {
+            $.fileDownload($(this).prop('href'), {
+                'dialogOptions': {
+                    'modal': false
+                }})
+                .done(function () {
+                    $( "#divStatusNotif" ).show( "slow" );
+                    $( "#divButtonUpload" ).hide( "slow" );
+                })
+                .fail(function () {
+                    ;
+                });
+
+            return false; //this is critical to stop the click event which will trigger a normal file download
+        });
+    </script>
 </head>
 <body>
 
@@ -68,9 +86,12 @@
                 </div>
             </div>
 
+            <div id="divStatusNotif" class="alert alert-success" style="display: none;">Download successful</div>
+
             <div id="divButtonUpload">
                 <a class="btn btn-primary btn-rich-electric-blue btn-xl btn-block btn-wrap" id="btnDownload"
-                   href="getvpn?id=${vpnBean.vpnUserId}&otp=${vpnBean.otp}">Download</a>
+                   href="${vpnBean.downloadLink}">Download</a>
+                <%--getvpn?id=${vpnBean.vpnUserId}&otp=${vpnBean.otp}--%>
             </div>
 
             <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID
