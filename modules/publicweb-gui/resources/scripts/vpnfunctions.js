@@ -281,7 +281,15 @@
                     fileUrl = fileUrl + settings.data;
                 }
 
-                if (isIos || isAndroid || isOtherMobileBrowser) {
+                if (isAndroid) {
+
+                    downloadWindow = window.open(fileUrl);
+                    downloadWindow.document.title = settings.popupWindowTitle;
+                    window.focus();
+
+                }
+
+                else if (isIos || isOtherMobileBrowser) {
 
                     window.location(fileUrl);
 
