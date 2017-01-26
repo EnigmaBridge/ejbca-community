@@ -107,6 +107,7 @@
                                rel="nofollow" target="_blank">OpenVPN</a> client for Linux.
                         </p>
 
+                        <h3>Installation using package managers</h3>
                         <div class="panel panel-default">
                             <div class="panel-heading">Yum</div>
                             <div class="panel-body pre-block">sudo yum install openvpn</div>
@@ -123,15 +124,6 @@
                                rel="nofollow" target="_blank">Tunnelblick</a> for MAC OS.
                         </p>
 
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Yum</div>
-                            <div class="panel-body pre-block">sudo yum install openvpn</div>
-                        </div>
-
-                        <div class="panel panel-default">
-                            <div class="panel-heading">apt-get</div>
-                            <div class="panel-body pre-block">sudo apt-get install openvpn</div>
-                        </div>
                         <% } %>
                     </div>
                 </div>
