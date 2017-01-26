@@ -174,7 +174,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     @Override
     public VpnUser checkOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnNoConfigException, VpnOtpDescriptorException {
         final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
-        if (user == null) {
+        if (user == null || otpToken == null || !otpToken.equals(user.getOtpDownload())) {
             throw new VpnOtpInvalidException();
         }
 
@@ -234,7 +234,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final String downloadSpec = specJson.toString();
 
         final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
-        if (user == null) {
+        if (user == null || otpToken == null || !otpToken.equals(user.getOtpDownload())) {
             throw new VpnOtpInvalidException();
         }
 
