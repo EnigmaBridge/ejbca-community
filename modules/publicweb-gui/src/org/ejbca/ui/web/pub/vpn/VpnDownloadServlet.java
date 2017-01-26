@@ -73,6 +73,7 @@ public class VpnDownloadServlet extends HttpServlet {
             final AuthenticationToken admin = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("VpnDownloadServlet: "+request.getRemoteAddr()));
             final GlobalConfiguration globalConfiguration = (GlobalConfiguration) globalConfigurationSession.getCachedConfiguration(GlobalConfiguration.GLOBAL_CONFIGURATION_ID);
             RequestHelper.setDefaultCharacterEncoding(request);
+            ServletUtils.removeCacheHeaders(response);
 
             final String otp = request.getParameter("otp");
             final String vpnUserIdTxt = request.getParameter("id");
@@ -159,7 +160,6 @@ public class VpnDownloadServlet extends HttpServlet {
 
             } else {
                 final String fileName = VpnUtils.genVpnConfigFileName(vpnUser);
-                ServletUtils.removeCacheHeaders(response);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
                 final byte[] bytes2send = vpnUser.getVpnConfig().getBytes("UTF-8");
