@@ -143,6 +143,16 @@ public interface VpnUserManagementSession {
             throws AuthorizationDeniedException, VpnMailSendException, IOException;
 
     /**
+     * Generates full download link for the VPN config.
+     * @param authenticationToken auth token
+     * @param vpnUserId VPN user id
+     * @return download link or null
+     * @throws AuthorizationDeniedException auth token invalid
+     * @throws VpnException exception on generating a link
+     */
+    String getConfigDownloadLink(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException, VpnException;
+
+    /**
      * Generates new VPN credentials - new certificate, VPN configuration. Resets OTP state.
      * The user state is changed accordingly, resulting VpnUser after merge is returned.
      *

@@ -538,6 +538,28 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         }
     }
 
+    @Override
+    public String getConfigDownloadLink(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException, VpnException {
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_LINK.resource() + "/" + vpnUserId)) {
+            throw new AuthorizationDeniedException();
+        }
+
+        final VpnUser user = vpnUserSession.getVpnUser(vpnUserId);
+        final String userName = VpnUtils.getUserName(user);
+        final EndEntityInformation endEntity = endEntityAccessSession.findUser(authenticationToken, userName);
+        if (user.getOtpDownload() == null){
+            return null;
+        }
+
+        try {
+            return genConfigDownloadLink(authenticationToken, endEntity, user);
+
+        } catch(CADoesntExistsException e){
+            throw new VpnException("Cannot generate the link", e);
+        }
+    }
+
     /**
      * Generates VPN download link for the user to download the configuration.
      *

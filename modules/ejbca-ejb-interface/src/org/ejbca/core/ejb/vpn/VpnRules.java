@@ -35,6 +35,7 @@ public enum VpnRules {
     USER_MODIFY(USER.resource() + "/modify"),
     USER_GENERATE(USER.resource() + "/generate"),
     USER_MAIL(USER.resource() + "/mail"),
+    USER_LINK(USER.resource() + "/link"),
     ;
 
     private final String resource;

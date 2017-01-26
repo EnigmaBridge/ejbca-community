@@ -229,6 +229,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private String certificate;
         private String key;
         private String config;
+        private String otpDownloadLink;
 
         // Not stored in db, just indicator
         private boolean sendConfigEmail = true;
@@ -388,6 +389,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         public void setSendConfigEmail(boolean sendConfigEmail) {
             this.sendConfigEmail = sendConfigEmail;
+        }
+
+        public String getOtpDownloadLink() {
+            return otpDownloadLink;
+        }
+
+        public void setOtpDownloadLink(String otpDownloadLink) {
+            this.otpDownloadLink = otpDownloadLink;
         }
     }
 
@@ -788,6 +797,20 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         currentVpnUser.setConfig(vpnUser.getVpnConfig());
         currentVpnUser.setDateOtpDownloaded(dateOrNull(vpnUser.getOtpUsed()));
         currentVpnUser.setDateMailSent(dateOrNull(vpnUser.getLastMailSent()));
+
+        // Link download.
+        try{
+            if (vpnUser.getOtpDownload() != null) {
+                currentVpnUser.setOtpDownloadLink(
+                        vpnUserManagementSession.getConfigDownloadLink(authenticationToken, vpnUser.getId()));
+            }
+
+        } catch (VpnException e) {
+            log.error("Exception on generating download link", e);
+        } catch (AuthorizationDeniedException e) {
+            log.error("Exception on generating download link - unauthorized", e);
+        }
+
         return currentVpnUser;
     }
 
