@@ -327,7 +327,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
 
         // Check if the OTP was not used too many times. Max 5.
         final int otpUsedCount = user.getOtpUsedCount();
-        if (otpUsedCount >= 5){
+        if (otpUsedCount >= 4){
             clearOtp(user);
             tryMergeUser(user);
             throw new VpnOtpTooManyException();
