@@ -42,7 +42,6 @@
                     $( "#divButtonUpload" ).hide( "slow" );
                 })
                 .fail(function () {
-                    ;
                 });
 
             return false; //this is critical to stop the click event which will trigger a normal file download
@@ -160,7 +159,7 @@
             </div>
         </c:when>
         <c:otherwise>
-            <div id="divError" class="alert alert-danger fade in">
+            <div id="divError" class="alert alert-danger">
                 <strong>Error:</strong>
                 <% if (vpnBean.getLinkError() == VpnLinkError.OTP_INVALID) { %>
                 Link is invalid
@@ -169,15 +168,15 @@
                 <% } else if (vpnBean.getLinkError() == VpnLinkError.OTP_TOO_MANY) { %>
                 Link used too many times
                 <% } else if (vpnBean.getLinkError() == VpnLinkError.OTP_COOKIE) { %>
-                Link cookie exception
+                Link already used on a different device
                 <% } else if (vpnBean.getLinkError() == VpnLinkError.OTP_DESCRIPTOR) { %>
-                Link invalid device
+                Link already used on a different device / address
                 <% } else if (vpnBean.getLinkError() == VpnLinkError.NO_CONFIGURATION) { %>
-                Configuration have already been downloaded
+                Configuration has already been downloaded
                 <% } else if (vpnBean.getLinkError() == VpnLinkError.GENERIC) { %>
-                Link is invalid - generic error
+                Link is invalid, generic error
                 <% } else { %>
-                No link
+                No link given
                 <% } %>
             </div>
 
