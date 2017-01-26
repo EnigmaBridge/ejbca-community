@@ -801,12 +801,13 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         // Link download.
         try{
             if (vpnUser.getOtpDownload() != null) {
+                vpnUserManagementSession.checkOtp(authenticationToken, vpnUser.getId(), vpnUser.getOtpDownload(), null);
                 currentVpnUser.setOtpDownloadLink(
                         vpnUserManagementSession.getConfigDownloadLink(authenticationToken, vpnUser.getId()));
             }
 
         } catch (VpnException e) {
-            log.error("Exception on generating download link", e);
+            log.info("Exception on generating download link", e);
         } catch (AuthorizationDeniedException e) {
             log.error("Exception on generating download link - unauthorized", e);
         }
