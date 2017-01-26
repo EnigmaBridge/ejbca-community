@@ -178,7 +178,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             throw new VpnOtpInvalidException();
         }
 
+        if (properties == null) {
+            properties = new Properties();
+        }
+
         // Build download spec.
+        properties.remove(VpnCons.KEY_METHOD);
         final JSONObject specJson = VpnUtils.properties2json(properties);
 
         // Checking basic OTP validity conditions.
@@ -202,11 +207,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final Map<String, Object> details = new LinkedHashMap<String, Object>();
         details.put("msg", "VPN OTP check: " + vpnUserId);
         details.put("otpToken", otpToken);
-        if (properties != null) {
-            details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
-            details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
-            details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
-        }
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
         
         securityEventsLoggerSession.log(EventTypes.VPN_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                 authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
@@ -217,6 +220,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     @Override
     public VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
             throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException, VpnNoConfigException {
+
+        if (properties == null) {
+            properties = new Properties();
+        }
 
         // Analyse request method. If HEAD, cookie is not mandatory.
         final String requestMethod = properties.getProperty(VpnCons.KEY_METHOD);
@@ -284,12 +291,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final Map<String, Object> details = new LinkedHashMap<String, Object>();
         details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
         details.put("otpToken", otpToken);
-
-        if (properties != null) {
-            details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
-            details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
-            details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
-        }
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
 
         if (cookie != null) {
             details.put("cookie", cookie);
