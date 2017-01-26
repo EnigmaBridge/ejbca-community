@@ -202,9 +202,12 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final Map<String, Object> details = new LinkedHashMap<String, Object>();
         details.put("msg", "VPN OTP check: " + vpnUserId);
         details.put("otpToken", otpToken);
-        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
-        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
-        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+        if (properties != null) {
+            details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+            details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+            details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+        }
+        
         securityEventsLoggerSession.log(EventTypes.VPN_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                 authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
 
@@ -281,9 +284,13 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final Map<String, Object> details = new LinkedHashMap<String, Object>();
         details.put("msg", "VPN config OTP downloaded for usrId: " + vpnUserId);
         details.put("otpToken", otpToken);
-        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
-        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
-        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+
+        if (properties != null) {
+            details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+            details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+            details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+        }
+
         if (cookie != null) {
             details.put("cookie", cookie);
         }
