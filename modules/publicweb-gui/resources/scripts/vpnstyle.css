@@ -1,0 +1,58 @@
+/* = Buttons
+-------------------------------------------------------------- */
+
+.btn {
+    /*margin: 0 5px 5px 0;*/
+}
+
+.btn.pull-right {
+    margin: 0 0 5px 5px;
+}
+
+.btn-d, .btn-d:hover, .btn-d:focus {
+    color: #FFF;
+    background: rgba(0, 0, 0, .3);
+}
+
+/* Prevent ugly blue glow on chrome and safari */
+button {
+    outline: none !important;
+}
+
+.btn-clean {
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-bottom-color: rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 1, .1);
+    box-shadow: 0 1px 3px rgba(0, 0, 1, .25), inset 0 1px 0 0 rgba(255, 255, 255, .15);
+}
+
+.btn-xl {
+    padding: 16px 40px;
+    font-size: 28px;
+}
+
+.btn .caret {
+    margin: 0 0 0 5px
+}
+
+.dropdown a .caret {
+    margin: 0 0 0 5px
+}
+
+.btn-dropdown .dropdown-menu .dropdown {
+    padding: 3px 20px;
+}
+
+.pre-block {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+    font-size: 13px;
+    color: rgba(0,0,0,.75);
+    overflow: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+

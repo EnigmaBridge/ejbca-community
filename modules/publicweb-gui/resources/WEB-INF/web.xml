@@ -92,6 +92,18 @@
         <servlet-name>VpnDownload</servlet-name>
         <url-pattern>/vpn/getvpn</url-pattern>
     </servlet-mapping>
+
+    <!-- BEGIN: Faces servlet for VPN -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+    <!-- END: Faces servlet for VPN -->
     
 <!--
     <servlet>

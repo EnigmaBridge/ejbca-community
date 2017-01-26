@@ -51,6 +51,7 @@ public class VpnDownloadServlet extends HttpServlet {
 
     @EJB
     private VpnUserManagementSessionLocal vpnUserManagementSession;
+
     @EJB
     private GlobalConfigurationSessionLocal globalConfigurationSession;
 
@@ -102,6 +103,7 @@ public class VpnDownloadServlet extends HttpServlet {
             properties.setProperty(VpnCons.KEY_USER_AGENT, ua+"");
             properties.setProperty(VpnCons.KEY_METHOD, method+"");
 
+            VpnLinkError vpnError = VpnLinkError.NONE;
             VpnUser vpnUser = null;
             try {
                 vpnUser = vpnUserManagementSession.downloadOtp(admin, vpnUserId, otp, cookieValue, properties);
@@ -112,28 +114,45 @@ public class VpnDownloadServlet extends HttpServlet {
                 response.addCookie(newCookie);
 
             } catch (VpnOtpOldException e) {
+                vpnError = VpnLinkError.OTP_OLD;
                 log.info(String.format("OTP failed - too old. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+
             } catch (VpnOtpTooManyException e) {
+                vpnError = VpnLinkError.OTP_TOO_MANY;
                 log.info(String.format("OTP failed - too many. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+
             } catch (VpnOtpCookieException e) {
+                vpnError = VpnLinkError.OTP_COOKIE;
                 log.info(String.format("OTP failed - cookie. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+
             } catch (VpnOtpDescriptorException e) {
+                vpnError = VpnLinkError.OTP_DESCRIPTOR;
                 log.info(String.format("OTP failed - descriptor. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+
             } catch (VpnOtpInvalidException e) {
+                vpnError = VpnLinkError.OTP_INVALID;
                 log.info(String.format("OTP failed - invalid. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+
             } catch (VpnNoConfigException e) {
+                vpnError = VpnLinkError.NO_CONFIGURATION;
                 log.info(String.format("OTP failed - config empty. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
+
+            } catch (Exception e){
+                vpnError = VpnLinkError.GENERIC;
+                log.info(String.format("OTP failed - generic. ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
+                        vpnUserId, otp, sourceAddr, ua, method, cookieValue), e);
             }
 
             if (vpnUser == null){
-                // TODO: redirect to some nice looking page explaining what happened.
-                response.setStatus(404);
+                // Set error to the session - picked up by the VpnBean.
+                request.getSession().setAttribute(VpnBean.LINK_ERROR_SESSION, vpnError.toString());
+                response.sendRedirect("config.jsf");
 
             } else {
                 final String fileName = VpnUtils.genVpnConfigFileName(vpnUser);
@@ -150,7 +169,7 @@ public class VpnDownloadServlet extends HttpServlet {
 
             response.flushBuffer();
 
-        } catch (AuthorizationDeniedException e) {
+        } catch (Exception e) {
             throw new ServletException(e);
         }
         log.trace("<doGet()");
