@@ -71,6 +71,14 @@
 </head>
 <body class="enigmabridge">
 
+<div class="navbar">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="https://enigmabridge.com"></a>
+        </div>
+    </div>
+</div>
+
 <div class="jumbotron text-center">
     <h1>Welcome to Private Space</h1>
     <p>User key download</p>
