@@ -169,6 +169,15 @@
                 </div>
             <% } %>
 
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Troubleshooting</h3>
+                    <p>
+                        In case of a problem please consult your administrator.
+                    </p>
+                </div>
+            </div>
+
             <% if (vpnBean.getLandingLink() != null) { %>
                 <div class="row">
                     <div class="col-sm-12">
@@ -184,15 +193,7 @@
                     </div>
                 </div>
             <% } %>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Troubleshooting</h3>
-                    <p>
-                        In case of a problem please consult your administrator.
-                    </p>
-                </div>
-            </div>
+                
         </c:when>
         <c:otherwise>
             <div id="divError" class="alert alert-danger">
