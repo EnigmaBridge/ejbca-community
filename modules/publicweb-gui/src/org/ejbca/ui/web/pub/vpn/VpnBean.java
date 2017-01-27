@@ -40,6 +40,7 @@ public class VpnBean implements Serializable {
     private Exception exception;
     private VpnLinkError linkError;
     private Date dateGenerated;
+    private String landingLink;
 
     private HttpServletRequest request;
     private EjbLocalHelper ejb = new EjbLocalHelper();
@@ -70,6 +71,7 @@ public class VpnBean implements Serializable {
         exception = null;
         linkError = VpnLinkError.NONE;
         dateGenerated = null;
+        landingLink = null;
     }
 
     /**
@@ -89,6 +91,7 @@ public class VpnBean implements Serializable {
             exception = null;
             linkError = VpnLinkError.NONE;
             dateGenerated = new Date(vpnUser.getConfigGenerated());
+            landingLink = vpnUserManagementSession.getConfigDownloadLink(authToken, vpnUser.getId());
 
         } catch (VpnOtpInvalidException e) {
             exception = e;
@@ -217,6 +220,14 @@ public class VpnBean implements Serializable {
      */
     public String getDownloadLink(){
         return String.format("getvpn?id=%s&otp=%s", vpnUserId, otp);
+    }
+
+    /**
+     * Returns OVPN download link - landing page.
+     * @return link for the download
+     */
+    public String getLandingLink() {
+        return landingLink;
     }
 
     /**

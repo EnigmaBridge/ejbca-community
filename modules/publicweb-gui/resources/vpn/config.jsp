@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="../scripts/bootstrap-3.3.7.min.css" type="text/css" />
     <link rel="stylesheet" href="../scripts/vpnstyle.css" type="text/css" />
     <script type="text/javascript" src="../scripts/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="../scripts/jquery.qrcode.min.js"></script>
     <script type="text/javascript" src="../scripts/bootstrap-3.3.7.min.js"></script>
     <script type="text/javascript" src="../scripts/vpnfunctions.js"></script>
     <script type="text/javascript">
@@ -46,13 +47,33 @@
 
             return false; //this is critical to stop the click event which will trigger a normal file download
         });
+
+        function regenerateQrCode(link){
+            var divQrCode = $('#qrcode');
+            divQrCode.html("");
+
+            if (!link || 0 === link.length) {
+                return;
+            }
+
+            var qrCodeSettings = {
+                "render": "canvas",
+                "text": link,
+                "size": 300
+            };
+            divQrCode.qrcode(qrCodeSettings);
+        }
+
+        $(function() {
+            regenerateQrCode('${!vpnBean.landingLink != null ? vpnBean.landingLink : ""}');
+        });
     </script>
 </head>
 <body>
 
 <div class="jumbotron text-center">
-    <h1>VPN Configuration</h1>
-    <p>VPN client configuration download</p>
+    <h1>Your Private Space</h1>
+    <p>Enigma Bridge Private Space key download</p>
 </div>
 
 <div class="container">
@@ -62,7 +83,7 @@
         <c:when test="${vpnBean.otpValid}">
             <div id="vpnInfo" class="form-group" style="display: block;">
                 <div class="panel panel-default">
-                    <div class="panel-heading">VPN configuration details</div>
+                    <div class="panel-heading">Private space user key</div>
                     <div class="panel-body" id="pre-info">
                         <table class="table">
                             <tr>
@@ -90,7 +111,6 @@
             <div id="divButtonUpload">
                 <a class="btn btn-primary btn-rich-electric-blue btn-xl btn-block btn-wrap" id="btnDownload"
                    href="${vpnBean.downloadLink}">Download</a>
-                <%--getvpn?id=${vpnBean.vpnUserId}&otp=${vpnBean.otp}--%>
             </div>
 
             <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID
@@ -101,31 +121,31 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Suitable VpnClient</h3>
-                        <p>Downloaded VPN configuration file needs to be opened in the appropriate VPN client.</p>
+                        <h3>Suitable VPN Client</h3>
+                        <p>Downloaded key file needs to be opened in the appropriate VPN client.</p>
                         <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
-                        <p>
+                        <ul><li>
                             <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn"
                                rel="nofollow" target="_blank">OpenVPN Connect</a> for Android.
-                        </p>
+                        </li></ul>
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.IOS) { %>
-                        <p>
+                        <ul><li>
                             <a href="https://itunes.apple.com/us/app/openvpn-connect/id590379981?mt=8"
                                rel="nofollow" target="_blank">OpenVPN Connect</a> for iOS.
-                        </p>
+                        </li></ul>
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                        <p>
+                        <ul><li>
                             <a href="https://openvpn.net"
                                rel="nofollow" target="_blank">OpenVPN</a> client for Windows.
-                        </p>
+                        </li></ul>
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                        <p>
+                        <ul><li>
                             <a href="https://openvpn.net"
                                rel="nofollow" target="_blank">OpenVPN</a> client for Linux.
-                        </p>
+                        </li></ul>
 
                         <h3>Installation using package managers</h3>
                         <div class="panel panel-default">
@@ -139,12 +159,28 @@
                         </div>
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                        <p>
+                        <ul><li>
                             <a href="https://tunnelblick.net/"
                                rel="nofollow" target="_blank">Tunnelblick</a> for MAC OS.
-                        </p>
+                        </li></ul>
 
                         <% } %>
+                    </div>
+                </div>
+            <% } %>
+
+            <% if (vpnBean.getLandingLink() == null) { %>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3>Device transfer</h3>
+                        <p>
+                            In case this link is displayed on a different device it belongs to below is a QR code
+                            with the link to scan.
+                        </p>
+
+                        <div class="qrWrap">
+                            <div id="qrcode" class="qr"></div>
+                        </div>
                     </div>
                 </div>
             <% } %>
