@@ -121,8 +121,8 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Suitable VPN Client</h3>
-                        <p>Downloaded key file needs to be opened in the appropriate VPN client.</p>
+                        <h3>Recommended Client</h3>
+                        <p>Downloaded key file needs to be opened a connection client installed on your device.</p>
                         <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
                         <ul><li>
                             <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn"
@@ -161,7 +161,7 @@
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
                         <ul><li>
                             <a href="https://tunnelblick.net/"
-                               rel="nofollow" target="_blank">Tunnelblick</a> for MAC OS.
+                               rel="nofollow" target="_blank">Tunnelblick</a> for Mac OS X.
                         </li></ul>
 
                         <% } %>
@@ -181,10 +181,9 @@
             <% if (vpnBean.getLandingLink() != null) { %>
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Device transfer</h3>
+                        <h3>Key transfer</h3>
                         <p>
-                            In case this link is displayed on a different device it belongs to below is a QR code
-                            with the link to scan.
+                            If the key is for another device able to read QR codes, you can use the code below.
                         </p>
 
                         <div class="qrWrap">
