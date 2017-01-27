@@ -83,7 +83,7 @@
         <c:when test="${vpnBean.otpValid}">
             <div id="vpnInfo" class="form-group" style="display: block;">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Private space user key</div>
+                    <%--<div class="panel-heading">Private space user key</div>--%>
                     <div class="panel-body" id="pre-info">
                         <table class="table table-vpn">
                             <tr>
