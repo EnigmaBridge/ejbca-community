@@ -169,7 +169,7 @@
                 </div>
             <% } %>
 
-            <% if (vpnBean.getLandingLink() == null) { %>
+            <% if (vpnBean.getLandingLink() != null) { %>
                 <div class="row">
                     <div class="col-sm-12">
                         <h3>Device transfer</h3>
