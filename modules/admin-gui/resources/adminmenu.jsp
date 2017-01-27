@@ -10,6 +10,7 @@ org.ejbca.config.GlobalConfiguration,
 org.ejbca.core.model.authorization.AccessRulesConstants,
 org.cesecore.keybind.InternalKeyBindingRules
 "%>
+<%@ page import="org.ejbca.core.ejb.vpn.VpnRules" %>
 <html>
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
 <jsp:setProperty name="ejbcawebbean" property="*" /> 
@@ -96,6 +97,8 @@ org.cesecore.keybind.InternalKeyBindingRules
     final String INTERNALKEYBINDING_RESOURCE            = InternalKeyBindingRules.BASE.resource();
     final String SERVICES_RESOURCE                      = StandardRules.ROLE_ROOT.resource();
     final String PEERCONNECTOR_RESOURCE_VIEW            = AccessRulesConstants.REGULAR_PEERCONNECTOR_VIEW;
+    final String VPN_VIEW                               = VpnRules.VIEW.resource();
+    final String VPN_USER_VIEW                          = VpnRules.USER_VIEW.resource();
  %>
 <%  
   boolean caheaderprinted     =false;
@@ -105,6 +108,7 @@ org.cesecore.keybind.InternalKeyBindingRules
   boolean logheaderprinted    =false;
   boolean systemheaderprinted =false;
   boolean configheaderprinted = false;
+  boolean vpnspaceheaderprinted = false;
 
 %>
 <head>
@@ -127,6 +131,27 @@ org.cesecore.keybind.InternalKeyBindingRules
 		</li>
 <%    }
    }catch(AuthorizationDeniedException e){} 
+%>
+
+<%
+   // --------------------------------------------------------------------------
+   // Private space FUNCTIONS
+ %>
+ <%
+   try{
+     if(ejbcawebbean.isAuthorizedNoLog(VPN_VIEW)){
+        if(!vpnspaceheaderprinted){
+          out.write("<li id=\"cat1\" class=\"section\"><strong>" + ejbcawebbean.getText("NAV_PRIV_SPACE")+"</strong><ul>");
+           vpnspaceheaderprinted=true;
+        } %>
+        <li><a href="<%= VPN_LINK %>" target="<%=GlobalConfiguration.MAINFRAME %>"><%=ejbcawebbean.getText("NAV_VPN") %></a></li>
+        <%    }
+   }catch(AuthorizationDeniedException e){}
+%>
+<%
+   if(vpnspaceheaderprinted){
+     out.write("</ul></li>");
+   }
 %>
 <%
    // --------------------------------------------------------------------------
@@ -347,21 +372,6 @@ org.cesecore.keybind.InternalKeyBindingRules
    // --------------------------------------------------------------------------
    // SYSTEM FUNCTIONS
 %>
-
-<%
-   // If authorized to edit authorizations then display related links.
-   try{
-     if(ejbcawebbean.isAuthorizedNoLog(ADMINPRIVILEGES_RESOURCE)){
-       if(!systemheaderprinted){
-         out.write("<li id=\"cat7\" class=\"section\"><strong>" + ejbcawebbean.getText("NAV_SYSTEMFUNCTIONS")+"</strong><ul>"); 
-         systemheaderprinted=true;
-         }  %>
-				<li><a href="<%= VPN_LINK %>" target="<%=GlobalConfiguration.MAINFRAME %>"><%=ejbcawebbean.getText("NAV_VPN") %></a></li>
-<%   }
-  }catch(AuthorizationDeniedException e){}
-%>
-
-
 <%
    // If authorized to edit authorizations then display related links.
    try{
