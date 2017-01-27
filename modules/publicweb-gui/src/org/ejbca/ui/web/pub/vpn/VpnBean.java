@@ -4,6 +4,9 @@ import org.apache.log4j.Logger;
 import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
+import org.cesecore.certificates.ca.CAInfo;
+import org.cesecore.certificates.ca.CaSessionLocal;
+import org.cesecore.util.CertTools;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.*;
 import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
@@ -27,7 +30,6 @@ public class VpnBean implements Serializable {
     public static final String LINK_ERROR_SESSION = "otpLinkError";
     public static final String DOWNLOADED_COOKIE = "fileDownload";
 
-    private boolean initialized;
     private AuthenticationToken authToken;
 
     private String browser = "unknown";
@@ -41,10 +43,12 @@ public class VpnBean implements Serializable {
     private VpnLinkError linkError;
     private Date dateGenerated;
     private String landingLink;
+    private String hostname;
 
     private HttpServletRequest request;
-    private EjbLocalHelper ejb = new EjbLocalHelper();
-    private VpnUserManagementSession vpnUserManagementSession = ejb.getVpnUserManagementSession();
+    private final EjbLocalHelper ejb = new EjbLocalHelper();
+    private final VpnUserManagementSession vpnUserManagementSession = ejb.getVpnUserManagementSession();
+    private final CaSessionLocal caSession = ejb.getCaSession();
 
     /**
      * Initialisation on load
@@ -53,7 +57,6 @@ public class VpnBean implements Serializable {
      */
     public void initialize(HttpServletRequest request) throws Exception {
         authToken = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("Public Web: "+request.getRemoteAddr()));
-        initialized = true;
         this.request = request;
 
         // Checking OTP token.
@@ -92,6 +95,9 @@ public class VpnBean implements Serializable {
             linkError = VpnLinkError.NONE;
             dateGenerated = new Date(vpnUser.getConfigGenerated());
             landingLink = vpnUserManagementSession.getConfigDownloadLink(authToken, vpnUser.getId());
+
+            final CAInfo vpnCA = caSession.getCAInfo(authToken, VpnConfig.getCA());
+            hostname = CertTools.getPartFromDN(vpnCA.getSubjectDN(), "CN");
 
         } catch (VpnOtpInvalidException e) {
             exception = e;
@@ -228,6 +234,14 @@ public class VpnBean implements Serializable {
      */
     public String getLandingLink() {
         return landingLink;
+    }
+
+    /**
+     * Private space host name
+     * @return hostname
+     */
+    public String getHostname() {
+        return hostname;
     }
 
     /**

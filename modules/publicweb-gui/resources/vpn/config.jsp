@@ -72,8 +72,8 @@
 <body>
 
 <div class="jumbotron text-center">
-    <h1>Your Private Space</h1>
-    <p>Enigma Bridge Private Space key download</p>
+    <h1>Welcome to Private Space</h1>
+    <p>User key download</p>
 </div>
 
 <div class="container">
@@ -85,10 +85,14 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Private space user key</div>
                     <div class="panel-body" id="pre-info">
-                        <table class="table">
+                        <table class="table table-vpn">
                             <tr>
-                                <th style="border-top: none">Email</th>
-                                <td style="border-top: none">${vpnBean.vpnUser.email}</td>
+                                <th style="border-top: none">Space name</th>
+                                <td style="border-top: none">${vpnBean.hostname}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>${vpnBean.vpnUser.email}</td>
                             </tr>
                             <tr>
                                 <th>Device</th>
@@ -110,7 +114,7 @@
 
             <div id="divButtonUpload">
                 <a class="btn btn-primary btn-rich-electric-blue btn-xl btn-block btn-wrap" id="btnDownload"
-                   href="${vpnBean.downloadLink}">Download</a>
+                   href="${vpnBean.downloadLink}">Download Key</a>
             </div>
 
             <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID
@@ -174,6 +178,7 @@
                     <h3>Troubleshooting</h3>
                     <p>
                         In case of a problem please consult your administrator.
+                        You can also contact Enigma Bridge support at: <a href="https://enigmabridge.freshdesk.com">https://enigmabridge.freshdesk.com</a>
                     </p>
                 </div>
             </div>
@@ -222,6 +227,7 @@
                     <p>VPN Configuration download link is invalid and cannot be used.
                         It may be expired or already downloaded. </p>
                     <p>Please contact your administrator to issue a new VPN configuration key.</p>
+                    <p>You can also contact Enigma Bridge support at: <a href="https://enigmabridge.freshdesk.com">https://enigmabridge.freshdesk.com</a></p>
                 </div>
             </div>
         </c:otherwise>
