@@ -281,15 +281,7 @@
                     fileUrl = fileUrl + settings.data;
                 }
 
-                if (isAndroid) {
-
-                    downloadWindow = window.open(fileUrl);
-                    downloadWindow.document.title = settings.popupWindowTitle;
-                    window.focus();
-
-                }
-
-                else if (isIos || isOtherMobileBrowser) {
+                if (isIos || isAndroid || isOtherMobileBrowser) {
 
                     window.location(fileUrl);
 
