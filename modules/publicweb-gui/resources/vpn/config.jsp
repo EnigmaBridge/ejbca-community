@@ -69,7 +69,7 @@
         });
     </script>
 </head>
-<body>
+<body class="enigmabridge">
 
 <div class="jumbotron text-center">
     <h1>Welcome to Private Space</h1>
@@ -113,7 +113,7 @@
             <div id="divStatusNotif" class="alert alert-success" style="display: none;">Download successful</div>
 
             <div id="divButtonUpload">
-                <a class="btn btn-primary btn-rich-electric-blue btn-xl btn-block btn-wrap" id="btnDownload"
+                <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnDownload"
                    href="${vpnBean.downloadLink}">Download Key</a>
             </div>
 

@@ -65,6 +65,20 @@ button {
     text-align: center;
 }
 
+.enigmabridge {
+
+}
+
 .table-vpn {
     margin-bottom: 0 !important;
 }
+
+.enigmabridge .btn-primary {
+    background-color: #00a7d7;
+}
+
+.enigmabridge .jumbotron {
+    background-color: #00a7d7;
+    color: #fcfcfc;
+}
+
