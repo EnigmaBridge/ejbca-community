@@ -24,8 +24,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<%= org.ejbca.config.WebConfiguration.getWebContentEncoding() %>" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
-    <title><%= org.ejbca.config.InternalConfiguration.getAppNameCapital() %> Public Web</title>
-    <link rel="shortcut icon" href="../images/favicon.png" type="image/png" />
+    <title><%= org.ejbca.core.ejb.vpn.VpnConfig.getConfigDownloadTitle() %> - <%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></title>
+    <link rel="shortcut icon" href="../images/favicon-eb.png" type="image/png" />
     <link rel="stylesheet" href="../scripts/bootstrap-3.3.7.min.css" type="text/css" />
     <link rel="stylesheet" href="../scripts/vpnstyle.css" type="text/css" />
     <script type="text/javascript" src="../scripts/jquery-1.12.4.min.js"></script>
