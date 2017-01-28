@@ -288,8 +288,8 @@ public class VpnUtils {
         final String settingHostname = VpnConfig.getServerHostname();
         final String hostPart = getHostnameId(settingHostname);
 
-        String fileName = String.format("Private Cloud %s - key %s-%s",
-                hostPart, user.getDevice(), user.getEmail().replace("@", "."));
+        String fileName = String.format("Private Space %s - %s - %s",
+                hostPart, user.getDevice(), user.getEmail().replace("@", "_"));
 
         final SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd", Locale.getDefault());
         final String dateFmted = formatter.format(
