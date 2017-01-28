@@ -159,7 +159,7 @@ public class VpnDownloadServlet extends HttpServlet {
                 response.sendRedirect("config.jsf");
 
             } else {
-                final String fileName = VpnUtils.genVpnConfigFileName(vpnUser);
+                final String fileName = VpnUtils.genVpnConfigFileNameHuman(vpnUser);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
                 final byte[] bytes2send = vpnUser.getVpnConfig().getBytes("UTF-8");

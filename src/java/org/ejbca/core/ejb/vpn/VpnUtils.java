@@ -18,6 +18,7 @@ import java.security.cert.*;
 import java.security.cert.Certificate;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Misc VPN utils.
@@ -185,13 +186,32 @@ public class VpnUtils {
 
     /**
      * Sanitizes single file name
-     * @param fileName
-     * @return
+     * @param fileName filename to sanitize
+     * @return sanitized file name
      */
     public static String sanitizeFileName(String fileName){
+        return sanitizeFileName(fileName, false, "_");
+    }
+
+    /**
+     * Sanitizes single file name
+     * @param fileName filename to sanitize
+     * @param allowSpace if true a space is allowed in the file name
+     * @param separator default separator for invalid characters
+     * @return sanitized file name
+     */
+    public static String sanitizeFileName(String fileName, boolean allowSpace, String separator){
         fileName = StringTools.stripFilename(fileName);
-        fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-_]", "_");
+        if (allowSpace){
+            fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-_\\s]", separator);
+        } else {
+            fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-_]", separator);
+        }
         fileName = fileName.replaceAll("[_]{2,}", "_");
+
+        if (!separator.isEmpty()) {
+            fileName = fileName.replaceAll("[" + Pattern.quote(separator) + "]{2,}", separator);
+        }
         return fileName;
     }
 
@@ -237,8 +257,8 @@ public class VpnUtils {
 
     /**
      * Generates a file name for the ovpn file
-     * @param user
-     * @return
+     * @param user vpn user to generate filename for
+     * @return OpenVPN configuration file name
      */
     public static String genVpnConfigFileName(VpnUser user){
         final String settingHostname = VpnConfig.getServerHostname();
@@ -257,6 +277,28 @@ public class VpnUtils {
         fileName += ".ovpn";
 
         fileName = VpnUtils.sanitizeFileName(fileName);
+        return fileName;
+    }
+    /**
+     * Generates a file name for the ovpn file - more human friendly
+     * @param user vpn user to generate filename for
+     * @return human friendly OpenVPN configuration file name
+     */
+    public static String genVpnConfigFileNameHuman(VpnUser user){
+        final String settingHostname = VpnConfig.getServerHostname();
+        final String hostPart = getHostnameId(settingHostname);
+
+        String fileName = String.format("Private Cloud %s - key %s-%s",
+                hostPart, user.getDevice(), user.getEmail().replace("@", "."));
+
+        final SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd", Locale.getDefault());
+        final String dateFmted = formatter.format(
+                new Date(user.getConfigGenerated() == null ? System.currentTimeMillis() : user.getConfigGenerated()));
+        fileName += " " + dateFmted;
+        fileName += " v" + user.getConfigVersion();
+        fileName += ".ovpn";
+
+        fileName = VpnUtils.sanitizeFileName(fileName, true, "_");
         return fileName;
     }
 
