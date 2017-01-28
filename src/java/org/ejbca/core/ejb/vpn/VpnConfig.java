@@ -32,6 +32,7 @@ public class VpnConfig {
     public static final String CONFIG_VPN_CRL_MOVE = "vpn.crl.move";
     public static final String CONFIG_VPN_CRL_REFRESH_ON_REVOKE = "vpn.crl.refresh_on_revoke";
     public static final String CONFIG_VPN_CRL_REFRESH_FILE_ON_REVOKE = "vpn.crl.refresh_file_on_revoke";
+    public static final String CONFIG_VPN_DOWNLOAD_TITLE = "vpn.download.title";
 
     public static String getDefaultIfEmpty(String src, String defaultValue){
         return (src == null || src.isEmpty()) ? defaultValue : src;
@@ -370,5 +371,15 @@ public class VpnConfig {
         }
 
         return VpnCons.DEFAULT_VPN_CRL_REFRESH_FILE_ON_REVOKE;
+    }
+
+    /**
+     * Returns VPN config download page title
+     * @return title for VPN download page.
+     */
+    public static String getConfigDownloadTitle(){
+        return getDefaultIfEmpty(
+                EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_DOWNLOAD_TITLE),
+                VpnCons.DEFAULT_CONFIG_VPN_DOWNLOAD_TITLE);
     }
 }
