@@ -51,8 +51,10 @@ org.cesecore.authorization.control.CryptoTokenRules
   <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
+	<link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
 	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
 	<script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
+	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
   <script>
 	/** Prevent form submission if enter is pressed in form and instead clicks on the button right of the inputText instead..) */
 	function preventSubmitOnEnter(o, e) {
@@ -228,16 +230,14 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<br/>
 
 	<h:panelGroup>
-		<%--<h:commandButton value="#{web.text.VPNUSER_REFRESH}" action="#{vpnUsersMBean.refreshPage}"/>--%>
-
 		<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_DELETE}')"/>
+						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_DELETE}')"/>
 
 		<h:commandButton value="#{web.text.VPNUSER_REVOKE}" action="#{vpnUsersMBean.revokeVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_REVOKE}')"/>
+						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REVOKE}')"/>
 
 		<h:commandButton value="#{web.text.VPNUSER_REGENERATE}" action="#{vpnUsersMBean.regenerateVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirm('#{web.text.VPNUSER_CONF_REGENERATE}')"/>
+						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REGENERATE}')"/>
 	</h:panelGroup>
 	<br/>
 
@@ -248,6 +248,11 @@ org.cesecore.authorization.control.CryptoTokenRules
 	</h:outputLink>
 
 	</h:form>
+
+	<div class="modal">
+		<div class="modal-wrap"></div>
+	</div>
+
 	<%	// Include Footer 
 	String footurl = globalconfiguration.getFootBanner(); %>
 	<jsp:include page="<%= footurl %>" />

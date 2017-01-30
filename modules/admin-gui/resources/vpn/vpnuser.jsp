@@ -60,6 +60,7 @@ org.cesecore.authorization.control.CryptoTokenRules
   <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery.qrcode.min.js"></script>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
 
 	<script>
         function viewuser(username){
@@ -189,13 +190,17 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<h:commandButton action="#{vpnUsersMBean.cancelEdit}" value="#{web.text.CRYPTOTOKEN_CANCEL}"
 							 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
 			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}"
-							 rendered="#{vpnUsersMBean.currentVpnUserEditMode}"/>
+							 rendered="#{vpnUsersMBean.currentVpnUserEditMode}" onclick="return bodyProgress(true)"/>
 		</h:panelGroup>
 	</h:panelGrid>
 	</h:form>
 
 	<div class="qrWrap">
 		<div id="qrcode" class="qr"></div>
+	</div>
+
+	<div class="modal">
+		<div class="modal-wrap"></div>
 	</div>
 
 	<%	// Include Footer 
