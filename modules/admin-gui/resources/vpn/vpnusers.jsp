@@ -125,7 +125,6 @@ org.cesecore.authorization.control.CryptoTokenRules
         $(document).delegate('.checkAll', 'click', function(event) {
             var isChecked = this.checked;
             $('.checkAnchor').prop('checked', isChecked);
-            //$(this).closest("table").find(':checkbox').attr('checked', isChecked);
         });
     });
   </script>
@@ -140,7 +139,6 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<div class="message"><h:messages layout="table" errorClass="alert"/></div>
 	<h:form id="vpnusers">
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
-		<%--<input type="hidden" name='<%= HIDDEN_USERNAME + i %>' value='<c:out value="<%= java.net.URLEncoder.encode(users[i].getEmail(),\"UTF-8\") %>"/>' >--%>
 		<h:column>
 			<f:facet name="header"><h:selectBooleanCheckbox styleClass="checkAll"/></f:facet>
 			<h:selectBooleanCheckbox value="#{vpnUserGuiInfo.selected}" styleClass="checkAnchor"/>
@@ -177,34 +175,6 @@ org.cesecore.authorization.control.CryptoTokenRules
 							 rendered="#{vpnUserGuiInfo.otpDownload != null}" />
 		</h:column>
 
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_EMAIL}"/></f:facet>--%>
-			<%--<h:outputText value="#{vpnUserGuiInfo.email}"/>--%>
-		<%--</h:column>--%>
-
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_DEVICE}"/></f:facet>--%>
-			<%--<h:outputText value="#{vpnUserGuiInfo.device}"/>--%>
-		<%--</h:column>--%>
-
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_TYPE}"/></f:facet>--%>
-			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_TYPE_P11}" rendered="#{cryptoTokenGuiInfo.p11SlotType}"/>--%>
-			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_TYPE_SOFT}" rendered="#{!cryptoTokenGuiInfo.p11SlotType}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_ACTIVE}"/></f:facet>--%>
-			<%--<h:graphicImage height="16" width="16" url="#{cryptoTokenGuiInfo.statusImg}" styleClass="statusIcon"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_AUTO}"/></f:facet>--%>
-			<%--<h:graphicImage height="16" width="16" url="#{cryptoTokenGuiInfo.autoActivationYesImg}" styleClass="statusIcon" rendered="#{cryptoTokenGuiInfo.autoActivation}"/>--%>
-		<%--</h:column>--%>
-		<%--<h:column>--%>
-   			<%--<f:facet name="header"><h:outputText value="#{web.text.CRYPTOTOKEN_REFDHEAD}"/></f:facet>--%>
-			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_UNUSED}" rendered="#{!cryptoTokenGuiInfo.referenced}"/>--%>
-			<%--<h:outputText value="#{web.text.CRYPTOTOKEN_REFD}" rendered="#{cryptoTokenGuiInfo.referenced}"/>--%>
-		<%--</h:column>--%>
 		<h:column>
 			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_STATUS}"/></f:facet>
 			<h:outputText value="#{vpnUserGuiInfo.statusText}" rendered="#{vpnUserGuiInfo.statusText != null}"/>
