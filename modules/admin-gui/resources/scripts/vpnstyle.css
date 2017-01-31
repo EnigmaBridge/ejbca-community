@@ -61,3 +61,111 @@ body.loading .modal {
     display: block;
 }
 
+/**
+ * Material design icons sprites
+ * https://materialdesignicons.com/
+ * https://www.materialpalette.com/icons
+ * https://material.io/icons/
+ * http://spritegen.website-performance.org/
+ */
+.sprite {
+    background-image: url(../images/spritesheet.png);
+    background-repeat: no-repeat;
+    display: block;
+}
+
+.sprite-btn {
+    background: white url(../images/spritesheet.png) no-repeat;
+}
+
+.sprite-account:hover {
+    width: 24px;
+    height: 24px;
+    background-position: -5px -5px;
+}
+
+.sprite-account {
+    width: 24px;
+    height: 24px;
+    background-position: -39px -5px;
+}
+
+.sprite-certificate:hover {
+    width: 24px;
+    height: 24px;
+    background-position: -73px -5px;
+}
+
+.sprite-certificate {
+    width: 24px;
+    height: 24px;
+    background-position: -5px -39px;
+}
+
+.sprite-check:hover {
+    width: 24px;
+    height: 24px;
+    background-position: -39px -39px;
+}
+
+.sprite-check {
+    width: 24px;
+    height: 24px;
+    background-position: -73px -39px;
+}
+
+.sprite-download:hover {
+    width: 24px;
+    height: 24px;
+    background-position: -5px -73px;
+}
+
+.sprite-download {
+    width: 24px;
+    height: 24px;
+    background-position: -39px -73px;
+}
+
+.sprite-email:hover {
+    width: 24px;
+    height: 24px;
+    background-position: -73px -73px;
+}
+
+.sprite-email {
+    width: 24px;
+    height: 24px;
+    background-position: -107px -5px;
+}
+
+#vpnusers .grid td,
+#vpnusers .grid th {
+    vertical-align: middle;
+}
+
+#vpnusers .grid td .center,
+#vpnusers .grid th .center {
+    text-align: center;
+}
+
+#vpnusers .sprite-icon {
+    margin: auto;
+    display: block;
+}
+
+#vpnusers .sprite-icon-float {
+    float: left;
+    opacity: 0.25;
+    filter: alpha(opacity=25);  /* For IE8 and earlier */
+}
+
+#vpnusers .detail-field {
+    display: none;
+    float: left;
+}
+
+#vpnusers .img-button {
+    background-color: white;
+    border: none;
+}
+

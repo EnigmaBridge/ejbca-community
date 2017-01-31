@@ -161,18 +161,36 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:column>
    			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_MAIL_SENT}"/></f:facet>
 			<h:outputText value="#{web.text.VPNUSER_DASH}" rendered="#{vpnUserGuiInfo.lastMailSent == null}"/>
-			<h:outputText id="lastMailSent" value="#{vpnUserGuiInfo.lastMailSent}" rendered="#{vpnUserGuiInfo.lastMailSent != null}">
-				<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
-			</h:outputText>
+			<h:panelGroup layout="block" rendered="#{vpnUserGuiInfo.lastMailSent != null}" >
+				<div class="mailsent-check sprite sprite-check sprite-icon"
+					 onclick="$('.mailsent-date').toggle(); $('.mailsent-check').toggleClass('sprite-icon-float')"></div>
+				<div class="mailsent-date detail-field">
+					<h:outputText id="lastMailSent" value="#{vpnUserGuiInfo.lastMailSent}" >
+						<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
+					</h:outputText>
+				</div>
+			</h:panelGroup>
 		</h:column>
 
 		<h:column>
    			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_OTP_USED}"/></f:facet>
-			<h:outputText id="otpUsed" value="#{vpnUserGuiInfo.otpUsed}" rendered="#{vpnUserGuiInfo.otpUsed != null}">
-				<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
-			</h:outputText>
-			<h:commandButton value="#{web.text.VPNUSER_SEND_EMAIL}" action="#{vpnUsersMBean.sendConfigEmail}"
-							 rendered="#{vpnUserGuiInfo.otpDownload != null && vpnUserGuiInfo.otpUsed == null}" />
+
+			<h:commandButton title="#{web.text.VPNUSER_SEND_EMAIL}"
+							 action="#{vpnUsersMBean.sendConfigEmail}"
+							 rendered="#{vpnUserGuiInfo.otpDownload != null && vpnUserGuiInfo.otpUsed == null}"
+							 onclick="return bodyProgress(true);"
+							 styleClass="img-button sprite sprite-email sprite-icon"/>
+
+			<h:panelGroup layout="block" rendered="#{vpnUserGuiInfo.otpUsed != null}">
+				<div class="downloaded-check sprite sprite-check sprite-icon"
+					 onclick="$('.downloaded-date').toggle(); $('.downloaded-check').toggleClass('sprite-icon-float')"></div>
+				<div class="downloaded-date detail-field">
+				<h:outputText id="otpUsed" value="#{vpnUserGuiInfo.otpUsed}" rendered="#{vpnUserGuiInfo.otpUsed != null}">
+					<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
+				</h:outputText>
+				</div>
+			</h:panelGroup>
+
 		</h:column>
 
 		<h:column>
@@ -188,11 +206,14 @@ org.cesecore.authorization.control.CryptoTokenRules
 			</h:panelGroup>
    			</f:facet>
 
-			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}">
-				<h:commandButton value="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
-								 onclick="return viewcert('#{vpnUserGuiInfo.userDesc}')"/>
-				<h:commandButton value="#{web.text.VPNUSER_VIEW_USER}"
-								 onclick="return viewuser('#{vpnUserGuiInfo.userDesc}')"/>
+			<h:panelGroup rendered="#{vpnUserGuiInfo.userview != null}" layout="block" styleClass="center">
+				<h:commandButton title="#{web.text.VPNUSER_VIEW_CERTIFICATE}"
+								 onclick="return viewcert('#{vpnUserGuiInfo.userDesc}')"
+								 styleClass="img-button sprite-btn sprite-certificate"/>
+
+				<h:commandButton title="#{web.text.VPNUSER_VIEW_USER}"
+								 onclick="return viewuser('#{vpnUserGuiInfo.userDesc}')"
+								 styleClass="img-button sprite-btn sprite-account"/>
 			</h:panelGroup>
 
 		</h:column>
