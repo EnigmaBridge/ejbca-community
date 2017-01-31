@@ -172,7 +172,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 				<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" />
 			</h:outputText>
 			<h:commandButton value="#{web.text.VPNUSER_SEND_EMAIL}" action="#{vpnUsersMBean.sendConfigEmail}"
-							 rendered="#{vpnUserGuiInfo.otpDownload != null}" />
+							 rendered="#{vpnUserGuiInfo.otpDownload != null && vpnUserGuiInfo.otpUsed == null}" />
 		</h:column>
 
 		<h:column>
