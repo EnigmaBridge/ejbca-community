@@ -13,6 +13,7 @@
 package org.ejbca.util.keystore;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -37,7 +38,12 @@ public class PasswordCallBackHandler implements CallbackHandler {
 				PasswordCallback pc = (PasswordCallback)callbacks[i];
 				System.err.print(pc.getPrompt());
 				System.err.flush();
-				pc.setPassword(System.console().readPassword());
+				if (System.console() != null){
+				    pc.setPassword(System.console().readPassword());
+                                } else {
+                                   final Scanner sc = new Scanner (System.in);
+                                   pc.setPassword(sc.next().toCharArray());
+                                }
 
 			} else {
 				throw new UnsupportedCallbackException

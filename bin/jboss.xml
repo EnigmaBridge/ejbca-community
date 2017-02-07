@@ -273,7 +273,7 @@
             <!-- Remove the current definitions. -->
             <jboss:admsilent arg='/subsystem=mail/mail-session="${mail.jndi-name}":remove' failonerror="false" />
             <jboss:admsilent arg='/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=ejbca-mail-smtp:remove' failonerror="false" />
-            <jboss:admsilent arg=":reload" />
+            <jboss:jbossreload/>
             <!-- We must wait a few seconds, or some race conditions could happen. The problem is that :reload is a non-blocking operation, and JBoss CLI is not very stable... -->
     	    <jboss:jbosswaitready/>
             <!-- Construct the parameters for adding the server based on whether we use authentication or not (not specifying the username/password means no authentication). -->
@@ -285,7 +285,7 @@
             <jboss:adm arg='/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=ejbca-mail-smtp:add(port="${mail.smtp.port}", host="${mail.smtp.host}")' />
             <jboss:adm arg='/subsystem=mail/mail-session="${mail.jndi-name}":add(jndi-name="${mail.jndi-name}",from="${mail.from}")' />
             <jboss:adm arg='/subsystem=mail/mail-session="${mail.jndi-name}"/server=smtp:add(${jboss7.ejbca-mail-smtp.params})' />
-            <jboss:admsilent arg=":reload" />
+            <jboss:jbossreload/>
             <!-- We must wait a few seconds, or some race conditions could happen. The problem is that :reload is a non-blocking operation, and JBoss CLI is not very stable... -->
     	    <jboss:jbosswaitready/>
             <jboss:admsilent arg="deploy --name=ejbca.ear" failonerror="false" />
@@ -308,7 +308,7 @@
         <jboss:adm arg='data-source add --name=ejbcads --driver-name="${database.driver}" --connection-url="${database.url}" --jndi-name="java:/${datasource.jndi-name}" ${jbosseap6enabledflag} --use-ccm=true --user-name="${database.username}" --password="${database.password}" --validate-on-match=true --background-validation=false --prepared-statements-cache-size=50 --share-prepared-statements=true --min-pool-size=5 --max-pool-size=150 --pool-prefill=true --transaction-isolation=TRANSACTION_READ_COMMITTED --check-valid-connection-sql="${database.valid.connection.sql}"' />
     
     <!-- If we don't reload now, JBoss AS 7 will get stuck. @TODO: Try this out with JBoss EAP 6, and see if we can report a bug. -->
-        <jboss:admsilent arg=":reload" />
+        <jboss:jbossreload/>
         <!-- We must wait a few seconds, or some race conditions could happen. The problem is that :reload is a non-blocking operation, and JBoss CLI is not very stable... -->
 	    <jboss:jbosswaitready/>
         <jboss:admsilent arg="deploy --name=ejbca.ear" failonerror="false" />
@@ -321,7 +321,7 @@
   		    <jboss:adm arg='data-source add --name=ocspds --driver-name="${ocsp-database.driver}" --connection-url="${ocsp-database.url}" --jndi-name="java:/${ocsp-datasource.jndi-name}" ${jbosseap6enabledflag} --use-ccm=true --user-name="${ocsp-database.username}" --password="${ocsp-database.password}" --validate-on-match=true --background-validation=false --prepared-statements-cache-size=50 --share-prepared-statements=true --min-pool-size=5 --max-pool-size=20 --pool-prefill=true --transaction-isolation=TRANSACTION_READ_COMMITTED --jta=false --check-valid-connection-sql="${ocsp-database.valid.connection.sql}"' />
 
             <!-- If we don't reload now, JBoss AS 7 will get stuck. @TODO: Try this out with JBoss EAP 6, and see if we can report a bug. -->
-            <jboss:admsilent arg=":reload" />
+            <jboss:jbossreload/>
             <!-- We must wait a few seconds, or some race conditions could happen. The problem is that :reload is a non-blocking operation, and JBoss CLI is not very stable... -->
 		    <jboss:jbosswaitready/>
             <jboss:admsilent arg="deploy --name=ejbca.ear" failonerror="false" />
@@ -334,7 +334,7 @@
             <jboss:adm arg='data-source add --name=extraguids --driver-name="${externalra-database.driver}" --connection-url="${externalra-gui.datasource.jdbc-url}" --jndi-name="java:/ExternalRAGUIMessageDS" ${jbosseap6enabledflag} --use-ccm=true --user-name="${externalra-gui.datasource.username}" --password="${externalra-gui.datasource.password}" --validate-on-match=true --background-validation=false --prepared-statements-cache-size=50 --share-prepared-statements=true --min-pool-size=10 --max-pool-size=10 --pool-prefill=true --transaction-isolation=TRANSACTION_READ_COMMITTED --jta=false --check-valid-connection-sql="${externalra-database.valid.connection.sql}"' />
 
             <!-- If we don't reload now, JBoss AS 7 will get stuck. @TODO: Try this out with JBoss EAP 6, and see if we can report a bug. -->
-            <jboss:admsilent arg=":reload" />
+            <jboss:jbossreload/>
             <jboss:admsilent arg="deploy --name=externalra-gui.war" failonerror="false" />
     </target>
 
@@ -345,7 +345,7 @@
 		    <jboss:adm arg='data-source add --name=extrascepds --driver-name="${externalra-database.driver}" --connection-url="${scep.ra.datasource.jdbc-url}" --jndi-name="java:/ScepRAMessageDS" ${jbosseap6enabledflag} --use-ccm=true --user-name="${scep.ra.datasource.username}" --password="${scep.ra.datasource.password}" --validate-on-match=true --background-validation=false --prepared-statements-cache-size=50 --share-prepared-statements=true --min-pool-size=10 --max-pool-size=10 --pool-prefill=true --transaction-isolation=TRANSACTION_READ_COMMITTED --jta=false --check-valid-connection-sql="${externalra-database.valid.connection.sql}"' />
 
             <!-- If we don't reload now, JBoss AS 7 will get stuck. @TODO: Try this out with JBoss EAP 6, and see if we can report a bug. -->
-            <jboss:admsilent arg=":reload" />
+            <jboss:jbossreload/>
             <jboss:admsilent arg="deploy --name=scepraserver.war" failonerror="false" />
     </target>
 
@@ -368,7 +368,7 @@
             <jboss:admsilent arg="/interfaces=/interface=httpspub:remove" failonerror="false" />
             <jboss:admsilent arg="/interfaces=/interface=httpspriv:remove" failonerror="false" />
 			<jboss:admwaitreload/>
-            <jboss:admsilent arg=":reload" />
+            <jboss:jbossreload/>
 			<jboss:admwaitreload/>
         </target>
 
@@ -389,7 +389,7 @@
             <jboss:adm arg="/subsystem=webservices:write-attribute(name=modify-wsdl-address, value=true)" />
         	<!-- If the server is not so fast, we have to wait a little before we can reload, otherwise it will be bad -->
 			<jboss:admwaitreload/>
-            <jboss:adm arg=":reload" />
+            <jboss:jbossreload/>
 			<jboss:admwaitreload/>
             <antcall target="jee:web-configureJBoss7SSL" />
         </target>
@@ -415,7 +415,7 @@
             <jboss:adm arg='/subsystem=web/connector=httpspub/ssl=configuration:write-attribute(name=protocol, value="${tlsprotocol}")' />
         	<!-- If the server is not so fast, we have to wait a little before we can reload, otherwise it will be bad -->
 			<jboss:admwaitreload/>
-            <jboss:adm arg=":reload" />
+            <jboss:jbossreload/>
 			<jboss:admwaitreload/>
         </target>
 
@@ -653,5 +653,20 @@
                 </retry>
             </sequential>
         </macrodef>
+
+        <macrodef name="jbossreload" uri="jboss" description="JBoss 7 CLI reload with retry macro">
+            <attribute name="failonerror" default="true" description="Fail the build if command exits with error."/>
+            <sequential>
+                <retry retrycount="10" retrydelay="40000">
+                    <sequential>
+                        <echo message="Reloading JBoss..."/>
+                        <sleep seconds="2"/> 
+                        <jboss:admsilent arg=":reload" failonerror="false" />
+                    </sequential>
+                </retry>
+            </sequential>
+        </macrodef>
+
+
 </project>
 
