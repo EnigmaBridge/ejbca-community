@@ -135,9 +135,7 @@ public class VpnConfig {
 
         if (ejbcaHomeDir == null) {
             ejbcaHomeDir = "";
-        }
-
-        if (!ejbcaHomeDir.endsWith("/") && !ejbcaHomeDir.endsWith("\\")) {
+        } else if (!ejbcaHomeDir.endsWith("/") && !ejbcaHomeDir.endsWith("\\")) {
             ejbcaHomeDir += File.separatorChar;
         }
 
