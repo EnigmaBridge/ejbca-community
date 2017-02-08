@@ -33,6 +33,7 @@ public class VpnConfig {
     public static final String CONFIG_VPN_CRL_REFRESH_ON_REVOKE = "vpn.crl.refresh_on_revoke";
     public static final String CONFIG_VPN_CRL_REFRESH_FILE_ON_REVOKE = "vpn.crl.refresh_file_on_revoke";
     public static final String CONFIG_VPN_DOWNLOAD_TITLE = "vpn.download.title";
+    public static final String CONFIG_VPN_HOME_DIR = "vpn.ejbca.home";
 
     public static String getDefaultIfEmpty(String src, String defaultValue){
         return (src == null || src.isEmpty()) ? defaultValue : src;
@@ -128,11 +129,18 @@ public class VpnConfig {
      */
     public static String getHomeDir() {
         String ejbcaHomeDir = System.getenv("EJBCA_HOME");
+        if (ejbcaHomeDir == null){
+            ejbcaHomeDir = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_HOME_DIR);
+        }
+
         if (ejbcaHomeDir == null) {
             ejbcaHomeDir = "";
-        } else if (!ejbcaHomeDir.endsWith("/") && !ejbcaHomeDir.endsWith("\\")) {
+        }
+
+        if (!ejbcaHomeDir.endsWith("/") && !ejbcaHomeDir.endsWith("\\")) {
             ejbcaHomeDir += File.separatorChar;
         }
+
         return ejbcaHomeDir;
     }
 
