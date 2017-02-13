@@ -461,7 +461,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return new Date(date);
     }
 
-    public String getStatusText(int status){
+    public String getEntityStatusText(int status){
         switch(status) {
             case EndEntityConstants.STATUS_NEW:
                 return (getEjbcaWebBean().getText("STATUSNEW"));
@@ -481,6 +481,35 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 return (getEjbcaWebBean().getText("STATUSKEYRECOVERY"));
             default:
                 return null;
+        }
+    }
+
+    /**
+     * Generates a localised status text for the end user.
+     * Takes complex state into account, e.g., sent, downloaded, generated, failed, revoked.
+     * @param vpnUser
+     * @param endEntity
+     * @return
+     */
+    public String getStatusText(VpnUser vpnUser, EndEntityInformation endEntity){
+        final int status = endEntity.getStatus();
+        if (status == EndEntityConstants.STATUS_FAILED){
+            return (getEjbcaWebBean().getText("VPN_STATUS_ERROR"));
+        } else if (status == EndEntityConstants.STATUS_REVOKED) {
+            return (getEjbcaWebBean().getText("VPN_STATUS_REVOKED"));
+        } else if (status != EndEntityConstants.STATUS_GENERATED){
+            return getEntityStatusText(status);
+        }
+
+        // Generated.
+        final Long lastMailSent = vpnUser.getLastMailSent();
+        final Long otpUsed = vpnUser.getOtpUsed();
+        if (otpUsed != null){
+            return (getEjbcaWebBean().getText("VPN_STATUS_DOWNLOADED"));
+        } else if (lastMailSent != null){
+            return (getEjbcaWebBean().getText("VPN_STATUS_SENT"));
+        } else {
+            return (getEjbcaWebBean().getText("VPN_STATUS_READY"));
         }
     }
 
@@ -506,7 +535,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 if (endEntity != null) {
                     UserView userview = new UserView(endEntity, caIdToNameMap);
                     guiUser.setUserview(userview);
-                    guiUser.setStatusText(getStatusText(userview.getStatus()));
+                    guiUser.setStatusText(getStatusText(vpnUser, endEntity));
 
                 } else {
                     guiUser.setStatusText(getEjbcaWebBean().getText("VPNINVALIDNOENTITY"));
