@@ -1,13 +1,13 @@
 Hello,
 
-a new VPN configuration file was generated for you for a device "[(${user.device})]".
+a new Private Space key was generated for you for a device "[(${user.device})]".
 
-The configuration file can be downloaded on the following link:
+The key can be downloaded on the following link:
 
 [(${vpn_link})]
 
 Please note this is one-time download link. Once it has been accessed it becomes invalid.
-If link does not work for you, please ask your administrator to generate a new VPN credentials for you.
+If link does not work for you, please ask your administrator to generate a new key for you.
 
 Best regards,
 
