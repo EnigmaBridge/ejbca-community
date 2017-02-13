@@ -1019,7 +1019,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         this.currentVpnUserEditMode = currentVpnUserEditMode;
     }
 
-    public void toggleCurrentCryptoTokenEditMode() {
+    public void toggleCurrentVpnUserEditMode() {
         currentVpnUserEditMode ^= true;
     }
 
