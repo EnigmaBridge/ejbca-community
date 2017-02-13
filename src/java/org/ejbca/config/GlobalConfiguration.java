@@ -76,7 +76,7 @@ public class GlobalConfiguration extends ConfigurationBase implements Serializab
     private static final Set<String> NODESINCLUSTER_DEFAULT      = new LinkedHashSet<String>();
 
     // Title of ra admin web interface.
-    private static final  String   DEFAULTEJBCATITLE             = InternalConfiguration.getAppNameCapital() + " Administration";
+    private static final  String   DEFAULTEJBCATITLE             = "Private Space from Enigma Bridge"; //InternalConfiguration.getAppNameCapital() + " Administration";
 
     // The base of help links
     public static final String HELPBASEURI = WebConfiguration.getDocBaseUri();
