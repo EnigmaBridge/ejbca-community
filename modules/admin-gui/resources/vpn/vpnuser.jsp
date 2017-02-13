@@ -115,6 +115,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<%--<h:commandButton action="#{vpnUsersMBean.toggleCurrentVpnUserEditMode}" value="#{web.text.VPNUSER_NAV_EDIT}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.allowedToModify}"/>--%>
 		<%--<h:panelGroup id="placeholder1" rendered="#{vpnUsersMBean.currentVpnUserEditMode || !vpnUsersMBean.allowedToModify}"/>--%>
+		<h:panelGroup id="placeholder1"/>
 
 		<%--<h:outputLabel for="currentVpnUserId" value="#{web.text.CRYPTOTOKEN_ID}:" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>--%>
 		<%--<h:outputText id="currentVpnUserId" value="#{vpnUsersMBean.currentVpnUserId}" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>--%>
