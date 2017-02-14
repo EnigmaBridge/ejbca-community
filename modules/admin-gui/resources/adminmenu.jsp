@@ -64,7 +64,7 @@ org.cesecore.keybind.InternalKeyBindingRules
                                                     + "/administratorprivileges.jsf";
 
     final String VPN_LINK   =  ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath()
-                                                    + "/vpn/vpnusers.jsf";
+                                                    + "/vpn/vpnusers.jsf?ejbcaMode=1";
     
     final String SCEPCONFIGURATION_LINK   =  ejbcawebbean.getBaseUrl() + globalconfiguration.getConfigPath() 
             										+ "/scepconfiguration.jsf";

@@ -28,6 +28,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 "%>
 <%@ page import="org.cesecore.certificates.endentity.EndEntityConstants" %>
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
+<jsp:useBean id="vpnUsersMBean" scope="session" class="org.ejbca.ui.web.admin.vpn.VpnUsersMBean" />
 <%!
 	static final String USER_PARAMETER           = "username";
 	static final String SELECT_REVOKE_REASON     = "selectrevokereason";
@@ -50,6 +51,12 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
 	<script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
 	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
+
+<% if (!vpnUsersMBean.getEjbcaMode()) { %>
+	<link rel="stylesheet" href="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.css" type="text/css" />
+	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.js"></script>
+<% } %>
+
   <script>
 	/** Prevent form submission if enter is pressed in form and instead clicks on the button right of the inputText instead..) */
 	function preventSubmitOnEnter(o, e) {
@@ -116,12 +123,31 @@ org.cesecore.authorization.control.CryptoTokenRules
   </script>
    
 </head>
-<body>
+<body class="enigmabridge vpnusers <%= vpnUsersMBean.getEjbcaMode() ? "eb-ejbca" : "eb-solo" %>">
+
+<% if (!vpnUsersMBean.getEjbcaMode()) { %>
+<div class="navbar">
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="https://enigmabridge.com"></a>
+		</div>
+	</div>
+</div>
+
+<div class="jumbotron text-center">
+	<h1>Welcome to Private Space</h1>
+	<p>User key download</p>
+</div>
+
+<div class="container">
+<% } %>
+
 	<h:outputText value="" rendered="#{vpnUsersMBean.pageLoadResetTrigger}"/>
 	<h1>
 		<h:outputText value="#{web.text.MANAGEVPNUSERS}"/>
 		<%= ejbcawebbean.getHelpReference("/userguide.html#Managing%20Crypto%20Tokens") %>
 	</h1>
+
 	<div class="message"><h:messages layout="table" errorClass="alert"/></div>
 	<h:form id="vpnusers">
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
@@ -220,19 +246,26 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 
 
-	<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=&ref=vpnusers" rendered="#{cryptoTokenMBean.allowedToModify}">
+	<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=&ref=vpnusers&ejbcaMode=#{vpnUsersMBean.getEjbcaMode() ? 1 : 0}"
+				  rendered="#{cryptoTokenMBean.allowedToModify}">
 		<h:outputText value="#{web.text.CRYPTOTOKEN_CREATENEW}"/>
 	</h:outputLink>
 
 	</h:form>
 
-	<div class="modal">
-		<div class="modal-wrap"></div>
+
+<% if (!vpnUsersMBean.getEjbcaMode()) { %>
 	</div>
+<% } %>
 
 	<%	// Include Footer 
 	String footurl = globalconfiguration.getFootBanner(); %>
 	<jsp:include page="<%= footurl %>" />
+
+	<div class="modal">
+		<div class="modal-wrap"></div>
+	</div>
+
 </body>
 </f:view>
 </html>

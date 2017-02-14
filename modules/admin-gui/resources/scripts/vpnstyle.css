@@ -169,3 +169,109 @@ body.loading .modal {
     border: none;
 }
 
+.btn {
+    /*margin: 0 5px 5px 0;*/
+}
+
+.btn.pull-right {
+    margin: 0 0 5px 5px;
+}
+
+.btn-d, .btn-d:hover, .btn-d:focus {
+    color: #FFF;
+    background: rgba(0, 0, 0, .3);
+}
+
+/* Prevent ugly blue glow on chrome and safari */
+button {
+    outline: none !important;
+}
+
+.btn-clean {
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-bottom-color: rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 1, .1);
+    box-shadow: 0 1px 3px rgba(0, 0, 1, .25), inset 0 1px 0 0 rgba(255, 255, 255, .15);
+}
+
+.btn-xl {
+    padding: 16px 40px;
+    font-size: 28px;
+}
+
+.btn .caret {
+    margin: 0 0 0 5px
+}
+
+.dropdown a .caret {
+    margin: 0 0 0 5px
+}
+
+.btn-dropdown .dropdown-menu .dropdown {
+    padding: 3px 20px;
+}
+
+/**
+ * EnigmaBridge
+ */
+
+.enigmabridge {
+
+}
+
+.table-vpn {
+    margin-bottom: 0 !important;
+}
+
+.enigmabridge .btn-primary {
+    background-color: #00a7d7;
+}
+
+.enigmabridge .jumbotron {
+    background-color: #00a7d7;
+    color: #fcfcfc;
+}
+
+.enigmabridge .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+    min-height: 0;
+}
+
+.enigmabridge .navbar-header {
+    float: right;
+}
+
+.enigmabridge .navbar-brand {
+    background: url("../images/eblogo2-white.png") center center;
+    width: 160px;
+    height: 30px;
+    background-size: cover;
+    padding: 0;
+}
+
+.enigmabridge .jumbotron h1 {
+    text-align: center;
+}
+
+/**
+ * Administration
+ */
+
+.eb-solo form#vpnusers .grid {
+    width: 100%;
+}
+
+.eb-solo .jumbotron h1 {
+    font-size: 48px;
+}
+
+.eb-solo .jumbotron {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.eb-solo .container h1 {
+    font-size: 24px;
+}

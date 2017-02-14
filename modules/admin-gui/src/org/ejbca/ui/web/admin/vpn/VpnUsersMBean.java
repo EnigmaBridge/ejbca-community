@@ -991,6 +991,29 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
         return reference;
     }
+
+    /**
+     * Returns true if the page is displayed within EJBCA adminweb.
+     * @return true if on adminweb
+     */
+    public boolean getEjbcaMode(){
+        final String ejbcaModeString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ejbcaMode");
+        if (ejbcaModeString != null && !ejbcaModeString.isEmpty()) {
+            try {
+                final int mode = Integer.parseInt(ejbcaModeString);
+                log.info("EJBCA MODE val: " + mode);
+                return mode > 0;
+
+            } catch (Exception e) {
+                log.info("Bad 'ejbcaMode' parameter value.. set, but not a number..");
+            }
+
+            // Always switch to edit mode for new ones and view mode for all others
+            setCurrentVpnUserEditMode(this.currentVpnUserId == null);
+        }
+
+        return false;
+    }
     
     /** @return the id of the VPNUser that is subject to view or edit */
     public Integer getCurrentVpnUserId() {
