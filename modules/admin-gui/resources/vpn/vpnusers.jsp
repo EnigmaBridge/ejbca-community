@@ -44,7 +44,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 <html>
 <f:view>
 <head>
-  <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /></title>
+  <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /> - <%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
 	<link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
@@ -135,8 +135,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 </div>
 
 <div class="jumbotron text-center">
-	<h1>Welcome to Private Space</h1>
-	<p>User key download</p>
+	<h1>Private Space Administration</h1>
+	<p><%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></p>
 </div>
 
 <div class="container">

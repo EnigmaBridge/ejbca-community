@@ -243,6 +243,14 @@ public class VpnUtils {
 
     /**
      * Returns top hostname domain, e.g., from blackburn.enigmabridge.com -> blackburn
+     * @return domain or null
+     */
+    public static String getHostnameId(){
+        return getHostnameId(VpnConfig.getServerHostname());
+    }
+
+    /**
+     * Returns top hostname domain, e.g., from blackburn.enigmabridge.com -> blackburn
      * @param hostname hostname to process or null.
      * @return domain or null
      */
