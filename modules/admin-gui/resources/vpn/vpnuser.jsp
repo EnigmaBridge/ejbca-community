@@ -35,8 +35,6 @@ org.cesecore.authorization.control.CryptoTokenRules
 %>
 <%!
 	static final String USER_PARAMETER           = "username";
-	static final String HIDDEN_USERNAME          = "hiddenusername";
-	static final String HIDDEN_RECORDNUMBER      = "hiddenrecordnumber";
 	static final String SELECT_REVOKE_REASON     = "selectrevokereason";
 %>
 
@@ -44,9 +42,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 	// TODO: fix resource for ACL
 	final String VIEWCERT_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "viewcertificate.jsp";
 	final String VIEWUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewendentity.jsp";
-	final String EDITUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/editendentity.jsp";
-	final String VIEWHISTORY_LINK         = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewhistory.jsp";
-	final String VIEWTOKEN_LINK           = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "hardtoken/viewtoken.jsp";
+
 %>
 <jsp:useBean id="vpnUsersMBean" class="org.ejbca.ui.web.admin.vpn.VpnUsersMBean" scope="session" />
 

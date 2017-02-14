@@ -30,8 +30,6 @@ org.cesecore.authorization.control.CryptoTokenRules
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
 <%!
 	static final String USER_PARAMETER           = "username";
-	static final String HIDDEN_USERNAME          = "hiddenusername";
-	static final String HIDDEN_RECORDNUMBER      = "hiddenrecordnumber";
 	static final String SELECT_REVOKE_REASON     = "selectrevokereason";
 %>
 
@@ -40,9 +38,6 @@ org.cesecore.authorization.control.CryptoTokenRules
 	GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource());
 	final String VIEWCERT_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "viewcertificate.jsp";
 	final String VIEWUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewendentity.jsp";
-	final String EDITUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/editendentity.jsp";
-	final String VIEWHISTORY_LINK         = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewhistory.jsp";
-	final String VIEWTOKEN_LINK           = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "hardtoken/viewtoken.jsp";
 
 %>
 <html>
@@ -81,15 +76,6 @@ org.cesecore.authorization.control.CryptoTokenRules
         win_popup = window.open(link, 'view_cert','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
         win_popup.focus();
         return false;
-    }
-
-    function viewtoken(row){
-        var hiddenusernamefield = eval("document.form.<%= HIDDEN_USERNAME %>" + row);
-        var username = hiddenusernamefield.value;
-        var link = "<%= VIEWTOKEN_LINK %>?<%= USER_PARAMETER %>="+username;
-        link = encodeURI(link);
-        win_popup = window.open(link, 'view_token','height=650,width=750,scrollbars=yes,toolbar=no,resizable=1');
-        win_popup.focus();
     }
 
     function confirmdelete(){
