@@ -136,6 +136,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 				<h:outputText value="#{web.text.VPNUSER_NAV_BACK}"/></h:outputLink>
 		</h:panelGroup>
 
+		<%-- Edit mode disabled for now. When enabled, modify SHOW_FIRST_ROW appropriatelly --%>
 		<%--<h:commandButton action="#{vpnUsersMBean.toggleCurrentVpnUserEditMode}" value="#{web.text.VPNUSER_NAV_EDIT}" --%>
 						 <%--rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.allowedToModify}"/>--%>
 		<%--<h:panelGroup id="placeholder1" rendered="#{vpnUsersMBean.currentVpnUserEditMode || !vpnUsersMBean.allowedToModify}"/>--%>
@@ -212,8 +213,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:selectBooleanCheckbox id="sendEmailNowAfterCreateCheck" value="#{vpnUsersMBean.currentVpnUser.sendConfigEmail}"
 								 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"/>
 
-		<h:panelGroup/>
-		<h:panelGroup>
+		<h:panelGroup rendered="#{vpnUsersMBean.currentVpnUserEditMode}"/>
+		<h:panelGroup rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
 			<h:commandButton action="#{vpnUsersMBean.cancelEdit}" value="#{web.text.CRYPTOTOKEN_CANCEL}"
 							 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId != null}"/>
 			<h:commandButton action="#{vpnUsersMBean.saveCurrentVpnUser}" value="#{web.text.CRYPTOTOKEN_SAVE}"
