@@ -46,15 +46,16 @@ org.cesecore.authorization.control.CryptoTokenRules
 <head>
   <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /> - <%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
+  <link rel="shortcut icon" href="<%= globalconfiguration.getAdminWebPath() %>images/favicon-eb.png" type="image/png" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
-	<link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
-	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
-	<script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
-	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
+  <link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
 
 <% if (!vpnUsersMBean.getEjbcaMode()) { %>
-	<link rel="stylesheet" href="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.css" type="text/css" />
-	<script src="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.js"></script>
+  <link rel="stylesheet" href="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.css" type="text/css" />
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.js"></script>
 <% } %>
 
   <script>
