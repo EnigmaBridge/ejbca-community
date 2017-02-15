@@ -30,6 +30,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 <%@ page import="static org.ejbca.ui.web.admin.rainterface.ViewEndEntityHelper.USER_PARAMETER" %>
 
 <jsp:useBean id="ejbcawebbean" scope="session" class="org.ejbca.ui.web.admin.configuration.EjbcaWebBean" />
+<jsp:useBean id="vpnUsersMBean" scope="session" class="org.ejbca.ui.web.admin.vpn.VpnUsersMBean" />
 <%
 	GlobalConfiguration globalconfiguration = ejbcawebbean.initialize(request, AccessRulesConstants.ROLE_ADMINISTRATOR, CryptoTokenRules.BASE.resource());
 %>
@@ -39,24 +40,28 @@ org.cesecore.authorization.control.CryptoTokenRules
 %>
 
 <%
-	// TODO: fix resource for ACL
 	final String VIEWCERT_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "viewcertificate.jsp";
 	final String VIEWUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewendentity.jsp";
-
 %>
-<jsp:useBean id="vpnUsersMBean" class="org.ejbca.ui.web.admin.vpn.VpnUsersMBean" scope="session" />
+<c:set var="SHOW_FIRST_ROW" value="#{vpnUsersMBean.paramRef eq 'default'}" />
 
 <html>
 <f:view>
 <head>
-  <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /></title>
+  <title><h:outputText value="#{web.ejbcaWebBean.globalConfiguration.ejbcaTitle}" /> - <%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></title>
   <base href="<%= ejbcawebbean.getBaseUrl() %>" />
+  <link rel="shortcut icon" href="<%= globalconfiguration.getAdminWebPath() %>images/favicon-eb.png" type="image/png" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
   <link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
   <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery.qrcode.min.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
+
+<% if (!vpnUsersMBean.getEjbcaMode()) { %>
+  <link rel="stylesheet" href="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.css" type="text/css" />
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/bootstrap-3.3.7.min.js"></script>
+<% } %>
 
 	<script>
         function viewuser(username){
@@ -96,23 +101,47 @@ org.cesecore.authorization.control.CryptoTokenRules
         });
 	</script>
 </head>
-<body>
+<body class="enigmabridge vpnuser <%= vpnUsersMBean.getEjbcaMode() ? "eb-ejbca" : "eb-solo" %>">
+
+<% if (!vpnUsersMBean.getEjbcaMode()) { %>
+<div class="navbar">
+	<div class="container">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="https://enigmabridge.com"></a>
+		</div>
+	</div>
+</div>
+
+<div class="jumbotron text-center">
+	<h1>Private Space Administration</h1>
+	<p><%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></p>
+</div>
+
+<div class="container">
+<% } %>
+
 	<h1>
 	    <h:outputText value="#{web.text.VPNUSER_NEW}" rendered="#{vpnUsersMBean.currentVpnUserId == null}"/>
 		<h:outputText value="#{web.text.VPNUSER_HEAD} #{vpnUsersMBean.currentVpnUser.name}" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>
 	</h1>
 	<div class="message"><h:messages layout="table" errorClass="alert" infoClass="info"/></div>
 	<h:form id="currentVpnUserForm">
-	<h:panelGrid columns="2">
-		<h:panelGroup>
-			<h:outputLink rendered="#{vpnUsersMBean.paramRef eq 'default'}" value="adminweb/vpn/vpnusers.jsf"><h:outputText value="#{web.text.VPNUSER_NAV_BACK}"/></h:outputLink>
-			<h:outputLink rendered="#{vpnUsersMBean.paramRef eq 'caactivation'}" value="adminweb/ca/caactivation.jsf"><h:outputText value="#{web.text.CRYPTOTOKEN_NAV_BACK_ACT}"/></h:outputLink>
+
+	<div class="panel panel-default">
+	<div class="panel-body" id="pre-info">
+
+	<h:panelGrid columns="2" styleClass="table table-vpn">
+		<h:panelGroup rendered="#{SHOW_FIRST_ROW}">
+			<h:outputLink rendered="#{vpnUsersMBean.paramRef eq 'default'}" value="adminweb/vpn/vpnusers.jsf?ejbcaMode=#{vpnUsersMBean.getEjbcaMode() ? 1 : 0}">
+				<h:outputText value="#{web.text.VPNUSER_NAV_BACK}"/></h:outputLink>
 		</h:panelGroup>
 
-		<%--<h:commandButton action="#{vpnUsersMBean.toggleCurrentVpnUserEditMode}" value="#{web.text.VPNUSER_NAV_EDIT}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.allowedToModify}"/>--%>
+		<%--<h:commandButton action="#{vpnUsersMBean.toggleCurrentVpnUserEditMode}" value="#{web.text.VPNUSER_NAV_EDIT}" --%>
+						 <%--rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.allowedToModify}"/>--%>
 		<%--<h:panelGroup id="placeholder1" rendered="#{vpnUsersMBean.currentVpnUserEditMode || !vpnUsersMBean.allowedToModify}"/>--%>
-		<h:panelGroup id="placeholder1"/>
+		<h:panelGroup id="placeholder1" rendered="#{SHOW_FIRST_ROW}"/>
 
+		<%-- ID field - commented out --%>
 		<%--<h:outputLabel for="currentVpnUserId" value="#{web.text.CRYPTOTOKEN_ID}:" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>--%>
 		<%--<h:outputText id="currentVpnUserId" value="#{vpnUsersMBean.currentVpnUserId}" rendered="#{vpnUsersMBean.currentVpnUserId != null}"/>--%>
 
@@ -191,19 +220,28 @@ org.cesecore.authorization.control.CryptoTokenRules
 							 rendered="#{vpnUsersMBean.currentVpnUserEditMode}" onclick="return bodyProgress(true)"/>
 		</h:panelGroup>
 	</h:panelGrid>
-	</h:form>
+
+	</div>
+	</div>
 
 	<div class="qrWrap">
 		<div id="qrcode" class="qr"></div>
 	</div>
 
-	<div class="modal">
-		<div class="modal-wrap"></div>
+	</h:form>
+
+<% if (!vpnUsersMBean.getEjbcaMode()) { %>
 	</div>
+<% } %>
 
 	<%	// Include Footer 
 	String footurl = globalconfiguration.getFootBanner(); %>
 	<jsp:include page="<%= footurl %>" />
+
+	<div class="modal">
+		<div class="modal-wrap"></div>
+	</div>
+
 </body>
 </f:view>
 </html>

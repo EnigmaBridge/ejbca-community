@@ -275,3 +275,14 @@ button {
 .eb-solo .container h1 {
     font-size: 24px;
 }
+
+.eb-solo .vpnuser label {
+    font-weight: inherit;
+    margin-bottom: 0;
+}
+
+.eb-solo .vpnuser .table tr:first-child td,
+.eb-solo .vpnuser .table tr:first-child th{
+    border-top: 0;
+}
+
