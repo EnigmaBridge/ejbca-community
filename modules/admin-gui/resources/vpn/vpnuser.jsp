@@ -251,7 +251,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 						<a class="nav-link" href="<%= globalconfiguration.getAdminWebPath() %>">EJBCA Admin</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="<%= globalconfiguration.getBaseUrl() %>">EJBCA Public</a>
+						<a class="nav-link" href="<%= org.ejbca.core.ejb.vpn.VpnConfig.getPublicPageLink() %>">EJBCA Public</a>
 					</li>
 				</ul>
 			</div>
