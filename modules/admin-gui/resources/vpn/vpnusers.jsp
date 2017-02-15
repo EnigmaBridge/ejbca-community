@@ -159,7 +159,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 		<h:column>
    			<f:facet name="header"><h:outputText value="#{web.text.VPNUSER_NAME}"/></f:facet>
-			<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=#{vpnUserGuiInfo.id}&ref=default">
+			<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=#{vpnUserGuiInfo.id}&ref=default&ejbcaMode=#{vpnUsersMBean.getEjbcaMode() ? 1 : 0}">
 				<h:outputText value="#{vpnUserGuiInfo.userDesc}" title="#{web.text.VPNUSER_VIEWWITH} #{vpnUserGuiInfo.userDesc}"/>
 			</h:outputLink>
 		</h:column>
