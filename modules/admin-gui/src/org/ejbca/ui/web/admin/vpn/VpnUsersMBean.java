@@ -1001,7 +1001,6 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         if (ejbcaModeString != null && !ejbcaModeString.isEmpty()) {
             try {
                 final int mode = Integer.parseInt(ejbcaModeString);
-                log.info("EJBCA MODE val: " + mode);
                 return mode > 0;
 
             } catch (Exception e) {
