@@ -306,3 +306,6 @@ html {
     padding-left: 0;
 }
 
+.eb-ejbca .eb-footer{
+    display: none;
+}
