@@ -2,6 +2,7 @@ package org.ejbca.core.ejb.vpn;
 
 import org.apache.log4j.Logger;
 import org.ejbca.config.EjbcaConfigurationHolder;
+import org.ejbca.config.InternalConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -225,12 +226,41 @@ public class VpnConfig {
     }
 
     /**
+     * Returns private HTTPS web port.
+     * @return integer port number
+     */
+    public static int getPrivateHttpsPort(){
+        final int DEFAULT_PORT = 8443;
+        final String portStr = EjbcaConfigurationHolder.getString("httpserver.privhttps");
+
+        int port = DEFAULT_PORT;
+        if (portStr != null && !portStr.isEmpty()) {
+            try{
+                port = Integer.parseInt(portStr);
+            } catch(Exception e){
+                log.error("Exception in parsing port number", e);
+            }
+        }
+
+        return port;
+    }
+
+    /**
      * Returns server hostname from the settings.
-     * @return
+     * @return server host name
      */
     public static String getServerHostname(){
         final String settingHostName = EjbcaConfigurationHolder.getString("httpsserver.hostname");
         return settingHostName;
+    }
+
+    /**
+     * EJBCA public page
+     * @return link to the public EJBCA page
+     */
+    public static String getPublicPageLink(){
+        return "https://" + getServerHostname() + ":" + getPublicHttpsPort() + "/" +
+                InternalConfiguration.getAppNameLower() + "/";
     }
 
     /**
