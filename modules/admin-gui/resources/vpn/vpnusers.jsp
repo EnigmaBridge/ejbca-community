@@ -247,7 +247,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 
 
-	<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=&ref=vpnusers&ejbcaMode=#{vpnUsersMBean.getEjbcaMode() ? 1 : 0}"
+	<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=&ref=default&ejbcaMode=#{vpnUsersMBean.getEjbcaMode() ? 1 : 0}"
 				  rendered="#{cryptoTokenMBean.allowedToModify}">
 		<h:outputText value="#{web.text.CRYPTOTOKEN_CREATENEW}"/>
 	</h:outputLink>
