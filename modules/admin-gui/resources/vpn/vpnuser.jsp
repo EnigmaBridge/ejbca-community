@@ -243,6 +243,21 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<div class="modal-wrap"></div>
 	</div>
 
+	<footer class="footer eb-footer">
+		<div class="container nav navbar navbar-toggleable-md ">
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				<ul class="nav navbar-nav mr-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="<%= globalconfiguration.getAdminWebPath() %>">EJBCA Admin</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="<%= globalconfiguration.getBaseUrl() %>">EJBCA Public</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</footer>
+
 </body>
 </f:view>
 </html>
