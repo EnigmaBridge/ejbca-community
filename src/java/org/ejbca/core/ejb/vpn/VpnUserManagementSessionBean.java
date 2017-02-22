@@ -34,6 +34,7 @@ import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.internal.InternalResources;
 import org.cesecore.jndi.JndiConstants;
 import org.cesecore.keys.token.CryptoTokenOfflineException;
+import org.cesecore.vpn.OtpDownload;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSessionLocal;
 import org.ejbca.core.ejb.ca.sign.SignSessionLocal;
@@ -79,6 +80,8 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     private SecurityEventsLoggerSessionLocal securityEventsLoggerSession;
     @EJB
     private VpnUserSession vpnUserSession;
+    @EJB
+    private OtpDownloadSession otpDownloadSession;
     @EJB
     private CaSessionLocal caSession;
     @EJB
@@ -840,5 +843,187 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         } catch(Exception e){
             throw new VpnException("Exception in loading CRL", e);
         }
+    }
+
+    //
+    // OtpDownload token section
+    //   General purpose OTP download tokens.
+    //   In future may be refactored to a separate session bean, OTP logic can be generalized from the VpnUser
+    //   to a common interfaces.
+    //
+
+    @Override
+    public OtpDownload otpCheckOtp(AuthenticationToken authenticationToken, String otpToken, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnNoConfigException, VpnOtpDescriptorException {
+        final OtpDownload token = otpDownloadSession.downloadOtp(otpToken);
+        if (token == null || otpToken == null || !otpToken.equals(token.getOtpDownload())) {
+            throw new VpnOtpInvalidException();
+        }
+
+        if (properties == null) {
+            properties = new Properties();
+        }
+
+        // Build download spec.
+        properties.remove(VpnCons.KEY_METHOD);
+        final JSONObject specJson = VpnUtils.properties2json(properties);
+
+        // Checking basic OTP validity conditions.
+        checkOtpConditions(token, false);
+
+        // Check descriptors.
+        final String otpUsedDescriptor = token.getOtpUsedDescriptor();
+        if (otpUsedDescriptor != null) {
+            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
+            if (!dbDescriptor.similar(specJson)){
+                throw new VpnOtpDescriptorException();
+            }
+        }
+
+        // Copy, detach from the persistence context, reset sensitive fields.
+        final OtpDownload tokenCopy = OtpDownload.copy(token);
+
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPN OTP download check");
+        details.put("otpToken", otpToken);
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(otpToken), null, null, details);
+
+        return tokenCopy;
+    }
+
+    @Override
+    public OtpDownload otpDownloadOtp(AuthenticationToken authenticationToken, String otpToken, String cookie, Properties properties)
+            throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException {
+
+        if (properties == null) {
+            properties = new Properties();
+        }
+
+        // Analyse request method. If HEAD, cookie is not mandatory.
+        final String requestMethod = properties.getProperty(VpnCons.KEY_METHOD);
+        properties.remove(VpnCons.KEY_METHOD);
+
+        // Build download spec.
+        final JSONObject specJson = VpnUtils.properties2json(properties);
+        final String downloadSpec = specJson.toString();
+
+        final OtpDownload token = otpDownloadSession.downloadOtp(otpToken);
+        if (token == null || otpToken == null || !otpToken.equals(token.getOtpDownload())) {
+            throw new VpnOtpInvalidException();
+        }
+
+        // Checking basic OTP validity conditions.
+        final long timeNow = System.currentTimeMillis();
+        checkOtpConditions(token, true);
+
+        // Check descriptors.
+        final String otpUsedDescriptor = token.getOtpUsedDescriptor();
+        if (otpUsedDescriptor != null) {
+            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
+            if (!dbDescriptor.similar(specJson)){
+                clearOtp(token);
+                tryMergeOtp(token);
+                throw new VpnOtpDescriptorException();
+            }
+        }
+
+        // If cookie is set in the database, require the same cookie.
+        // Chrome on iOS does two concurrent requests. The one with HEAD does
+        // not have cookie set correctly.
+        // In that case we relax this condition - no cookie check.
+        final boolean isHead = requestMethod.equalsIgnoreCase("head");
+        final String otpCookie = token.getOtpCookie();
+        if (otpCookie != null && !isHead && !otpCookie.equals(cookie)){
+            clearOtp(token);
+            tryMergeOtp(token);
+            throw new VpnOtpCookieException();
+        }
+
+        // Vpn seems valid. Update fields.
+        token.setDateModified(timeNow);
+        token.setOtpUsed(timeNow);
+        token.setOtpUsedCount(token.getOtpUsedCount()+1);
+        token.setOtpUsedDescriptor(downloadSpec);
+
+        // Generate cookie on the first GET request.
+        // Cookie rotation is disabled due to fishy behavior of the mobile browsers.
+        if (token.getOtpCookie() == null) {
+            token.setOtpCookie(VpnUtils.genRandomPwd());
+        }
+
+        tryMergeOtp(token);
+
+        // Copy, detach from the persistence context
+        final OtpDownload tokenCopy = OtpDownload.copy(token);
+
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPN OTP downloaded for token: " + tokenCopy.getOtpId());
+        details.put("otpToken", otpToken);
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+
+        if (cookie != null) {
+            details.put("cookie", cookie);
+        }
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_DOWNLOADED, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(tokenCopy.getOtpId()), null, null, details);
+
+        return tokenCopy;
+    }
+
+    /**
+     * Checks OTP validity and used count.
+     * In case OTP token is invalid anymore it is cleared from the database.
+     *
+     * @param token token validation
+     * @param saveFirstUsed if true the time is saved on the first use
+     * @throws VpnOtpOldException OTP token is too old
+     * @throws VpnOtpTooManyException OTP used too many times
+     */
+    private void checkOtpConditions(OtpDownload token, boolean saveFirstUsed) throws VpnOtpOldException, VpnOtpTooManyException {
+        // Multiple times download is possible in several cases.
+        // If OTP was used already check if it was not too long time ago.
+        final long timeNow = System.currentTimeMillis();
+        final Long otpFirstUsed = token.getOtpFirstUsed();
+        if (otpFirstUsed != null && otpFirstUsed > 0) {
+            if ((timeNow - otpFirstUsed) > 3L * 60L * 1000L) {
+                clearOtp(token);
+                tryMergeOtp(token);
+                throw new VpnOtpOldException();
+            }
+        } else if (saveFirstUsed) {
+            // First OTP download.
+            token.setOtpFirstUsed(timeNow);
+        }
+
+        // Check if the OTP was not used too many times. Max 5.
+        final int otpUsedCount = token.getOtpUsedCount();
+        if (otpUsedCount >= 4){
+            clearOtp(token);
+            tryMergeOtp(token);
+            throw new VpnOtpTooManyException();
+        }
+    }
+
+    /**
+     * Tries to merge OtpDownload. Runtime exception is thrown in case of an error.
+     * @param token OTP token to merge
+     */
+    private void tryMergeOtp(OtpDownload token){
+        otpDownloadSession.merge(token);
+    }
+
+    /**
+     * Clears OTP related data
+     * @param token token to clear OTP data.
+     */
+    private void clearOtp(OtpDownload token){
+        token.setOtpDownload(null);
+        token.setDateModified(System.currentTimeMillis());
     }
 }
