@@ -69,6 +69,18 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
         return readOtpDownload(otpType, otpId);
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    @Override
+    public List<OtpDownload> getOtp(final String otpType, final String otpId, final String resource) {
+        return readOtpDownload(otpType, otpId, resource);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Integer> getIds() {
+        return entityManager.createQuery("SELECT a.id FROM OtpDownload a").getResultList();
+    }
+
     @Override
     public OtpDownload merge(final OtpDownload otpDownload) {
         final long lastUpdate = System.currentTimeMillis();
@@ -100,6 +112,12 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
     @Override
     public boolean remove(final int otpId) {
         final boolean ret = delete(otpId);
+        return ret;
+    }
+
+    @Override
+    public boolean remove(final String otpType, final String otpId, final String otpResource) {
+        final boolean ret = delete(otpType, otpId, otpResource);
         return ret;
     }
 
@@ -162,6 +180,15 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
     private boolean delete(final int otpId) {
         final Query query = entityManager.createQuery("DELETE FROM OtpDownload a WHERE a.id=:id");
         query.setParameter("id", otpId);
+        return query.executeUpdate() == 1;
+    }
+
+    private boolean delete(final String otpType, final String otpId, final String otpResource) {
+        final TypedQuery<OtpDownload>  query = entityManager.createQuery("DELETE FROM OtpDownload a " +
+                " WHERE a.otpType=:otpType AND a.otpId=:otpId and a.otpResource=:otpResource", OtpDownload.class);
+        query.setParameter("otpType", otpType);
+        query.setParameter("otpId", otpId);
+        query.setParameter("otpResource", otpResource);
         return query.executeUpdate() == 1;
     }
 }

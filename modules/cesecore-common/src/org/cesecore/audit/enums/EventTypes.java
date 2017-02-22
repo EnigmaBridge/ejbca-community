@@ -148,6 +148,10 @@ public enum EventTypes implements EventType {
     VPN_OTP_CHECK,
     VPN_OTP_DOWNLOADED,
     VPN_MAIL_SENT,
+    VPN_OTP_NEW,
+    VPN_OTP_GET,
+    VPN_OTP_OTP_CHECK,
+    VPN_OTP_OTP_DOWNLOAD,
     ;
 
     @Override

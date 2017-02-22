@@ -852,6 +852,61 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     //   to a common interfaces.
     //
 
+    public OtpDownload otpGet(AuthenticationToken authenticationToken, String otpType, String otpId, String otpResource) throws AuthorizationDeniedException {
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.OTP_GET.resource())) {
+            throw new AuthorizationDeniedException();
+        }
+
+        final List<OtpDownload> otps = otpDownloadSession.getOtp(otpType, otpId, otpResource);
+        if (otps == null || otps.isEmpty()){
+            return null;
+        }
+
+        return otps.get(0);
+    }
+
+    public OtpDownload otpNew(final AuthenticationToken authenticationToken, OtpDownload token)
+            throws AuthorizationDeniedException, VpnUserNameInUseException
+    {
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.OTP_NEW.resource())) {
+            throw new AuthorizationDeniedException();
+        }
+
+        // Remove token if it exists already - unique triplet.
+        otpDownloadSession.remove(token.getOtpType(), token.getOtpId(), token.getOtpResource());
+
+        final Set<Integer> allDbIds = new HashSet<>(otpDownloadSession.getIds());
+
+        // Allocate new ID
+        Integer otpDownloadId = null;
+        for (int i = 0; i < 100; i++) {
+            final int current = rnd.nextInt();
+            if (!allDbIds.contains(current)) {
+                otpDownloadId = current;
+                break;
+            }
+        }
+        if (otpDownloadId == null) {
+            throw new RuntimeException("Failed to allocate a new otpDownloadId.");
+        }
+
+        token.setId(otpDownloadId);
+        token = otpDownloadSession.merge(token);
+
+        // Audit logging
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPNUser created with id: " + otpDownloadId);
+        details.put("id", otpDownloadId);
+        details.put("otpType", token.getOtpType());
+        details.put("otpId", token.getOtpId());
+        details.put("otpResource", token.getOtpResource());
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_NEW, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(otpDownloadId), null, null, details);
+        return token;
+    }
+
     @Override
     public OtpDownload otpCheckOtp(AuthenticationToken authenticationToken, String otpToken, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnNoConfigException, VpnOtpDescriptorException {
         final OtpDownload token = otpDownloadSession.downloadOtp(otpToken);
@@ -889,7 +944,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
         details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
 
-        securityEventsLoggerSession.log(EventTypes.VPN_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                 authenticationToken.toString(), String.valueOf(otpToken), null, null, details);
 
         return tokenCopy;
@@ -970,7 +1025,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         if (cookie != null) {
             details.put("cookie", cookie);
         }
-        securityEventsLoggerSession.log(EventTypes.VPN_OTP_DOWNLOADED, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_OTP_DOWNLOAD, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                 authenticationToken.toString(), String.valueOf(tokenCopy.getOtpId()), null, null, details);
 
         return tokenCopy;

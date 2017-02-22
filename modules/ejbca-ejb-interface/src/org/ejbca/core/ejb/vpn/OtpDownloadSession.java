@@ -25,6 +25,12 @@ import java.util.List;
 public interface OtpDownloadSession {
 
     /**
+     * Fetches all IDs from the DB
+     * @return
+     */
+    List<Integer> getIds();
+
+    /**
      * @return the specified Otp or null if it does not exist.
      * @throws RuntimeException
      */
@@ -43,6 +49,15 @@ public interface OtpDownloadSession {
     List<OtpDownload> getOtp(String otpType, String otpId);
 
     /**
+     *
+     * @param otpType
+     * @param otpId
+     * @param resource
+     * @return
+     */
+    List<OtpDownload> getOtp(String otpType, String otpId, String resource);
+
+    /**
      * Add the specified VPNUser to the database and return the id used to store it
      * @param otpDownload
      * @return
@@ -55,6 +70,15 @@ public interface OtpDownloadSession {
      * @return true if crypto token exists and is deleted, false if crypto token with given id does not exist
      */
     boolean remove(final int id);
+
+    /**
+     * Remove the specified OTP Download from the database.
+     * @param otpType
+     * @param otpId
+     * @param otpResource
+     * @return
+     */
+    boolean remove(final String otpType, final String otpId, final String otpResource);
 
     /**
      * Loads OtpDownload via OTP token. If token matches, user is returned.

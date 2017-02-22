@@ -28,6 +28,9 @@ public enum VpnRules {
     CRL_GET(BASE.resource() + "/crl/get"),
     CRL_GEN(BASE.resource() + "/crl/gen"),
 
+    OTP_GET(BASE.resource() + "/otp/get"),
+    OTP_NEW(BASE.resource() + "/otp/new"),
+
     USER_VIEW(USER.resource() + "/view"),
     USER_NEW(USER.resource() + "/new"),
     USER_DELETE(USER.resource() + "/delete"),

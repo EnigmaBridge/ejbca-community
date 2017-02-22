@@ -202,6 +202,31 @@ public interface VpnUserManagementSession {
     byte[] getCRL(AuthenticationToken authenticationToken) throws AuthorizationDeniedException, CADoesntExistsException, VpnException;
 
     /**
+     * Fetches OTP download token by the OTP ID
+     *
+     * @param authenticationToken
+     * @param otpType
+     * @param otpId
+     * @param otpResource
+     * @return
+     * @throws AuthorizationDeniedException
+     */
+    OtpDownload otpGet(AuthenticationToken authenticationToken, String otpType, String otpId, String otpResource)
+            throws AuthorizationDeniedException;
+
+    /**
+     * Creates new OTP download token
+     *
+     * @param authenticationToken
+     * @param token
+     * @return
+     * @throws AuthorizationDeniedException
+     * @throws VpnUserNameInUseException
+     */
+    OtpDownload otpNew(final AuthenticationToken authenticationToken, OtpDownload token)
+            throws AuthorizationDeniedException, VpnUserNameInUseException;
+
+    /**
      * General purpose OTP - check if token is valid.
      *
      * @param authenticationToken
