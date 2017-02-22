@@ -77,7 +77,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
      * Checks OTP
      */
     public void checkOtp(){
-        if (token == null || otp == null || exception != null || linkError != VpnLinkError.NONE) {
+        if (otp == null || exception != null || linkError != VpnLinkError.NONE) {
             otpValid = false;
             return;
         }
