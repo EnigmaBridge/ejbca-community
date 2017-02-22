@@ -36,6 +36,10 @@ public class VpnConfig {
     public static final String CONFIG_VPN_DOWNLOAD_TITLE = "vpn.download.title";
     public static final String CONFIG_VPN_HOME_DIR = "vpn.ejbca.home";
 
+    public static final String CONFIG_VPN_SUBNET_ADDRESS = "vpn.vpn.subnet.address";
+    public static final String CONFIG_VPN_SUBNET_SIZE = "vpn.vpn.subnet.size";
+    public static final String CONFIG_VPN_VPN_SERVER = "vpn.vpn.server";
+
     public static String getDefaultIfEmpty(String src, String defaultValue){
         return (src == null || src.isEmpty()) ? defaultValue : src;
     }
@@ -418,4 +422,35 @@ public class VpnConfig {
                 EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_DOWNLOAD_TITLE),
                 VpnCons.DEFAULT_CONFIG_VPN_DOWNLOAD_TITLE);
     }
+
+    /**
+     * Returns the VPN subnet. Can be used to restrict access to the resource based on the IP address.
+     * @return ip address string
+     */
+    public static String getConfigVpnSubnetAddress(){
+        return getDefaultIfEmpty(
+                EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_SUBNET_ADDRESS),
+                VpnCons.DEFAULT_VPN_SUBNET_ADDRESS);
+    }
+
+    /**
+     * Returns VPN subnet size.
+     * @return size of the subnet in bits. 0-32.
+     */
+    public static int getConfigVpnSubnetSize(){
+        final String pref = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_SUBNET_SIZE);
+        if (pref == null){
+            return VpnCons.DEFAULT_VPN_SUBNET_SIZE;
+        }
+
+        try{
+            return Integer.parseInt(pref);
+        } catch(Exception e){
+            log.error("Exception in parsing " + CONFIG_VPN_SUBNET_SIZE, e);
+        }
+
+        return VpnCons.DEFAULT_VPN_SUBNET_SIZE;
+    }
+
+
 }

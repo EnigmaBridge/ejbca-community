@@ -24,6 +24,10 @@ public class VpnCons {
     public static final boolean DEFAULT_VPN_CRL_REFRESH_FILE_ON_REVOKE = true;
     public static final String DEFAULT_CONFIG_VPN_DOWNLOAD_TITLE = "Enigma Bridge Private Space";
 
+    public static final String DEFAULT_VPN_SUBNET_ADDRESS = "10.8.0.0";
+    public static final int DEFAULT_VPN_SUBNET_SIZE = 24;
+    public static final String DEFAULT_VPN_VPN_SERVER = "10.8.0.1";
+
     public static final String VPN_SERVER_USERNAME = "VPN Server";
     public static final String VPN_LANGUAGE_FILE = "languagefile";
 
