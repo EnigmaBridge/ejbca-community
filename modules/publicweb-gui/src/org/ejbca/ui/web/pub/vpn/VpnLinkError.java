@@ -14,5 +14,6 @@ public enum VpnLinkError {
     OTP_COOKIE,
     OTP_DESCRIPTOR,
     NO_CONFIGURATION,
+    NOT_IN_VPN,
     GENERIC
 }

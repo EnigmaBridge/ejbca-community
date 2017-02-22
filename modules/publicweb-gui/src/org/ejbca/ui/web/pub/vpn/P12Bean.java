@@ -4,40 +4,42 @@ import org.apache.log4j.Logger;
 import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
+import org.cesecore.certificates.ca.CA;
 import org.cesecore.certificates.ca.CAInfo;
 import org.cesecore.certificates.ca.CaSessionLocal;
 import org.cesecore.util.CertTools;
+import org.cesecore.vpn.OtpDownload;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.*;
 import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
-import org.ejbca.core.model.util.EjbLocalHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Properties;
 
 /**
- * VPN managed bean for VPN config download
+ * Managed web bean for p12 file download
  *
  * @author ph4r05
  * Created by dusanklinec on 25.01.17.
  */
-public class VpnBean extends BaseWebBean implements Serializable {
+public class P12Bean extends BaseWebBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private static final Logger log = Logger.getLogger(VpnBean.class);
-    public static final String LINK_ERROR_SESSION = "otpLinkError";
-    public static final String DOWNLOADED_COOKIE = "fileDownload";
+    private static final Logger log = Logger.getLogger(P12Bean.class);
+    public static final String LINK_ERROR_SESSION = "otpP12LinkError";
+    public static final String DOWNLOADED_COOKIE = "fileP12Download";
 
     private String otp;
-    private Integer vpnUserId;
     private Boolean otpValid;
-    private VpnUser vpnUser;
+    private OtpDownload token;
     private Exception exception;
     private VpnLinkError linkError;
     private Date dateGenerated;
     private String landingLink;
+    private Boolean connectedFromVpn;
 
     private final CaSessionLocal caSession = ejb.getCaSession();
 
@@ -50,8 +52,9 @@ public class VpnBean extends BaseWebBean implements Serializable {
         authToken = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("Public Web: "+request.getRemoteAddr()));
         this.request = request;
 
-        // Checking OTP token.
         userAgentParse(request);
+        this.ip = request.getRemoteAddr();
+
         loadParams();
         checkOtp();
     }
@@ -61,7 +64,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
      */
     private void clean(){
         otpValid = null;
-        vpnUser = null;
+        token = null;
         exception = null;
         linkError = VpnLinkError.NONE;
         dateGenerated = null;
@@ -72,20 +75,20 @@ public class VpnBean extends BaseWebBean implements Serializable {
      * Checks OTP
      */
     public void checkOtp(){
-        if (vpnUserId == null || otp == null || exception != null || linkError != VpnLinkError.NONE) {
+        if (token == null || otp == null || exception != null || linkError != VpnLinkError.NONE) {
             otpValid = false;
             return;
         }
 
         try {
             final Properties properties = buildDescriptorProperties(request, null);
-            vpnUser = vpnUserManagementSession.checkOtp(authToken, vpnUserId, otp, properties);
+            token = vpnUserManagementSession.otpCheckOtp(authToken, otp, properties);
 
             otpValid = true;
             exception = null;
-            linkError = VpnLinkError.NONE;
-            dateGenerated = new Date(vpnUser.getConfigGenerated());
-            landingLink = vpnUserManagementSession.getConfigDownloadLink(authToken, vpnUser.getId());
+            linkError = getConnectedFromVpn() ? VpnLinkError.NONE : VpnLinkError.NOT_IN_VPN;
+            dateGenerated = new Date(token.getDateCreated());
+            landingLink = buildLandingLink(token.getOtpDownload());
 
             final CAInfo vpnCA = caSession.getCAInfo(authToken, VpnConfig.getCA());
             hostname = CertTools.getPartFromDN(vpnCA.getSubjectDN(), "CN");
@@ -123,37 +126,22 @@ public class VpnBean extends BaseWebBean implements Serializable {
     }
 
     /**
+     * Generates OTP landing link
+     * @param otp otp code
+     * @return absolute link
+     */
+    private String buildLandingLink(String otp){
+        final int port = VpnConfig.getPublicHttpsPort();
+        final String hostname = VpnConfig.getServerHostname();
+        return String.format("https://%s:%d/ejbca/vpn/p12.jsf?otp=%s", hostname, port, otp);
+    }
+
+    /**
      * Loads params from the request / session.
      */
     public void loadParams() {
-//        final FacesContext cInst = FacesContext.getCurrentInstance();
-//        final ExternalContext ctx = cInst.getExternalContext();
-//        final String vpnUserIdString = ctx.getRequestParameterMap().get("id");
-//        final String otpString = ctx.getRequestParameterMap().get("otp");
-
-        final String vpnUserIdString = request.getParameter("id");
         final String otpString = request.getParameter("otp");
         boolean changed = false;
-
-        if (vpnUserIdString != null) {
-            if (vpnUserIdString.isEmpty()){
-                this.vpnUserId = null;
-                changed = true;
-
-            } else {
-                try {
-                    int vpnUserId = Integer.parseInt(vpnUserIdString);
-                    // If there is a query parameter present and the id is different we flush the cache!
-                    if (this.vpnUserId == null || vpnUserId != this.vpnUserId) {
-                        this.vpnUserId = vpnUserId;
-                        changed = true;
-                    }
-
-                } catch (NumberFormatException e) {
-                    log.info("Bad 'id' parameter value set, but not a number.");
-                }
-            }
-        }
 
         if (otpString != null){
             this.otp = !otpString.isEmpty() ? otpString : null;
@@ -162,7 +150,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
 
         // LinkError from session - download servlet
         try {
-            final String errorLinkString = (String)request.getSession().getAttribute(VpnBean.LINK_ERROR_SESSION);
+            final String errorLinkString = (String)request.getSession().getAttribute(P12Bean.LINK_ERROR_SESSION);
             if (errorLinkString != null && !errorLinkString.isEmpty()) {
                 linkError = VpnLinkError.valueOf(errorLinkString);
                 log.info("Link error loaded from session: " + linkError);
@@ -183,7 +171,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
      * @return link for the download
      */
     public String getDownloadLink(){
-        return String.format("getvpn?id=%s&otp=%s", vpnUserId, otp);
+        return String.format("getp12?otp=%s", otp);
     }
 
     /**
@@ -194,12 +182,32 @@ public class VpnBean extends BaseWebBean implements Serializable {
         return landingLink;
     }
 
-    public String getOtp() {
-        return otp;
+    /**
+     * Returns true if detected OS is not a desktop.
+     * @return
+     */
+    public boolean getIsMobileDevice(){
+        final OperatingSystem grp = os.getGroup();
+        return grp != OperatingSystem.WINDOWS && grp != OperatingSystem.LINUX && grp != OperatingSystem.MAC_OS_X;
     }
 
-    public Integer getVpnUserId() {
-        return vpnUserId;
+    /**
+     * Returns true if user is connected from VPN
+     * @return true if user connects using VPN
+     */
+    public boolean getConnectedFromVpn(){
+        try {
+            connectedFromVpn = VpnUtils.isIpInVPNNetwork(this.ip);
+            return connectedFromVpn;
+        } catch (UnknownHostException e){
+            log.error("Exception when checking IP in VPN", e);
+        }
+
+        return false;
+    }
+
+    public String getOtp() {
+        return otp;
     }
 
     public boolean isOtpValid() {
@@ -210,8 +218,8 @@ public class VpnBean extends BaseWebBean implements Serializable {
         return otpValid;
     }
 
-    public VpnUser getVpnUser() {
-        return vpnUser;
+    public OtpDownload getToken() {
+        return token;
     }
 
     public Exception getException() {
