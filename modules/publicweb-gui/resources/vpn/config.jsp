@@ -232,10 +232,11 @@
             <div class="row">
                 <div class="col-sm-12">
                     <h3>This link is invalid</h3>
-                    <p>VPN Configuration download link is invalid and cannot be used.
+                    <p>The key download link is invalid and cannot be used.
                         It may be expired or already downloaded. </p>
-                    <p>Please contact your administrator to issue a new VPN configuration key.</p>
-                    <p>You can also contact Enigma Bridge support at: <a href="https://enigmabridge.freshdesk.com">https://enigmabridge.freshdesk.com</a></p>
+                    <p>Please contact your administrator to issue a new key.</p>
+                    <p>You can also contact Enigma Bridge support at:
+                        <a href="https://enigmabridge.freshdesk.com">https://enigmabridge.freshdesk.com</a></p>
                 </div>
             </div>
         </c:otherwise>
