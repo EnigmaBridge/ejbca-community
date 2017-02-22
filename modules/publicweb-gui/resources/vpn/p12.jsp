@@ -124,7 +124,7 @@
                                 <a href="https://enigmabridge.freshdesk.com" rel="nofollow" target="_blank">support system</a>.</li>
                             <li>Once you have obtained the password, locate the downloaded key on your computer.</li>
                             <li>The browser will show it as the last downloaded file at the bottom of your screen, or in a list available via a button in the top right corner.</li>
-                            <li>It's name looks like "superadmin.p12". Open the key by clicking on it and follow the dialog to complete installation.</li>
+                            <li>It's name looks like "${p12Bean.p12FileName}". Open the key by clicking on it and follow the dialog to complete installation.</li>
                             <li>When asked for a password, use the one located earlier.</li>
                         </ul>
                     </div>

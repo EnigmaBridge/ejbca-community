@@ -30,7 +30,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
 
     private static final Logger log = Logger.getLogger(P12Bean.class);
     public static final String LINK_ERROR_SESSION = "otpP12LinkError";
-    public static final String DOWNLOADED_COOKIE = "fileP12Download";
+    public static final String DOWNLOADED_COOKIE = "fileDownload";
 
     private String otp;
     private Boolean otpValid;
@@ -39,6 +39,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
     private VpnLinkError linkError;
     private Date dateGenerated;
     private String landingLink;
+    private String p12FileName;
     private Boolean connectedFromVpn;
 
     private final CaSessionLocal caSession = ejb.getCaSession();
@@ -69,6 +70,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
         linkError = VpnLinkError.NONE;
         dateGenerated = null;
         landingLink = null;
+        p12FileName = null;
     }
 
     /**
@@ -89,6 +91,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
             linkError = getConnectedFromVpn() ? VpnLinkError.NONE : VpnLinkError.NOT_IN_VPN;
             dateGenerated = new Date(token.getDateCreated());
             landingLink = buildLandingLink(token.getOtpDownload());
+            p12FileName = VpnUtils.getP12FileNameHuman(token);
 
             final CAInfo vpnCA = caSession.getCAInfo(authToken, VpnConfig.getCA());
             hostname = CertTools.getPartFromDN(vpnCA.getSubjectDN(), "CN");
@@ -236,5 +239,9 @@ public class P12Bean extends BaseWebBean implements Serializable {
 
     public Date getDateGenerated() {
         return dateGenerated;
+    }
+
+    public String getP12FileName() {
+        return p12FileName;
     }
 }

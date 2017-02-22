@@ -7,6 +7,7 @@ import org.bouncycastle.util.io.pem.PemWriter;
 import org.cesecore.util.Base64;
 import org.cesecore.util.CertTools;
 import org.cesecore.util.StringTools;
+import org.cesecore.vpn.OtpDownload;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.util.passgen.IPasswordGenerator;
 import org.ejbca.util.passgen.PasswordGeneratorFactory;
@@ -311,6 +312,15 @@ public class VpnUtils {
 
         fileName = VpnUtils.sanitizeFileName(fileName, true, "_");
         return fileName;
+    }
+
+    /**
+     * Generates a filename for the token file - human friendly
+     * @param token token
+     * @return human friendly p12 configuration file name
+     */
+    public static String getP12FileNameHuman(OtpDownload token){
+        return String.format("%s-%s.p12", VpnUtils.getHostnameId(), VpnUtils.sanitizeFileName(token.getOtpId()));
     }
 
     /**
