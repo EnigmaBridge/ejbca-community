@@ -203,7 +203,7 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
         final Query query = entityManager.createQuery("DELETE FROM OtpDownload a " +
                 " WHERE " + queryNullable("otpType", otpType) +
                 " AND " + queryNullable("otpId", otpId) +
-                " AND " + queryNullable("otpResource", otpResource), OtpDownload.class);
+                " AND " + queryNullable("otpResource", otpResource));
 
         queryParameter(query, "otpType", otpType);
         queryParameter(query, "otpId", otpId);
