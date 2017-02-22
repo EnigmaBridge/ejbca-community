@@ -93,6 +93,17 @@
         <url-pattern>/vpn/getvpn</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <description><![CDATA[Servlet used to download P12 files]]></description>
+        <display-name>P12DownloadServlet</display-name>
+        <servlet-name>P12Download</servlet-name>
+        <servlet-class>org.ejbca.ui.web.pub.vpn.P12DownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>P12Download</servlet-name>
+        <url-pattern>/vpn/getp12</url-pattern>
+    </servlet-mapping>
+
     <!-- BEGIN: Faces servlet for VPN -->
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
