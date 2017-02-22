@@ -19,7 +19,6 @@ import org.cesecore.jndi.JndiConstants;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.QueryResultWrapper;
 import org.cesecore.vpn.OtpDownload;
-import org.cesecore.vpn.VpnUser;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -138,12 +137,7 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
 
     @Override
     public boolean isOtpTokenTaken(final String otpType, final String otpId, final String otpResource) {
-        final Query query = entityManager.createQuery("SELECT a FROM OtpDownload a WHERE " +
-                "a.otpType=:otpType AND a.otpId=:otpId AND a.otpResource=:otpResource");
-        query.setParameter("otpType", otpType);
-        query.setParameter("otpId", otpId);
-        query.setParameter("otpResource", otpResource);
-        return !query.getResultList().isEmpty();
+        return !readOtpDownload(otpType, otpId, otpResource).isEmpty();
     }
 
     //
@@ -165,18 +159,23 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
 
     private List<OtpDownload> readOtpDownload(final String otpType, final String otpId) {
         final TypedQuery<OtpDownload>  query = entityManager.createQuery("SELECT a FROM OtpDownload a " +
-                " WHERE a.otpType=:otpType AND a.otpId=:otpId", OtpDownload.class);
-        query.setParameter("otpType", otpType);
-        query.setParameter("otpId", otpId);
+                " WHERE " + queryNullable("otpType", otpType) +
+                " AND " + queryNullable("otpId", otpId), OtpDownload.class);
+
+        queryParameter(query, "otpType", otpType);
+        queryParameter(query, "otpId", otpId);
         return query.getResultList();
     }
 
     private List<OtpDownload> readOtpDownload(final String otpType, final String otpId, final String otpResource) {
         final TypedQuery<OtpDownload>  query = entityManager.createQuery("SELECT a FROM OtpDownload a " +
-                " WHERE a.otpType=:otpType AND a.otpId=:otpId and a.otpResource=:otpResource", OtpDownload.class);
-        query.setParameter("otpType", otpType);
-        query.setParameter("otpId", otpId);
-        query.setParameter("otpResource", otpResource);
+                " WHERE " + queryNullable("otpType", otpType) +
+                " AND " + queryNullable("otpId", otpId) +
+                " AND " + queryNullable("otpResource", otpResource), OtpDownload.class);
+
+        queryParameter(query, "otpType", otpType);
+        queryParameter(query, "otpId", otpId);
+        queryParameter(query, "otpResource", otpResource);
         return query.getResultList();
     }
 
@@ -192,18 +191,49 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
 
     private boolean delete(final String otpType, final String otpId) {
         final Query query = entityManager.createQuery("DELETE FROM OtpDownload a " +
-                " WHERE a.otpType=:otpType AND a.otpId=:otpId");
-        query.setParameter("otpType", otpType);
-        query.setParameter("otpId", otpId);
+                " WHERE " + queryNullable("otpType", otpType) +
+                " AND " + queryNullable("otpId", otpId));
+
+        queryParameter(query, "otpType", otpType);
+        queryParameter(query, "otpId", otpId);
         return query.executeUpdate() == 1;
     }
 
     private boolean delete(final String otpType, final String otpId, final String otpResource) {
         final Query query = entityManager.createQuery("DELETE FROM OtpDownload a " +
-                " WHERE a.otpType=:otpType AND a.otpId=:otpId and a.otpResource=:otpResource");
-        query.setParameter("otpType", otpType);
-        query.setParameter("otpId", otpId);
-        query.setParameter("otpResource", otpResource);
+                " WHERE " + queryNullable("otpType", otpType) +
+                " AND " + queryNullable("otpId", otpId) +
+                " AND " + queryNullable("otpResource", otpResource), OtpDownload.class);
+
+        queryParameter(query, "otpType", otpType);
+        queryParameter(query, "otpId", otpId);
+        queryParameter(query, "otpResource", otpResource);
         return query.executeUpdate() == 1;
+    }
+
+    /**
+     * Builds query fragments w.r.t. nullity of the object.
+     * @param key parameter key = entity key
+     * @param value parameter value
+     * @return query fragment checking value of the entity attribute (or nullity)
+     */
+    private String queryNullable(String key, Object value){
+        return value == null ?
+                "a." + key + " IS NULL" :
+                "a." + key + "=:"+key;
+    }
+
+    /**
+     * Sets the parameter to the query, if null, value is not added.
+     * @param q query
+     * @param key parameter key
+     * @param value parameter value
+     */
+    private void queryParameter(Query q, String key, Object value){
+        if (value == null){
+            return;
+        }
+
+        q.setParameter(key, value);
     }
 }
