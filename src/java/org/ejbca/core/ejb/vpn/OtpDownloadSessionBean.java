@@ -191,16 +191,16 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
     }
 
     private boolean delete(final String otpType, final String otpId) {
-        final TypedQuery<OtpDownload>  query = entityManager.createQuery("DELETE FROM OtpDownload a " +
-                " WHERE a.otpType=:otpType AND a.otpId=:otpId", OtpDownload.class);
+        final Query query = entityManager.createQuery("DELETE FROM OtpDownload a " +
+                " WHERE a.otpType=:otpType AND a.otpId=:otpId");
         query.setParameter("otpType", otpType);
         query.setParameter("otpId", otpId);
         return query.executeUpdate() == 1;
     }
 
     private boolean delete(final String otpType, final String otpId, final String otpResource) {
-        final TypedQuery<OtpDownload>  query = entityManager.createQuery("DELETE FROM OtpDownload a " +
-                " WHERE a.otpType=:otpType AND a.otpId=:otpId and a.otpResource=:otpResource", OtpDownload.class);
+        final Query query = entityManager.createQuery("DELETE FROM OtpDownload a " +
+                " WHERE a.otpType=:otpType AND a.otpId=:otpId and a.otpResource=:otpResource");
         query.setParameter("otpType", otpType);
         query.setParameter("otpId", otpId);
         query.setParameter("otpResource", otpResource);
