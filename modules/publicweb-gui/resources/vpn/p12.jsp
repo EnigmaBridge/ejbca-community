@@ -119,12 +119,14 @@
                     <div class="col-sm-12">
                         <h3>How To Install The Key</h3>
                         <ul>
-                            <li>You will need a password to install the key. </li>
-                            <li>You can find it under your account in our
+                            <li>You will need a password to install the key. You can find it under your account in our
                                 <a href="https://enigmabridge.freshdesk.com" rel="nofollow" target="_blank">support system</a>.</li>
                             <li>Once you have obtained the password, locate the downloaded key on your computer.</li>
-                            <li>The browser will show it as the last downloaded file at the bottom of your screen, or in a list available via a button in the top right corner.</li>
-                            <li>It's name looks like "${p12Bean.p12FileName}". Open the key by clicking on it and follow the dialog to complete installation.</li>
+                            <ul>
+                                <li>The browser will show it as the last downloaded file at the bottom of your screen, or in a list available via a button in the top right corner.</li>
+                                <li>Its name looks like "${p12Bean.p12FileName}". </li>
+                            </ul>
+                            <li>Open the key by clicking on it and follow the dialog to complete installation.</li>
                             <li>When asked for a password, use the one located earlier.</li>
                         </ul>
                     </div>
