@@ -215,7 +215,8 @@ public interface VpnUserManagementSession {
             throws AuthorizationDeniedException;
 
     /**
-     * Creates new OTP download token
+     * Creates new OTP download token.
+     * All previous OTP tokens with same type, id and resource are removed.
      *
      * @param authenticationToken
      * @param token

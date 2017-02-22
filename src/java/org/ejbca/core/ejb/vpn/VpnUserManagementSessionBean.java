@@ -892,7 +892,16 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             throw new RuntimeException("Failed to allocate a new otpDownloadId.");
         }
 
+        final long curTime = System.currentTimeMillis();
         token.setId(otpDownloadId);
+        token.setOtpUsedCount(0);
+        token.setDateCreated(curTime);
+        token.setDateModified(curTime);
+
+        if (token.getOtpDownload() == null){
+            token.setOtpDownload(VpnUtils.genRandomPwd());
+        }
+
         token = otpDownloadSession.merge(token);
 
         // Audit logging
