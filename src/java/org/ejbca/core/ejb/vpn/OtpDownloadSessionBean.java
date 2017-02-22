@@ -117,6 +117,12 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
     }
 
     @Override
+    public boolean remove(final String otpType, final String otpId) {
+        final boolean ret = delete(otpType, otpId);
+        return ret;
+    }
+
+    @Override
     public boolean remove(final String otpType, final String otpId, final String otpResource) {
         final boolean ret = delete(otpType, otpId, otpResource);
         return ret;
@@ -181,6 +187,14 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
     private boolean delete(final int otpId) {
         final Query query = entityManager.createQuery("DELETE FROM OtpDownload a WHERE a.id=:id");
         query.setParameter("id", otpId);
+        return query.executeUpdate() == 1;
+    }
+
+    private boolean delete(final String otpType, final String otpId) {
+        final TypedQuery<OtpDownload>  query = entityManager.createQuery("DELETE FROM OtpDownload a " +
+                " WHERE a.otpType=:otpType AND a.otpId=:otpId", OtpDownload.class);
+        query.setParameter("otpType", otpType);
+        query.setParameter("otpId", otpId);
         return query.executeUpdate() == 1;
     }
 

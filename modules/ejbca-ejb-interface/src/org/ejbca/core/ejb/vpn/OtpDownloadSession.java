@@ -31,25 +31,28 @@ public interface OtpDownloadSession {
     List<Integer> getIds();
 
     /**
+     * Returns OTP with given ID
      * @return the specified Otp or null if it does not exist.
      * @throws RuntimeException
      */
     OtpDownload getOtp(int otpId);
 
     /**
+     * Returns list of OTPs with specified criteria
      * @return the specified Otp or null if it does not exist.
      * @throws RuntimeException
      */
     List<OtpDownload> getOtp(String otpId);
 
     /**
+     * Returns list of OTPs with specified criteria
      * @return the specified Otp or null if it does not exist.
      * @throws RuntimeException
      */
     List<OtpDownload> getOtp(String otpType, String otpId);
 
     /**
-     *
+     * Returns list of OTPs with specified criteria
      * @param otpType
      * @param otpId
      * @param resource
@@ -70,6 +73,14 @@ public interface OtpDownloadSession {
      * @return true if crypto token exists and is deleted, false if crypto token with given id does not exist
      */
     boolean remove(final int id);
+
+    /**
+     * Remove the specified OTP Download from the database.
+     * @param otpType
+     * @param otpId
+     * @return
+     */
+    boolean remove(final String otpType, final String otpId);
 
     /**
      * Remove the specified OTP Download from the database.
