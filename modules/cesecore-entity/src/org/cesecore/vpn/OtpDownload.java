@@ -72,6 +72,11 @@ public class OtpDownload implements Serializable, Cloneable {
      */
     private int otpUsedCount;
 
+    /**
+     * Serialized aux data
+     */
+    private String auxData;
+
     public OtpDownload() {
     }
 
@@ -80,7 +85,7 @@ public class OtpDownload implements Serializable, Cloneable {
         this.otpId = otpId;
     }
 
-    public OtpDownload(int rowVersion, String rowProtection, Integer id, String otpType, String otpId, String otpResource, long dateCreated, long dateModified, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount) {
+    public OtpDownload(int rowVersion, String rowProtection, Integer id, String otpType, String otpId, String otpResource, long dateCreated, long dateModified, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount, String auxData) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -95,6 +100,7 @@ public class OtpDownload implements Serializable, Cloneable {
         this.otpUsedDescriptor = otpUsedDescriptor;
         this.otpCookie = otpCookie;
         this.otpUsedCount = otpUsedCount;
+        this.auxData = auxData;
     }
 
     @Override
@@ -226,6 +232,14 @@ public class OtpDownload implements Serializable, Cloneable {
 
     public void setOtpUsedCount(int otpUsedCount) {
         this.otpUsedCount = otpUsedCount;
+    }
+
+    public String getAuxData() {
+        return auxData;
+    }
+
+    public void setAuxData(String auxData) {
+        this.auxData = auxData;
     }
 
     @Override

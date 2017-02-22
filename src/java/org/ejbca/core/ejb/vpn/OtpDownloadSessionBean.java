@@ -103,6 +103,7 @@ public class OtpDownloadSessionBean implements OtpDownloadSession {
             otpObj.setOtpUsedDescriptor(otpDownload.getOtpUsedDescriptor());
             otpObj.setOtpCookie(otpDownload.getOtpCookie());
             otpObj.setOtpUsedCount(otpDownload.getOtpUsedCount());
+            otpObj.setAuxData(otpDownload.getAuxData());
         }
 
         otpObj = createOrUpdate(otpObj);
