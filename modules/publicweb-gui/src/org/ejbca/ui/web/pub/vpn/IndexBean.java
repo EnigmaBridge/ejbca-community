@@ -5,8 +5,12 @@ import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
+import org.cesecore.configuration.ConfigurationBase;
+import org.cesecore.configuration.GlobalConfigurationData;
+import org.cesecore.configuration.GlobalConfigurationSessionLocal;
 import org.cesecore.vpn.OtpDownload;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.config.GlobalConfiguration;
 import org.ejbca.core.ejb.authentication.web.WebAuthenticationProviderSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityManagementSessionLocal;
 import org.ejbca.core.ejb.vpn.*;
@@ -28,6 +32,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
     private EndEntityManagementSessionLocal endEntityManagementSessionLocal = ejb.getEndEntityManagementSession();
     private WebAuthenticationProviderSessionLocal authenticationSessionLocal = ejb.getWebAuthenticationProviderSession();
     private AccessControlSessionLocal accessControlSessionLocal = ejb.getAccessControlSession();
+    private GlobalConfigurationSessionLocal configurationSessionLocal = ejb.getGlobalConfigurationSession();
     private VpnUserManagementSessionLocal vpnUserManagementSession = ejb.getVpnUserManagementSession();
 
     private VpnWebUtils.AdminAuthorization adminChecker;
@@ -38,6 +43,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
     private Boolean isVpnDownloaded;
     private OtpDownload otpDownload;
     private VpnUser vpnUser;
+    private GlobalConfiguration globalConfiguration;
     private String hostPort;
 
     /**
@@ -57,6 +63,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         this.vpnUser = null;
         this.isOnlyAdmin = null;
         this.isVpnDownloaded = null;
+        this.globalConfiguration = null;
         this.hostname = VpnConfig.getServerHostname();
         this.hostPort = VpnWebUtils.getRequestServerName(request);
 
@@ -85,6 +92,19 @@ public class IndexBean  extends BaseWebBean implements Serializable {
             response.sendRedirect(buildP12Link(otpDownload.getOtpDownload()));
             response.flushBuffer();
             return;
+        }
+
+        try {
+            globalConfiguration = (GlobalConfiguration) configurationSessionLocal
+                    .getCachedConfiguration(GlobalConfiguration.GLOBAL_CONFIGURATION_ID);
+            if (globalConfiguration.getAdminLoggedInSuccessfully()){
+                log.info("Admin logged in successfully, redirecting to admin");
+                response.sendRedirect(buildPrivateSpaceAdminPageLink());
+                response.flushBuffer();
+                return;
+            }
+        } catch(Exception e){
+            log.error("Could not load global configuration");
         }
     }
 
