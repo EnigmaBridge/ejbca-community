@@ -26,6 +26,7 @@ import org.cesecore.certificates.endentity.EndEntityConstants;
 import org.cesecore.certificates.endentity.EndEntityInformation;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.config.GlobalConfiguration;
 import org.ejbca.core.EjbcaException;
 import org.ejbca.core.ejb.ca.auth.EndEntityAuthenticationSession;
 import org.ejbca.core.ejb.ra.EndEntityAccessSession;
@@ -453,6 +454,25 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         return raif;
     }
 
+    /**
+     * Stores event of successful administrator login to the global configuration.
+     */
+    private void noteSuccessfulAdminLogin(){
+        final GlobalConfiguration globalConfiguration = getEjbcaWebBean().getGlobalConfiguration();
+        if (globalConfiguration.getAdminLoggedInSuccessfully()){
+            return;
+        }
+
+        log.info("Setting info admin logged in successfully");
+        globalConfiguration.setAdminLoggedInSuccessfully(true);
+
+        try {
+            getEjbcaWebBean().saveGlobalConfiguration();
+        } catch (Exception e) {
+            log.error("Could not save global configuration");
+        }
+    }
+
     private Date dateOrNull(Long date){
         if (date == null){
             return null;
@@ -520,7 +540,9 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     /** Build a list sorted by name from the authorized VpnUsers that can be presented to the user */
     @SuppressWarnings({ "rawtypes", "unchecked" }) //JDK6 does not support typing for ListDataModel
     public ListDataModel getVpnUserGuiList() throws AuthorizationDeniedException {
-        if (vpnUserGuiList ==null) {
+        noteSuccessfulAdminLogin();
+
+        if (vpnUserGuiList == null) {
             final List<Integer> vpnUserIds = vpnUserManagementSession.geVpnUsersIds(authenticationToken);
             final List<VpnUserGuiInfo> users = new ArrayList<>(vpnUserIds.size());
             final HashMap<Integer, String> caIdToNameMap = caSession.getCAIdToNameMap();
