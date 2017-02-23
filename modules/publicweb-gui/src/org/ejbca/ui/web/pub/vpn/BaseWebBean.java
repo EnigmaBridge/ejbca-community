@@ -2,6 +2,7 @@ package org.ejbca.ui.web.pub.vpn;
 
 import org.apache.log4j.Logger;
 import org.cesecore.authentication.tokens.AuthenticationToken;
+import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
 import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
@@ -64,6 +65,15 @@ public abstract class BaseWebBean implements Serializable {
     }
 
     /**
+     * Returns true if detected OS is not a desktop.
+     * @return
+     */
+    public boolean getIsMobileDevice(){
+        final OperatingSystem grp = os.getGroup();
+        return grp != OperatingSystem.WINDOWS && grp != OperatingSystem.LINUX && grp != OperatingSystem.MAC_OS_X;
+    }
+
+    /**
      * Builds properties descriptor
      * @param request http request
      * @return properties
@@ -110,7 +120,26 @@ public abstract class BaseWebBean implements Serializable {
         }
     }
 
+    /**
+     * Generates OTP landing link
+     * @param otp otp code
+     * @return absolute link
+     */
+    public String buildP12Link(String otp){
+        final int port = VpnConfig.getPublicHttpsPort();
+        final String hostname = VpnConfig.getServerHostname();
+        return String.format("https://%s:%d/ejbca/vpn/p12.jsf?otp=%s", hostname, port, otp);
+    }
 
+    /**
+     * Builds link to the private space administration
+     * @return absolute link
+     */
+    public String buildPrivateSpaceAdminPageLink(){
+        final int port = VpnConfig.getPrivateHttpsPort();
+        final String hostname = VpnConfig.getServerHostname();
+        return String.format("https://%s:%d/admin", hostname, port);
+    }
 
 
 }

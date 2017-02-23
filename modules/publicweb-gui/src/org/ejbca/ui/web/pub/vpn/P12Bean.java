@@ -39,6 +39,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
     private VpnLinkError linkError;
     private Date dateGenerated;
     private String landingLink;
+    private String adminLink;
     private String p12FileName;
     private Boolean connectedFromVpn;
 
@@ -54,7 +55,8 @@ public class P12Bean extends BaseWebBean implements Serializable {
         this.request = request;
 
         userAgentParse(request);
-        this.ip = request.getRemoteAddr();
+        ip = request.getRemoteAddr();
+        adminLink = buildPrivateSpaceAdminPageLink();
 
         loadParams();
         checkOtp();
@@ -134,9 +136,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
      * @return absolute link
      */
     private String buildLandingLink(String otp){
-        final int port = VpnConfig.getPublicHttpsPort();
-        final String hostname = VpnConfig.getServerHostname();
-        return String.format("https://%s:%d/ejbca/vpn/p12.jsf?otp=%s", hostname, port, otp);
+        return buildP12Link(otp);
     }
 
     /**
@@ -183,15 +183,6 @@ public class P12Bean extends BaseWebBean implements Serializable {
      */
     public String getLandingLink() {
         return landingLink;
-    }
-
-    /**
-     * Returns true if detected OS is not a desktop.
-     * @return
-     */
-    public boolean getIsMobileDevice(){
-        final OperatingSystem grp = os.getGroup();
-        return grp != OperatingSystem.WINDOWS && grp != OperatingSystem.LINUX && grp != OperatingSystem.MAC_OS_X;
     }
 
     /**
@@ -243,5 +234,9 @@ public class P12Bean extends BaseWebBean implements Serializable {
 
     public String getP12FileName() {
         return p12FileName;
+    }
+
+    public String getAdminLink() {
+        return adminLink;
     }
 }

@@ -117,6 +117,16 @@
 
                 <div class="row">
                     <div class="col-sm-12">
+                        <h3>Administrator key</h3>
+                        <ul>
+                            <li>The key is required to enter the <a href="${p12Bean.adminLink}" target="_blank">administration section</a>.</li>
+                            <li>Administrator can create a new Private Space users.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
                         <h3>How To Install The Key</h3>
                         <ul>
                             <li>You will need a password to install the key. You can find it under your account in our
