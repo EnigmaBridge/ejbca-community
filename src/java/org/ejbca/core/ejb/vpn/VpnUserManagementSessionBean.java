@@ -102,10 +102,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final List<Integer> allVpnUsersIds = vpnUserSession.getVpnUserIds();
         final List<Integer> authorizedVpnUserIds = new ArrayList<Integer>();
         for (final Integer current : allVpnUsersIds) {
-            if (accessControlSessionSession.isAuthorizedNoLogging(authenticationToken,
-                    VpnRules.USER_VIEW.resource() + "/" + current.toString())) {
-                authorizedVpnUserIds.add(current);
-            }
+            authorizedVpnUserIds.add(current);
         }
         return authorizedVpnUserIds;
     }
