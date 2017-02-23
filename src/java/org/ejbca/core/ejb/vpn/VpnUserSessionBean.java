@@ -130,6 +130,9 @@ public class VpnUserSessionBean implements VpnUserSession {
 
             // Simple clone
             vpnUserObj = VpnUser.copy(vpnUser);
+            if (vpnUserObj.getDateCreated() == 0){
+                vpnUserObj.setDateCreated(lastUpdate);
+            }
 
         } else {
             // It might be the case that the calling transaction has already loaded a reference to this vpn user
