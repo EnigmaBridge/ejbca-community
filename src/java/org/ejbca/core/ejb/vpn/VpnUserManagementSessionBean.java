@@ -906,7 +906,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
 
         // Audit logging
         final Map<String, Object> details = new LinkedHashMap<String, Object>();
-        details.put("msg", "VPNUser created with id: " + otpDownloadId);
+        details.put("msg", "OTP created with id: " + otpDownloadId);
         details.put("id", otpDownloadId);
         details.put("otpType", token.getOtpType());
         details.put("otpId", token.getOtpId());
