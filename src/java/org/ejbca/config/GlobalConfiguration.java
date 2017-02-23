@@ -184,7 +184,8 @@ public class GlobalConfiguration extends ConfigurationBase implements Serializab
     private static final   String MENUFILENAME          =  "menufilename";
     private static final   String ERRORPAGE             =  "errorpage";
     private static final   String IECSSFILENAMEPOSTFIX  =  "iecssfilenamepostfix";
-        
+    private static final   String ADMINLOGGEDIN  =  "admin_logged_in_ok";
+
     /** Creates a new instance of GlobalConfiguration */
     public GlobalConfiguration()  {
        super();
@@ -394,6 +395,9 @@ public class GlobalConfiguration extends ConfigurationBase implements Serializab
 
     public boolean getIssueHardwareTokens() { return getBoolean(ISSUEHARDWARETOKENS, false);}
     public void setIssueHardwareTokens(final boolean value) { putBoolean(ISSUEHARDWARETOKENS, value);}
+
+    public boolean getAdminLoggedInSuccessfully() { return getBoolean(ADMINLOGGEDIN, false); }
+    public void setAdminLoggedInSuccessfully(final boolean value) { putBoolean(ADMINLOGGEDIN, value); }
 
    /**
     * @return the number of required approvals to access sensitive hard token data (default 0)
