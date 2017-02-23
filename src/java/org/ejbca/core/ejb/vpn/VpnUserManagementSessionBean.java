@@ -155,6 +155,16 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     }
 
     @Override
+    public List<VpnUser> getVpnUsers(AuthenticationToken authenticationToken, List<Integer> vpnUserIds) throws AuthorizationDeniedException {
+        if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                VpnRules.USER_VIEW.resource())) {
+            throw new AuthorizationDeniedException();
+        }
+
+        return vpnUserSession.getVpnUsers(vpnUserIds);
+    }
+
+    @Override
     public VpnUser getVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         if (!accessControlSessionSession.isAuthorized(authenticationToken,
                 VpnRules.USER_VIEW.resource() + "/" + vpnUserId)) {

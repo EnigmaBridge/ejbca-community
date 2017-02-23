@@ -71,6 +71,16 @@ public interface VpnUserManagementSession {
     void revokeVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException;
 
     /**
+     * Loads VpnUsers from the list
+     *
+     * @param authenticationToken auth token
+     * @param vpnUserIds          VPN user ids
+     * @return VPN user
+     * @throws AuthorizationDeniedException token invalid
+     */
+    List<VpnUser> getVpnUsers(AuthenticationToken authenticationToken, List<Integer> vpnUserIds) throws AuthorizationDeniedException;
+
+    /**
      * Loads VpnUser from the database using ID.
      *
      * @param authenticationToken auth token

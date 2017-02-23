@@ -81,6 +81,13 @@ public class VpnUserSessionBean implements VpnUserSession {
 
     @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     @Override
+    public List<VpnUser> getVpnUsers(final List<Integer> ids) {
+        final List<VpnUser> vpnUsers = readVpnUsers(ids);
+        return vpnUsers;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
+    @Override
     public List<VpnUser> getVpnUser(final String email) {
         if (log.isDebugEnabled()) {
             log.debug("VpnUser with email " + email + " will be checked for updates.");
@@ -215,6 +222,13 @@ public class VpnUserSessionBean implements VpnUserSession {
         final Query query = entityManager.createQuery("SELECT a FROM VpnUser a WHERE a.id=:id");
         query.setParameter("id", vpnUserId);
         return QueryResultWrapper.getSingleResult(query);
+    }
+
+    private List<VpnUser> readVpnUsers(final List<Integer> ids) {
+        final TypedQuery<VpnUser> query = entityManager.createQuery(
+                "SELECT a FROM VpnUser a WHERE a.id in :ids", VpnUser.class);
+        query.setParameter("ids", ids);
+        return query.getResultList();
     }
 
     private List<VpnUser> readVpnUser(final String email) {

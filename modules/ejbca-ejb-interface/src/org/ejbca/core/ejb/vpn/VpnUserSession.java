@@ -35,6 +35,13 @@ public interface VpnUserSession {
 
     /**
      * Returns all vpn user records for the given user email
+     * @param ids identifiers
+     * @return
+     */
+    List<VpnUser> getVpnUsers(final List<Integer> ids);
+
+    /**
+     * Returns all vpn user records for the given user email
      * @param email
      * @return
      */

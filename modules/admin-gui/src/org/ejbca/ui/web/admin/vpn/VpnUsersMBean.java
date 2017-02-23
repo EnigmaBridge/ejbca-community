@@ -547,8 +547,8 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             final List<VpnUserGuiInfo> users = new ArrayList<>(vpnUserIds.size());
             final HashMap<Integer, String> caIdToNameMap = caSession.getCAIdToNameMap();
 
-            for(Integer userId : vpnUserIds){
-                final VpnUser vpnUser = vpnUserManagementSession.getVpnUser(authenticationToken, userId);
+            final List<VpnUser> vpnUsersDb = vpnUserManagementSession.getVpnUsers(authenticationToken, vpnUserIds);
+            for(VpnUser vpnUser : vpnUsersDb){
                 final VpnUserGuiInfo guiUser = toGuiUser(vpnUser);
                 final String endEntityId = getEndEntityId(vpnUser);
 
