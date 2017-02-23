@@ -46,6 +46,7 @@ public class VpnCons {
      */
     public static final String VPN_DATA = "vpn";
 
+    public static final String OTP_SUPERADMIN = "superadmin";
     public static final String OTP_TYPE_P12 = "p12";
     public static final String OTP_AUX_P12_PATH = "p12_path";
 

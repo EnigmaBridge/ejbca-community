@@ -17,4 +17,10 @@
     <managed-bean-scope>session</managed-bean-scope>
   </managed-bean>
 
+  <managed-bean>
+    <managed-bean-name>indexBean</managed-bean-name>
+    <managed-bean-class>org.ejbca.ui.web.pub.vpn.IndexBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+
 </faces-config>
