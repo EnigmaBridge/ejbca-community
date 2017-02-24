@@ -79,6 +79,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         getConnectedFromVpn();
 
         if (connectedFromVpn){
+            log.info("Connected via VPN -> VPN was downloaded");
             isVpnDownloaded = true;
         }
 
@@ -142,11 +143,12 @@ public class IndexBean  extends BaseWebBean implements Serializable {
      */
     public boolean checkVpnDownloaded(){
         if (vpnUser == null){
+            log.info("VPN user is null, vpn downloaded = false");
             isVpnDownloaded = false;
             return isVpnDownloaded;
         }
 
-        isVpnDownloaded = vpnUser.getConfigVersion() > 1 || vpnUser.getOtpUsedCount() > 0;
+        isVpnDownloaded = vpnUser.getConfigVersion() > 2 || vpnUser.getOtpUsedCount() > 0;
         return isVpnDownloaded;
     }
 
