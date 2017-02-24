@@ -63,11 +63,11 @@
                     <div class="col-sm-12">
                         <h3>Private Space key is required</h3>
                         <p>
-                        <ul>
-                            <li>In order to continue you need to download a Private Space Key.</li>
-                            <li>The Private Space Key is used to connect to the VPN.</li>
-                            <li>Link for the Private Space Key should be already in your mailbox.</li>
-                        </ul>
+                            <ul>
+                                <li>In order to continue you need to download a Private Space Key.</li>
+                                <li>The Private Space Key is used to connect to the VPN.</li>
+                                <li>Link for the Private Space Key should be already in your mailbox.</li>
+                            </ul>
                         </p>
                     </div>
                 </div>
@@ -76,41 +76,76 @@
             <%--P12 file has not been downloaded yet--%>
             <c:when test="${indexBean.onlyAdmin && indexBean.isAdminP12Available && indexBean.vpnDownloaded && !indexBean.connectedFromVpn}">
                 <div id="divError" class="alert alert-warning">
-                    You are not connected via VPN
+                    You are not connected via Private Space VPN
                 </div>
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>The administrator key needs VPN for download</h3>
+                        <h3>You need to be connected via Private Space VPN to continue</h3>
                         <p>
                             <ul>
                                 <li>Administrator key has not been downloaded yet.</li>
-                                <li>In order to download the key you need to connect via VPN.</li>
-                                <li>Open the Private Space key you downloaded to connect to the VPN and refresh this page.</li>
+                                <li>In order to download the administrator key you need to connect via Private Space VPN.</li>
+                                <li>Open the Private Space key you downloaded already to connect to the Private Space VPN and refresh this page.</li>
                             </ul>
                         </p>
                     </div>
                 </div>
             </c:when>
 
+            <%--P12 downloaded, user did not login to the admin page --%>
             <c:otherwise>
+
+
+                <h2 style="color:#00a7d7">Add users and devices to your Private Space</h2>
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-md-2">
                         <p>
-                            <a href="${indexBean.buildPrivateSpaceAdminPageLink()}" class="btn btn-sq-lg btn-success" style="width:150px">
-                                <i class="fa fa-bolt fa-5x"></i><br>
-                                <br>Manage Users
+                            <a href="${indexBean.adminPageLink}" class="btn btn-sq-lg btn-warning"
+                               style="width:150px">
+                                <i class="fa fa-flag-checkered fa-5x"></i><br>
+                                First Time Here<br>Click When Ready
                             </a>
                         </p>
 
+                    </div>
+                    <div class="col-md-10">
+                        <ul>
+                            <li>As you are here for the first time, we are just checking you installed your admin key.</li>
+                            <li>Installation of the admin key requires:</li>
+                            <ul>
+                                <li>The key itself. It is somewhere on your computer, stored as "${indexBean.spaceName}-superadmin.p12".
+                                </li>
+                                <li>A password, which you can find in an email with Service installation status, sent by Enigma
+                                    Bridge Ltd.
+                                </li>
+                            </ul>
+                            <li>Open the key and follow the import procedure. Keep the default options and when asked, enter the
+                                password.
+                            </li>
+                            <li>When you complete the installation, you may delete the original key.</li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-2">
+                        &nbsp;
+                    </div>
+                    <div class="col-md-10">
+                        <br>
+                        <div style="text-align: center;">
+                            <a href="https://enigmabridge.freshdesk.com/helpdesk/tickets/new" class="btn btn-sq-lg btn-info">
+                                <i class="fa fa-bell-o fa-2x"></i><br>
+                                Ask for help if things go wrong
+                            </a>
+                        </div>
                     </div>
                 </div>
 
             </c:otherwise>
         </c:choose>
-
-
-
 
         </div>
 

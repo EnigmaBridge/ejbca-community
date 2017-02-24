@@ -45,6 +45,8 @@ public class IndexBean  extends BaseWebBean implements Serializable {
     private VpnUser vpnUser;
     private GlobalConfiguration globalConfiguration;
     private String hostPort;
+    private String spaceName;
+    private String adminPageLink;
 
     /**
      * Initialisation on load
@@ -64,8 +66,10 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         this.isOnlyAdmin = null;
         this.isVpnDownloaded = null;
         this.globalConfiguration = null;
+        this.adminPageLink = buildPrivateSpaceAdminPageLink();
         this.hostname = VpnConfig.getServerHostname();
         this.hostPort = VpnWebUtils.getRequestServerName(request);
+        this.spaceName = VpnUtils.getHostnameId();
 
         userAgentParse(request);
         loadVpnAdminUser();
@@ -223,5 +227,13 @@ public class IndexBean  extends BaseWebBean implements Serializable {
 
     public Boolean getVpnDownloaded() {
         return isVpnDownloaded;
+    }
+
+    public String getAdminPageLink() {
+        return adminPageLink;
+    }
+
+    public String getSpaceName() {
+        return spaceName;
     }
 }
