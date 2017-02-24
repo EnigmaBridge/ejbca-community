@@ -43,6 +43,9 @@ button {
     padding: 3px 20px;
 }
 
+/* = Enigma formatting
+-------------------------------------------------------------- */
+
 .pre-block {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     font-size: 13px;
@@ -98,5 +101,94 @@ button {
     height: 30px;
     background-size: cover;
     padding: 0;
+}
+
+/* = Square buttons
+-------------------------------------------------------------- */
+
+.btn-sq-lg {
+    width: 150px !important;
+    height: 150px !important;
+}
+
+.btn-sq {
+    width: 100px !important;
+    height: 100px !important;
+    font-size: 10px;
+}
+
+.btn-sq-sm {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 10px;
+}
+
+.btn-sq-xs {
+    width: 25px !important;
+    height: 25px !important;
+    padding: 2px;
+}
+
+.btn-eb {
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+.btn-eb.active {
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+fieldset[disabled] .btn-eb {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.btn-eb .badge {
+    text-shadow: none;
+}
+
+.btn-eb {
+    background-image: -webkit-linear-gradient(top, #36C4EF 0%, #00a7d7 100%);
+    background-image: -o-linear-gradient(top, #36C4EF 0%, #00a7d7 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#36C4EF), to(#00a7d7));
+    background-image: linear-gradient(to bottom, #36C4EF 0%, #00a7d7 100%);
+    background-repeat: repeat-x;
+    border-color: #009BCA;
+}
+
+.btn-eb:hover,
+.btn-eb:focus {
+    background-color: #00a7d7;
+    background-position: 0 -15px;
+}
+
+.btn-eb:active,
+.btn-eb.active {
+    background-color: #00a7d7;
+    border-color: #009BCA;
+}
+
+.btn-eb.disabled,
+.btn-eb[disabled],
+fieldset[disabled] .btn-eb,
+.btn-eb.disabled:hover,
+.btn-eb[disabled]:hover,
+fieldset[disabled] .btn-eb:hover,
+.btn-eb.disabled:focus,
+.btn-eb[disabled]:focus,
+fieldset[disabled] .btn-eb:focus,
+.btn-eb.disabled.focus,
+.btn-eb[disabled].focus,
+fieldset[disabled] .btn-eb.focus,
+.btn-eb.disabled:active,
+.btn-eb[disabled]:active,
+fieldset[disabled] .btn-eb:active,
+.btn-eb.disabled.active,
+.btn-eb[disabled].active,
+fieldset[disabled] .btn-eb.active {
+    background-color: #00a7d7;
+    background-image: none;
 }
 
