@@ -33,7 +33,7 @@ import org.apache.commons.lang.StringUtils;
 public class ContentSecurityPolicyFilter implements Filter {
 
     /** Configuration member to specify if web app use web fonts */
-    public static final boolean APP_USE_WEBFONTS = false;
+    public static final boolean APP_USE_WEBFONTS = true;
 
     /** Configuration member to specify if web app use videos or audios */
     public static final boolean APP_USE_AUDIOS_OR_VIDEOS = false;
