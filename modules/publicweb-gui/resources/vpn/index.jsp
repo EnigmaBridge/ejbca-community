@@ -101,8 +101,7 @@
                 <div class="row">
                     <div class="col-md-2">
                         <p>
-                            <a href="${indexBean.adminPageLink}" class="btn btn-sq-lg btn-warning"
-                               style="width:150px">
+                            <a href="${indexBean.adminPageLink}" class="btn btn-auto btn-warning">
                                 <i class="fa fa-flag-checkered fa-5x"></i><br>
                                 First Time Here<br>Click When Ready
                             </a>
@@ -136,7 +135,7 @@
                     <div class="col-md-10">
                         <br>
                         <div style="text-align: center;">
-                            <a href="https://enigmabridge.freshdesk.com/helpdesk/tickets/new" class="btn btn-sq-lg btn-info">
+                            <a href="https://enigmabridge.freshdesk.com/helpdesk/tickets/new" class="btn btn-auto btn-info">
                                 <i class="fa fa-bell-o fa-2x"></i><br>
                                 Ask for help if things go wrong
                             </a>
