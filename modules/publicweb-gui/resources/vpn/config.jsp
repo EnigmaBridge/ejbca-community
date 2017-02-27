@@ -137,7 +137,9 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h3>Recommended Client</h3>
-                        <p>Downloaded key file needs to be opened a connection client installed on your device.</p>
+                        <p>  Your browser will store the key on your computer.
+                            You need to add it to a connection client (click/double-click on the key file).
+                              We recommend:</p>
                         <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
                         <ul><li>
                             <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn"
@@ -189,7 +191,7 @@
                     <h3>Troubleshooting</h3>
                     <p>
                         In case of a problem please consult your administrator.
-                        You can also contact Enigma Bridge support at: <a href="https://enigmabridge.freshdesk.com">https://enigmabridge.freshdesk.com</a>
+                        Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261"> our user guides</a> at if unsure.
                     </p>
                 </div>
             </div>
