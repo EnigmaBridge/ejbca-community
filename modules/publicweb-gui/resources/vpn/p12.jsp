@@ -104,7 +104,9 @@
                 We apologise for the inconvenience, but administrator keys can't be downloaded onto mobile devices.
             </div>
             <% } else { %>
-            <div id="divStatusNotif" class="alert alert-success" style="display: none;">Download successful</div>
+            <div id="divStatusNotif" class="alert alert-success" style="display: none;">Thank you, you have successfully downloaded your administrator key.
+                Please install the key.</div>
+
             <div id="divButtonUpload">
                 <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnDownload"
                    href="${p12Bean.downloadLink}">Download Key</a>
@@ -119,8 +121,8 @@
                     <div class="col-sm-12">
                         <h3>Administrator key</h3>
                         <ul>
-                            <li>The key is required to enter the <a href="${p12Bean.adminLink}" target="_blank">administration section</a>.</li>
-                            <li>Administrator can create a new Private Space users.</li>
+                            <li>Private Space allows you to add keys to new users, as well as revoke keys not needed any more.</li>
+                            <li>You need to install your administrator key before you can add new users. This key ensures that no-one else can access your Private Space.</li>
                         </ul>
                     </div>
                 </div>
@@ -129,19 +131,28 @@
                     <div class="col-sm-12">
                         <h3>How To Install The Key</h3>
                         <ul>
-                            <li>You will need a password to install the key. You can find it under your account in our
-                                <a href="https://enigmabridge.freshdesk.com" rel="nofollow" target="_blank">support system</a>.</li>
-                            <li>Once you have obtained the password, locate the downloaded key on your computer.</li>
-                            <ul>
-                                <li>The browser will show it as the last downloaded file at the bottom of your screen, or in a list available via a button in the top right corner.</li>
-                                <li>Its name looks like "${p12Bean.p12FileName}". </li>
-                            </ul>
-                            <li>Open the key by clicking on it and follow the dialog to complete installation.</li>
-                            <li>When asked for a password, use the one located earlier.</li>
+                            <li>You need two piece of information to install your administrator key. These are delivered with different channels for maximum security.</li>
+                            <li>First item is an installation password. You will find this under your account in
+                            <a href="https://enigmabridge.freshdesk.com" rel="nofollow" target="_blank"> our support system</a>.</li>
+
+                            <li>Second item is the key itself, which you download by clicking the "Download Key" button above.</li>
+                            <li>To start the key installation, please click (or double-click) the key file you downloaded here (file name "${p12Bean.p12FileName}").
+                                Follow instructions and use the password when it is requested.</li>
+                            <li>Once the key is installed proceed to the <a href="${p12Bean.indexLink}" target="_blank">next step</a>.</li>
                         </ul>
                     </div>
                 </div>
             <% } %>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Connected to Private Space</h3>
+                    <ul>
+                        <li>Connection clients use the technology called "VPN" for providing the required level of control and security of your Private Space.</li>
+                        <li>Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank">our user manuals</a> for more information, examples, and videos how to use recommended connection clients.</li>
+                    </ul>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-sm-12">
@@ -159,29 +170,29 @@
             <div id="divError" class="alert alert-danger">
                 <strong>Error:</strong>
                 <% if (p12Bean.getLinkError() == VpnLinkError.OTP_INVALID) { %>
-                The link is invalid
+                The administrator key is not available.
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.OTP_OLD) { %>
-                The link is too old
+                The administrator key is not available (the link is too old)
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.OTP_TOO_MANY) { %>
-                The link was used too many times
+                The administrator key is not available (the link was already used).
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.OTP_COOKIE) { %>
-                The link has been already used on a different device
+                The administrator key is not available (the link has been already used on a different device).
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.OTP_DESCRIPTOR) { %>
-                The link has been already used on a different device / address
+                The administrator key is not available  (the link has been already used on a different device / address).
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.NO_CONFIGURATION) { %>
-                The configuration has already been downloaded
+                The administrator key is not available (the configuration has already been downloaded).
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.GENERIC) { %>
-                The link is invalid, generic error
+                The administrator key is not available (the link is invalid, generic error).
                 <% } else if (p12Bean.getLinkError() == VpnLinkError.NOT_IN_VPN) { %>
-                The link can be used only when connected via VPN
+                The administrator key is not available. The link can be used only when connected to the Private Space.
                 <% } else { %>
-                No link given
+                The administrator key is not available. No link given.
                 <% } %>
             </div>
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>This link is invalid</h3>
+                    <h3>The administrator key is not available</h3>
                     <p>The download link is invalid and cannot be used. It may be expired or already downloaded. </p>
                     <p>Please contact your administrator to issue a new download link.</p>
                     <p>You can also contact Enigma Bridge support at:
