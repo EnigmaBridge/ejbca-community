@@ -40,6 +40,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
     private Date dateGenerated;
     private String landingLink;
     private String adminLink;
+    private String indexLink;
     private String p12FileName;
     private Boolean connectedFromVpn;
 
@@ -57,6 +58,7 @@ public class P12Bean extends BaseWebBean implements Serializable {
         userAgentParse(request);
         ip = request.getRemoteAddr();
         adminLink = buildPrivateSpaceAdminPageLink();
+        indexLink = buildPrivateSpaceIndexLink();
 
         loadParams();
         checkOtp();
@@ -238,5 +240,9 @@ public class P12Bean extends BaseWebBean implements Serializable {
 
     public String getAdminLink() {
         return adminLink;
+    }
+
+    public String getIndexLink() {
+        return indexLink;
     }
 }

@@ -141,5 +141,15 @@ public abstract class BaseWebBean implements Serializable {
         return String.format("https://%s:%d/admin", hostname, port);
     }
 
+    /**
+     * Builds link to the private space index page on the public https port
+     * @return absolute link
+     */
+    public String buildPrivateSpaceIndexLink(){
+        final int port = VpnConfig.getPublicHttpsPort();
+        final String hostname = VpnConfig.getServerHostname();
+        return String.format("https://%s:%d/", hostname, port);
+    }
+
 
 }
