@@ -40,7 +40,8 @@
                 }})
                 .done(function () {
                     $( "#divStatusNotif" ).show( "slow" );
-                    $( "#divButtonUpload" ).hide( "slow" );
+                    $( "#divButtonDownload" ).hide( "slow" );
+                    $( "#divStatusClient" ).hide( "slow" );
                 })
                 .fail(function () {
                 });
@@ -120,7 +121,9 @@
 
             <div id="divStatusNotif" class="alert alert-success" style="display: none;">Download successful</div>
 
-            <div id="divButtonUpload">
+            <div id="divStatusClient" class="alert alert-info">Make sure you have installed a connection client before downloading the key.</div>
+
+            <div id="divButtonDownload">
                 <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnDownload"
                    href="${vpnBean.downloadLink}">Download Key</a>
             </div>
