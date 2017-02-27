@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <div id="divStatusNotif" class="alert alert-success" style="display: none;">Download successful</div>
+            <div id="divStatusNotif" class="alert alert-success" style="display: none;">Thank you, you have successfully downloaded your user key.</div>
 
             <div id="divStatusClient" class="alert alert-info">Make sure you have installed a connection client before downloading the key.</div>
 
@@ -184,6 +184,17 @@
                         <% } %>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3>Connected to Private Space</h3>
+                        <ul>
+                            <li>Connection clients use the technology called "VPN" for providing the required level of control and security of your Private Space.</li>
+                            <li>Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank">our user manuals</a> for more information, examples, and videos how to use recommended connection clients.</li>
+                        </ul>
+                    </div>
+                </div>
+
             <% } %>
 
             <div class="row">
@@ -191,7 +202,7 @@
                     <h3>Troubleshooting</h3>
                     <p>
                         In case of a problem please consult your administrator.
-                        Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261"> our user guides</a> at if unsure.
+                        Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank"> our user guides</a> at if unsure.
                     </p>
                 </div>
             </div>
@@ -236,7 +247,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>This link is invalid</h3>
+                    <h3>The private space key is not available</h3>
                     <p>The key download link is invalid and cannot be used.
                         It may be expired or already downloaded. </p>
                     <p>Please contact your administrator to issue a new key.</p>
