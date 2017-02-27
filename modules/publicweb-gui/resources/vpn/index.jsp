@@ -56,17 +56,17 @@
             <%-- VPN has not been downloaded yet --%>
             <c:when test="${indexBean.onlyAdmin && !indexBean.vpnDownloaded}">
                 <div id="divError" class="alert alert-warning">
-                    Private Space key has not been downloaded yet
+                    You are not connected to your Private Space, you need to download your user key first.
                 </div>
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Private Space key is required</h3>
+                        <h3>You need to connect to the Private Space first</h3>
                         <p>
                             <ul>
-                                <li>In order to continue you need to download a Private Space Key.</li>
-                                <li>The Private Space Key is used to connect to the VPN.</li>
-                                <li>Link for the Private Space Key should be already in your mailbox.</li>
+                                <li>Access is allowed only to authorized users of this Private Space.</li>
+                                <li>You need to download your user key and connect to the Private Space with a recommended connection client.</li>
+                                <li>Please check your emails for a message with instructions to download and use the key.</li>
                             </ul>
                         </p>
                     </div>
@@ -81,12 +81,12 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>You need to be connected via Private Space VPN to continue</h3>
+                        <h3>You need to be connected to your Private Space to continue</h3>
                         <p>
                             <ul>
-                                <li>Administrator key has not been downloaded yet.</li>
-                                <li>In order to download the administrator key you need to connect via Private Space VPN.</li>
-                                <li>Open the Private Space key you downloaded already to connect to the Private Space VPN and refresh this page.</li>
+                                <li>Please check your mailbox (possibly the spam folder) for an email from your private space and follow instructions in the email.</li>
+                                <li>Use the connection client to connect to the Private Space.</li>
+                                <li>Refresh this page, or open it again to download the administrator key.</li>
                             </ul>
                         </p>
                     </div>
