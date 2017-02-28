@@ -1,8 +1,8 @@
 Hello,
 
-a new Private Space key was generated for you for a device "[(${user.device})]".
+we have created a new  Private Space key for a device "[(${user.device})]".
 
-The key can be downloaded on the following link:
+Please follow this link to download it:
 
 [(${vpn_link})]
 
