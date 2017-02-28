@@ -592,7 +592,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         final java.security.cert.Certificate caCert = ca.getCACertificate();
         final String hostname = VpnUtils.extractCN(caCert);
 
-        return String.format("https://%s:%d/ejbca/vpn/config.jsf?id=%d&otp=%s",
+        return String.format("https://%s:%d/key?id=%d&otp=%s",
                 hostname, port, user.getId(), user.getOtpDownload());
     }
 
