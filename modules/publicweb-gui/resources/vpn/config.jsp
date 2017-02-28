@@ -202,7 +202,7 @@
                     <h3>Troubleshooting</h3>
                     <p>
                         In case of a problem please consult your administrator.
-                        Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank"> our user guides</a> at if unsure.
+                        Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank"> our user guides</a> if unsure.
                     </p>
                 </div>
             </div>
