@@ -1,14 +1,15 @@
 Hello,
 
-we have created a new  Private Space key for a device "[(${user.device})]".
+we have created a new Private Space key for a device "[(${user.device})]".
 
 Please follow this link to download it:
 
 [(${vpn_link})]
 
-Please note this is one-time download link. Once it has been accessed it becomes invalid.
-If link does not work for you, please ask your administrator to generate a new key for you.
+Please note this is one-time download link. Once used, it's disabled to prevent its misuse.
+If the link does not work, and it's the first time you tried it, inform your administrator straightaway so she/he can revoke the key.
 
 Best regards,
 
 EnigmaBridge Private Space
+
