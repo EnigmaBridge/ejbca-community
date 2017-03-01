@@ -134,7 +134,7 @@ public class VpnConfig {
      */
     public static String getHomeDir() {
         String ejbcaHomeDir = System.getenv("EJBCA_HOME");
-        if (ejbcaHomeDir == null){
+        if (ejbcaHomeDir == null || ejbcaHomeDir.isEmpty()){
             ejbcaHomeDir = EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_HOME_DIR);
         }
 
