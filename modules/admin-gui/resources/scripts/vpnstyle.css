@@ -290,7 +290,7 @@ html {
     min-height: 100%;
 }
 
-.eb-solo {
+.eb-solo.with-footer {
     margin-bottom: 60px;
 }
 
