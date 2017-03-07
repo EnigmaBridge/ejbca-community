@@ -309,3 +309,8 @@ html {
 .eb-ejbca .eb-footer{
     display: none;
 }
+
+.enigmabridge .btn-primary {
+    color: #fff;
+}
+
