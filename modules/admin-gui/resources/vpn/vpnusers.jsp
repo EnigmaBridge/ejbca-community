@@ -233,24 +233,32 @@ org.cesecore.authorization.control.CryptoTokenRules
 	</h:dataTable>
 	<br/>
 
+	<div class="btn-group">
 	<h:panelGroup>
 		<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_DELETE}')"/>
+						 rendered="#{vpnUsersMBean.allowedToDelete}"
+						 styleClass="btn btn-default"
+						 onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_DELETE}')"/>
 
 		<h:commandButton value="#{web.text.VPNUSER_REVOKE}" action="#{vpnUsersMBean.revokeVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REVOKE}')"/>
+						 rendered="#{vpnUsersMBean.allowedToDelete}"
+						 styleClass="btn btn-default"
+						 onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REVOKE}')"/>
 
 		<h:commandButton value="#{web.text.VPNUSER_REGENERATE}" action="#{vpnUsersMBean.regenerateVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}" onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REGENERATE}')"/>
+						 rendered="#{vpnUsersMBean.allowedToDelete}"
+						 styleClass="btn btn-default"
+						 onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REGENERATE}')"/>
 	</h:panelGroup>
-	<br/>
+	</div>
 
-
-
+	<div class="btn-group">
 	<h:outputLink value="adminweb/vpn/vpnuser.jsf?vpnUserId=&ref=default&ejbcaMode=#{vpnUsersMBean.getEjbcaMode() ? 1 : 0}"
+				  styleClass="btn btn-primary"
 				  rendered="#{cryptoTokenMBean.allowedToModify}">
 		<h:outputText value="#{web.text.VPN_CREATENEW}"/>
 	</h:outputLink>
+	</div>
 
 	</h:form>
 
