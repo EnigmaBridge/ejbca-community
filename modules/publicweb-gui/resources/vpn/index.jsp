@@ -115,8 +115,7 @@
                             <ul>
                                 <li>The key itself. It is somewhere on your computer, stored as "${indexBean.spaceName}-superadmin.p12".
                                 </li>
-                                <li>A password, which you can find in an email with Service installation status, sent by Enigma
-                                    Bridge Ltd.
+                                <li>A password, which you can find in an email "Admin password and launch status", sent by Enigma Bridge.
                                 </li>
                             </ul>
                             <li>Open the key and follow the import procedure. Keep the default options and when asked, enter the
