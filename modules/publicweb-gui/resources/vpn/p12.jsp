@@ -130,7 +130,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h3>How To Install The Key</h3>
-                        <ul>
+                        <ol>
                             <li>You need two piece of information to install your administrator key. These are delivered with different channels for maximum security.</li>
                             <li>First item is an installation password. You will find this under your account in
                             <a href="https://enigmabridge.freshdesk.com" rel="nofollow" target="_blank"> our support system</a>.</li>
@@ -139,7 +139,7 @@
                             <li>To start the key installation, please click (or double-click) the key file you downloaded here (file name "${p12Bean.p12FileName}").
                                 Follow instructions and use the password when it is requested.</li>
                             <li>Once the key is installed proceed to the <a href="${p12Bean.indexLink}" target="_blank">next step</a>.</li>
-                        </ul>
+                        </ol>
                     </div>
                 </div>
             <% } %>
