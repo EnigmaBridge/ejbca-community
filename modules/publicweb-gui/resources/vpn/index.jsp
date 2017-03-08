@@ -109,20 +109,23 @@
 
                     </div>
                     <div class="col-md-10">
+                        <h5>How to install the admin key</h5>
                         <ul>
-                            <li>As you are here for the first time, we are just checking you installed your admin key.</li>
-                            <li>Installation of the admin key requires:</li>
+                            <li>What you need</li>
                             <ul>
-                                <li>The key itself. It is somewhere on your computer, stored as "${indexBean.spaceName}-superadmin.p12".
-                                </li>
-                                <li>A password, which you can find in an email "Admin password and launch status", sent by Enigma Bridge.
-                                </li>
+                                <li>The key itself. It is somewhere on your computer, stored as "&lt;space name&gt;-superadmin.p12". </li>
+                                <li>A password, which you can find in an email "Admin password and launch status", sent by Enigma Bridge.</li>
                             </ul>
-                            <li>Open the key and follow the import procedure. Keep the default options and when asked, enter the
-                                password.
-                            </li>
-                            <li>When you complete the installation, you may delete the original key.</li>
+                            <li>How to install it</li>
+                            <ul>
+                                <li>Open the key (e.g., double click on it) and follow the import wizard. Keep the default options and when asked, enter the password.</li>
+                                <li>When you complete the installation, you may want to delete the original key file.</li>
+                            </ul>
                         </ul>
+
+                        <div class="checkbox checkbox-firsttime">
+                            <label><input type="checkbox" value="" disabled>Yes, I installed my admin key.</label>
+                        </div>
                     </div>
                 </div>
 

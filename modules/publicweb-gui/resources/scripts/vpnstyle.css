@@ -103,6 +103,10 @@ button {
     padding: 0;
 }
 
+.checkbox-firsttime {
+    padding-left: 20px;
+}
+
 /* = Square buttons
 -------------------------------------------------------------- */
 
