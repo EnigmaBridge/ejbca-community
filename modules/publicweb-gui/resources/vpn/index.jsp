@@ -124,7 +124,7 @@
                         </ul>
 
                         <div class="checkbox checkbox-firsttime">
-                            <label><input type="checkbox" value="" disabled>Yes, I installed my admin key.</label>
+                            <label><input type="checkbox" value="">Yes, I installed my admin key.</label>
                         </div>
                     </div>
                 </div>
