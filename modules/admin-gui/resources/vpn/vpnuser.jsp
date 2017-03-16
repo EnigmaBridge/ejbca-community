@@ -209,6 +209,11 @@ org.cesecore.authorization.control.CryptoTokenRules
 			<h:outputText value="#{vpnUsersMBean.currentVpnUser.otpDownloadLink}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDownloadLink != null}"/>
 		</h:outputLink>
 
+		<h:outputLabel for="directLink" value="#{web.text.VPNUSER_SERVER_LINK}:"
+					   rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDirectLink != null}"/>
+		<h:outputText id="directLink" value="#{vpnUsersMBean.currentVpnUser.otpDirectLink}"
+					  rendered="#{!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDirectLink != null}"/>
+
 		<h:outputLabel for="sendEmailNowAfterCreateCheck" value="#{web.text.VPNUSER_MAIL_SEND_CHECKBOX}" rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"/>
 		<h:selectBooleanCheckbox id="sendEmailNowAfterCreateCheck" value="#{vpnUsersMBean.currentVpnUser.sendConfigEmail}"
 								 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"/>

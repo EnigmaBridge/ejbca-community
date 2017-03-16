@@ -362,6 +362,16 @@ public class VpnUtils {
     }
 
     /**
+     * Builds direct download link for the ovpn config
+     * @param user vpn user
+     * @return
+     */
+    public static String getDirectDownloadLink(VpnUser user){
+        return "https://" + VpnConfig.getServerHostname() + ":" + VpnConfig.getPublicHttpsPort() + "/"
+                + String.format("ejbca/vpn/getvpn?id=%s&otp=%s", user.getId(), user.getOtpDownload());
+    }
+
+    /**
      * Returns true if the given IP address is inside VPN address range.
      * @param ip
      * @return true if given IP belongs to the VPN address range

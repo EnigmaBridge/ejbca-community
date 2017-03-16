@@ -231,6 +231,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         private String key;
         private String config;
         private String otpDownloadLink;
+        private String otpDirectLink;
 
         // Not stored in db, just indicator
         private boolean sendConfigEmail = true;
@@ -398,6 +399,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
         public void setOtpDownloadLink(String otpDownloadLink) {
             this.otpDownloadLink = otpDownloadLink;
+        }
+
+        public String getOtpDirectLink() {
+            return otpDirectLink;
+        }
+
+        public void setOtpDirectLink(String otpDirectLink) {
+            this.otpDirectLink = otpDirectLink;
         }
     }
 
@@ -856,6 +865,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 vpnUserManagementSession.checkOtp(authenticationToken, vpnUser.getId(), vpnUser.getOtpDownload(), null);
                 currentVpnUser.setOtpDownloadLink(
                         vpnUserManagementSession.getConfigDownloadLink(authenticationToken, vpnUser.getId()));
+                currentVpnUser.setOtpDirectLink(VpnUtils.getDirectDownloadLink(vpnUser));
             }
 
         } catch (VpnException e) {
