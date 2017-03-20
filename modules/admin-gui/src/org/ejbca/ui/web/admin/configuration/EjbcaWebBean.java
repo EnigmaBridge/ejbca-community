@@ -81,6 +81,7 @@ import org.ejbca.core.ejb.hardtoken.HardTokenSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityManagementSessionLocal;
 import org.ejbca.core.ejb.ra.raadmin.EndEntityProfileSessionLocal;
 import org.ejbca.core.ejb.ra.userdatasource.UserDataSourceSessionLocal;
+import org.ejbca.core.ejb.vpn.VpnWebUtils;
 import org.ejbca.core.model.authorization.AccessRulesConstants;
 import org.ejbca.core.model.ra.raadmin.AdminPreference;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
@@ -186,7 +187,20 @@ public class EjbcaWebBean implements Serializable {
     public GlobalConfiguration initialize(HttpServletRequest request, String... resources) throws Exception {
         if (!initialized) {
             requestServerName = getRequestServerName(request);
-            final X509Certificate[] certificates = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+            X509Certificate[] certificates = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+
+            final VpnWebUtils.AdminAuthorization adminAuth = new VpnWebUtils.AdminAuthorization(authenticationSession,
+                    endEntityManagementSession,
+                    ejbLocalHelper.getAccessControlSession(),
+                    ejbLocalHelper.getVpnUserManagementSession(),
+                    ejbLocalHelper.getCertificateStoreSession());
+
+            if (certificates == null || certificates.length == 0) {
+                if (adminAuth.tryIsAuthorizedVpn(request)){
+                    certificates = adminAuth.getCertificates();
+                }
+            }
+
             if (certificates == null || certificates.length == 0) {
                 throw new AuthenticationFailedException("Client certificate required.");
             } else {
