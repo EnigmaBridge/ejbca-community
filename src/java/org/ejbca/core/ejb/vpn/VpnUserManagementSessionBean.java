@@ -856,7 +856,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             config.put(VpnCons.VPN_CFG_CA, caCertPem);
             config.put(VpnCons.VPN_CFG_CERT, certPem);
             config.put(VpnCons.VPN_CFG_KEY, keyPem);
-            return config.toString();
+            return json.toString();
 
         } catch (UnsupportedEncodingException e) {
             log.error("Unsupported encoding in VPN config generation", e);
