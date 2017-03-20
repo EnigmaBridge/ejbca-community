@@ -776,6 +776,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
                 ctx.setVariable(curKey, obj);
             }
 
+            ctx.setVariable(VpnCons.VPN_CFG_USER, user);
             ctx.setVariable("generated_time", new Date(user.getConfigGenerated()));
 
             // Candidate templte names
@@ -851,8 +852,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             json.put(VpnCons.VPN_CFG, config);
 
             config.put(VpnCons.VPN_CFG_HOSTNAME, hostname);
-            config.put(VpnCons.VPN_CFG_ENTITY, endEntity);
-            config.put(VpnCons.VPN_CFG_USER, user);
+            config.put(VpnCons.VPN_CFG_ENTITY_USERNAME, endEntity.getUsername());
             config.put(VpnCons.VPN_CFG_CA, caCertPem);
             config.put(VpnCons.VPN_CFG_CERT, certPem);
             config.put(VpnCons.VPN_CFG_KEY, keyPem);
