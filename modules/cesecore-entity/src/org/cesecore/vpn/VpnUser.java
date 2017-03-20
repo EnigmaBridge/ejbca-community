@@ -97,6 +97,11 @@ public class VpnUser implements Serializable, Cloneable {
     private Integer configVersion=1;
 
     /**
+     * Flag determining if the user is allowed to use VPN auth.
+     */
+    private Integer isAdmin;
+
+    /**
      * Raw key store object for transfer from the create routines.
      * Not stored nor serialized.
      */
@@ -111,7 +116,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.device = device;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion, Integer isAdmin) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -134,6 +139,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.vpnConfig = vpnConfig;
         this.configGenerated = configGenerated;
         this.configVersion = configVersion;
+        this.isAdmin = isAdmin;
     }
 
     @Override
@@ -331,6 +337,14 @@ public class VpnUser implements Serializable, Cloneable {
         this.otpUsedCount = otpUsedCount;
     }
 
+    public Integer getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Integer isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
     @Transient
     public KeyStore getKeyStoreRaw() {
         return keyStoreRaw;
@@ -375,7 +389,9 @@ public class VpnUser implements Serializable, Cloneable {
         if (vpnConfig != null ? !vpnConfig.equals(vpnUser.vpnConfig) : vpnUser.vpnConfig != null) return false;
         if (configGenerated != null ? !configGenerated.equals(vpnUser.configGenerated) : vpnUser.configGenerated != null)
             return false;
-        return configVersion != null ? configVersion.equals(vpnUser.configVersion) : vpnUser.configVersion == null;
+        if (configVersion != null ? !configVersion.equals(vpnUser.configVersion) : vpnUser.configVersion != null)
+            return false;
+        return isAdmin != null ? isAdmin.equals(vpnUser.isAdmin) : vpnUser.isAdmin == null;
     }
 
     @Override
@@ -402,6 +418,7 @@ public class VpnUser implements Serializable, Cloneable {
         result = 31 * result + (vpnConfig != null ? vpnConfig.hashCode() : 0);
         result = 31 * result + (configGenerated != null ? configGenerated.hashCode() : 0);
         result = 31 * result + (configVersion != null ? configVersion.hashCode() : 0);
+        result = 31 * result + (isAdmin != null ? isAdmin.hashCode() : 0);
         return result;
     }
 }
