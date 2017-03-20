@@ -19,10 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -233,14 +230,25 @@ public class VpnWebUtils {
                 throw new AuthenticationFailedException("System does not accept VPN auth");
             }
 
+            // Get remote IP.
+            // Try to auth only if connected via VPN.
             final String remoteAddr = request.getRemoteAddr();
+            try {
+                if (!VpnUtils.isIpInVPNNetwork(remoteAddr)){
+                    throw new AuthenticationFailedException("Not connected via VPN");
+                }
+            } catch (UnknownHostException e) {
+                throw new AuthenticationFailedException("VPN auth failed");
+            }
+
+            // Query VPN auth server for the user state, CNAME, etc...
             final JSONObject json = queryVpnAuthServer(remoteAddr);
             if (json == null){
                 throw new AuthenticationFailedException("User could not be authenticated against VPN auth server.");
             }
 
-            log.info("VPNAuth: " + json.toString());
-            try{
+            try {
+                log.info("VPNAuth: " + json.toString());
                 final String cname = json.getString("cname");
                 final String adminRole = vpnUserManagementSession.getAdminRole(cname);
                 if (adminRole == null){
