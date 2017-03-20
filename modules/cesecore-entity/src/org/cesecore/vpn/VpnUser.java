@@ -97,9 +97,9 @@ public class VpnUser implements Serializable, Cloneable {
     private Integer configVersion=1;
 
     /**
-     * Flag determining if the user is allowed to use VPN auth.
+     * Associated administrator user name role.
      */
-    private Integer isAdmin;
+    private String adminRole;
 
     /**
      * Raw key store object for transfer from the create routines.
@@ -116,7 +116,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.device = device;
     }
 
-    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion, Integer isAdmin) {
+    public VpnUser(int rowVersion, String rowProtection, Integer id, String email, String device, String usrLang, long dateCreated, long dateModified, int revokedStatus, String otpDownload, Long otpFirstUsed, Long otpUsed, String otpUsedDescriptor, String otpCookie, int otpUsedCount, Long lastMailSent, String certificateId, String certificate, String keyStore, String vpnConfig, Long configGenerated, Integer configVersion, String adminRole) {
         this.rowVersion = rowVersion;
         this.rowProtection = rowProtection;
         this.id = id;
@@ -139,7 +139,7 @@ public class VpnUser implements Serializable, Cloneable {
         this.vpnConfig = vpnConfig;
         this.configGenerated = configGenerated;
         this.configVersion = configVersion;
-        this.isAdmin = isAdmin;
+        this.adminRole = adminRole;
     }
 
     @Override
@@ -337,12 +337,12 @@ public class VpnUser implements Serializable, Cloneable {
         this.otpUsedCount = otpUsedCount;
     }
 
-    public Integer getIsAdmin() {
-        return isAdmin;
+    public String getAdminRole() {
+        return adminRole;
     }
 
-    public void setIsAdmin(Integer isAdmin) {
-        this.isAdmin = isAdmin;
+    public void setAdminRole(String adminRole) {
+        this.adminRole = adminRole;
     }
 
     @Transient
@@ -391,7 +391,7 @@ public class VpnUser implements Serializable, Cloneable {
             return false;
         if (configVersion != null ? !configVersion.equals(vpnUser.configVersion) : vpnUser.configVersion != null)
             return false;
-        return isAdmin != null ? isAdmin.equals(vpnUser.isAdmin) : vpnUser.isAdmin == null;
+        return adminRole != null ? adminRole.equals(vpnUser.adminRole) : vpnUser.adminRole == null;
     }
 
     @Override
@@ -418,7 +418,7 @@ public class VpnUser implements Serializable, Cloneable {
         result = 31 * result + (vpnConfig != null ? vpnConfig.hashCode() : 0);
         result = 31 * result + (configGenerated != null ? configGenerated.hashCode() : 0);
         result = 31 * result + (configVersion != null ? configVersion.hashCode() : 0);
-        result = 31 * result + (isAdmin != null ? isAdmin.hashCode() : 0);
+        result = 31 * result + (adminRole != null ? adminRole.hashCode() : 0);
         return result;
     }
 }
