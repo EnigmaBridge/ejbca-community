@@ -37,11 +37,13 @@
 
 package org.ejbca.core.ejb.vpn.useragent;
 
+import java.io.Serializable;
+
 /**
  * Enum contact for the type of used device
  * @author harald
  */
-public enum DeviceType {
+public enum DeviceType implements Serializable{
 
     /**
      * Standard desktop or laptop computer

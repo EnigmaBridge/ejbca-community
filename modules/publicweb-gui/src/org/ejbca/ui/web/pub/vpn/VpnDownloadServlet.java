@@ -23,6 +23,7 @@ import org.cesecore.util.StringTools;
 import org.cesecore.vpn.VpnUser;
 import org.ejbca.config.GlobalConfiguration;
 import org.ejbca.core.ejb.vpn.*;
+import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.ui.web.RequestHelper;
 import org.ejbca.ui.web.pub.ServletUtils;
@@ -162,7 +163,15 @@ public class VpnDownloadServlet extends HttpServlet {
                 final String fileName = VpnUtils.genVpnConfigFileNameHuman(vpnUser);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
-                final byte[] bytes2send = vpnUser.getVpnConfig().getBytes("UTF-8");
+
+                final VpnGenOptions genOptions = new VpnGenOptions();
+                final String userAgent = request.getHeader("User-Agent");
+                if (userAgent != null) {
+                    genOptions.setOs(OperatingSystem.parseUserAgentString(userAgent));
+                }
+
+                final String vpnConfig = vpnUserManagementSession.generateVpnConfig(admin, vpnUser, genOptions);
+                final byte[] bytes2send = vpnConfig.getBytes("UTF-8");
                 response.setContentLength(bytes2send.length);
                 response.getOutputStream().write(bytes2send);
 

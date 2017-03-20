@@ -188,16 +188,29 @@ public interface VpnUserManagementSession {
             throws AuthorizationDeniedException, CADoesntExistsException, IOException, VpnException;
 
     /**
-     * Generates a new VPN CRL.
-     *
+     * Generates new VPN configuration file fro the settings.
      * @param authenticationToken auth token
-     * @param force               if true the new CRL is generated no matter what
-     * @param overlapMilli        if force is false, this defines the time in milliseconds the new CRL is generated before the old one expires.
-     * @return number of the CRL ID generated, null if CRL was not generated
-     * @throws AuthorizationDeniedException token invalid
-     * @throws CADoesntExistsException      VPN ca does not exist
-     * @throws VpnException                 Generic exception encapsulating many internal exceptions
+     * @param user vpn user with VPNConfig data filled in
+     * @param options generation options (e.g., OS)
+     * @return generated VPN config.
+     * @throws AuthorizationDeniedException
+     * @throws CADoesntExistsException
      */
+    String generateVpnConfig(AuthenticationToken authenticationToken, VpnUser user, VpnGenOptions options)
+            throws AuthorizationDeniedException, CADoesntExistsException;
+
+
+        /**
+         * Generates a new VPN CRL.
+         *
+         * @param authenticationToken auth token
+         * @param force               if true the new CRL is generated no matter what
+         * @param overlapMilli        if force is false, this defines the time in milliseconds the new CRL is generated before the old one expires.
+         * @return number of the CRL ID generated, null if CRL was not generated
+         * @throws AuthorizationDeniedException token invalid
+         * @throws CADoesntExistsException      VPN ca does not exist
+         * @throws VpnException                 Generic exception encapsulating many internal exceptions
+         */
     Integer generateCRL(AuthenticationToken authenticationToken, boolean force, Long overlapMilli) throws AuthorizationDeniedException, CADoesntExistsException, VpnException;
 
     /**

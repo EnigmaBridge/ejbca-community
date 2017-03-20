@@ -50,4 +50,15 @@ public class VpnCons {
     public static final String OTP_TYPE_P12 = "p12";
     public static final String OTP_AUX_P12_PATH = "p12_path";
 
+    /**
+     * VPN config json
+     */
+    public static final String VPN_CFG = "config";
+    public static final String VPN_CFG_VERSION = "version";
+    public static final String VPN_CFG_HOSTNAME = "vpn_hostname";
+    public static final String VPN_CFG_ENTITY = "entity";
+    public static final String VPN_CFG_USER = "user";
+    public static final String VPN_CFG_CA = "vpn_ca";
+    public static final String VPN_CFG_CERT = "vpn_cert";
+    public static final String VPN_CFG_KEY = "vpn_key";
 }

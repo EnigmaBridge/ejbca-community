@@ -41,12 +41,14 @@ import org.ejbca.core.ejb.ca.sign.SignSessionLocal;
 import org.ejbca.core.ejb.crl.PublishingCrlSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityAccessSessionLocal;
 import org.ejbca.core.ejb.ra.EndEntityManagementSessionLocal;
+import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
 import org.ejbca.core.model.InternalEjbcaResources;
 import org.ejbca.core.model.SecConst;
 import org.ejbca.core.model.ca.AuthLoginException;
 import org.ejbca.core.model.ca.AuthStatusException;
 import org.ejbca.core.model.ra.raadmin.UserDoesntFullfillEndEntityProfile;
 import org.ejbca.util.mail.MailSender;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -711,7 +713,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             final Integer prevVersion = user.getConfigVersion();
             user.setConfigVersion(prevVersion == null ? 1 : prevVersion + 1);
 
-            final String vpnConfig = generateVpnConfig(authenticationToken, endEntity, user, ks);
+            final String vpnConfig = generateVpnConfigData(authenticationToken, endEntity, user, ks);
             user.setVpnConfig(vpnConfig);
 
             final VpnUser mergedUser = vpnUserSession.mergeVpnUser(user);
@@ -738,8 +740,80 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         }
     }
 
+    public String generateVpnConfig(AuthenticationToken authenticationToken, VpnUser user, VpnGenOptions options)
+            throws AuthorizationDeniedException, CADoesntExistsException {
+
+        try {
+            if (!accessControlSessionSession.isAuthorized(authenticationToken,
+                    VpnRules.USER_VIEW.resource())) {
+                throw new AuthorizationDeniedException();
+            }
+
+            final String vpnConfig = user.getVpnConfig();
+            if (vpnConfig == null || vpnConfig.isEmpty()){
+                return null;
+            }
+
+            if (!vpnConfig.startsWith("{")){
+                return vpnConfig;
+            }
+
+            // Translate config JSON to the templating context
+            final JSONObject json = new JSONObject(vpnConfig);
+            final JSONObject config = json.getJSONObject(VpnCons.VPN_CFG);
+
+            final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine();
+            final Context ctx = new Context();
+
+            final Iterator<String> keys = config.keys();
+            while(keys.hasNext()){
+                final String curKey = keys.next();
+                final Object obj = config.get(curKey);
+                if (obj instanceof JSONObject || obj instanceof JSONArray){
+                    continue;
+                }
+
+                ctx.setVariable(curKey, obj);
+            }
+
+            ctx.setVariable("generated_time", new Date(user.getConfigGenerated()));
+
+            // Candidate templte names
+            LinkedList<String> candidateTemplates = new LinkedList<>();
+            candidateTemplates.add(VpnCons.VPN_CONFIG_TEMPLATE);
+
+            // OS - dependent template name, higher priority.
+            if (options != null && options.getOs() != null) {
+                final OperatingSystem os = options.getOs().getGroup();
+                final String osTemplateSuffix = VpnUtils.sanitizeFileName(os.getName().toLowerCase().trim());
+                candidateTemplates.add(0, VpnCons.VPN_CONFIG_TEMPLATE + "_" + osTemplateSuffix);
+            }
+
+            // Try each template according to the preference.
+            for(String templateName : candidateTemplates){
+                try{
+                    final String tpl = templateEngine.process(templateName, ctx);
+                    return tpl;
+                } catch(Exception e){
+
+                }
+            }
+
+            log.warn("No suitable template file was found");
+            return null;
+
+        } catch (UnsupportedEncodingException e) {
+            log.error("Unsupported encoding in VPN config generation", e);
+        } catch (IOException e) {
+            log.error("IOException in VPN config generation", e);
+        }
+
+        return null;
+    }
+
     /**
-     * Generates a new VPN configuration file given the key store, user and token.
+     * Generates a structure with information needed to generate a new VPN configuration.
+     *
      * @param authenticationToken auth token
      * @param user user end entity
      * @param ks key store
@@ -747,7 +821,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
      * @throws AuthorizationDeniedException token invalid
      * @throws CADoesntExistsException invalid CA in the end entity
      */
-    private String generateVpnConfig(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user, KeyStore ks)
+    private String generateVpnConfigData(AuthenticationToken authenticationToken, EndEntityInformation endEntity, VpnUser user, KeyStore ks)
             throws AuthorizationDeniedException, CADoesntExistsException {
 
         try {
@@ -771,18 +845,18 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             final Key key = ks.getKey(endEntity.getUsername(), null);
             final String keyPem = VpnUtils.privateKeyToPem((PrivateKey) key).trim();
 
-            final TemplateEngine templateEngine = LanguageHelper.getTemplateEngine();
-            final Context ctx = new Context();
-            ctx.setVariable("vpn_hostname", hostname);
-            ctx.setVariable("entity", endEntity);
-            ctx.setVariable("user", user);
-            ctx.setVariable("vpn_ca", caCertPem);
-            ctx.setVariable("vpn_cert", certPem);
-            ctx.setVariable("vpn_key", keyPem);
-            ctx.setVariable("generated_time", new Date(user.getConfigGenerated()));
+            final JSONObject json = new JSONObject();
+            final JSONObject config = new JSONObject();
+            json.put(VpnCons.VPN_CFG_VERSION, 1);
+            json.put(VpnCons.VPN_CFG, config);
 
-            final String tpl = templateEngine.process(VpnCons.VPN_CONFIG_TEMPLATE, ctx);
-            return tpl;
+            config.put(VpnCons.VPN_CFG_HOSTNAME, hostname);
+            config.put(VpnCons.VPN_CFG_ENTITY, endEntity);
+            config.put(VpnCons.VPN_CFG_USER, user);
+            config.put(VpnCons.VPN_CFG_CA, caCertPem);
+            config.put(VpnCons.VPN_CFG_CERT, certPem);
+            config.put(VpnCons.VPN_CFG_KEY, keyPem);
+            return config.toString();
 
         } catch (UnsupportedEncodingException e) {
             log.error("Unsupported encoding in VPN config generation", e);

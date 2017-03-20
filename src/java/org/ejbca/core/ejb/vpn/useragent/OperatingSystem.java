@@ -37,6 +37,7 @@ package org.ejbca.core.ejb.vpn.useragent;
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -45,7 +46,7 @@ import java.util.regex.Pattern;
  * Enum constants for most common operating systems.
  * @author harald
  */
-public enum OperatingSystem {
+public enum OperatingSystem implements Serializable {
     // the order is important since the agent string is being compared with the aliases
     /**
      * Windows Mobile / Windows CE. Exact version unknown.

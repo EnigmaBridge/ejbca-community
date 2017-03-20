@@ -37,12 +37,14 @@
 
 package org.ejbca.core.ejb.vpn.useragent;
 
+import java.io.Serializable;
+
 /**
  * Enum constants representing manufacturers of operating systems and client software.
  * Manufacturer could be used for specific handling of browser requests.
  * @author harald
  */
-public enum Manufacturer {
+public enum Manufacturer implements Serializable {
 
     /**
      * Unknow or rare manufacturer

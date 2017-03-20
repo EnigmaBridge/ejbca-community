@@ -235,7 +235,7 @@ public class GenClientCommand extends BaseVpnCommand {
      *             if directory to store keystore cannot be created
      */
     private void storeKeyStore(VpnUser vpnUser, String kspassword, boolean storePem, boolean storeVpnConfig) throws IOException,
-            KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchProviderException, CertificateException {
+            KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, NoSuchProviderException, CertificateException, AuthorizationDeniedException, CADoesntExistsException {
 
         final String userName = VpnUtils.getUserName(vpnUser);
         if (log.isTraceEnabled()) {
@@ -268,16 +268,24 @@ public class GenClientCommand extends BaseVpnCommand {
         // Vpn Configuration
         if (storeVpnConfig) {
             final String vpnConfigName = keyStoreFilenameBase + ".ovpn";
-            final File vpnConfigFile = new File(vpnConfigName);
-            VpnUtils.readOwnerOnly(vpnConfigFile);
+            final String vpnConfig = getRemoteSession(VpnUserManagementSessionRemote.class)
+                    .generateVpnConfig(getAuthenticationToken(), vpnUser, null);
 
-            final BufferedOutputStream ovpnOs = new BufferedOutputStream(new FileOutputStream(vpnConfigFile));
-            VpnUtils.readOwnerOnly(new File(vpnConfigFile.getAbsolutePath()));
+            if (vpnConfig == null){
+                log.error("Could not generate VPN file");
 
-            ovpnOs.write(vpnUser.getVpnConfig().getBytes("UTF-8"));
-            ovpnOs.flush();
-            ovpnOs.close();
-            VpnUtils.readOwnerOnly(new File(vpnConfigFile.getAbsolutePath()));
+            } else {
+                final File vpnConfigFile = new File(vpnConfigName);
+                VpnUtils.readOwnerOnly(vpnConfigFile);
+
+                final BufferedOutputStream ovpnOs = new BufferedOutputStream(new FileOutputStream(vpnConfigFile));
+                VpnUtils.readOwnerOnly(new File(vpnConfigFile.getAbsolutePath()));
+
+                ovpnOs.write(vpnConfig.getBytes("UTF-8"));
+                ovpnOs.flush();
+                ovpnOs.close();
+                VpnUtils.readOwnerOnly(new File(vpnConfigFile.getAbsolutePath()));
+            }
         }
 
         if (log.isTraceEnabled()) {

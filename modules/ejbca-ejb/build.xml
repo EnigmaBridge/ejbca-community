@@ -330,6 +330,8 @@
 		<include name="org/ejbca/core/ejb/vpn/LanguageHelper.java"/>
 		<include name="org/ejbca/core/ejb/vpn/AuthenticationTokenProvider.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnBaseHelper.java"/>
+		<include name="org/ejbca/core/ejb/vpn/useragent/*.java"/>
+		<include name="org/ejbca/core/ejb/vpn/VpnGenOptions.java"/>
 	</fileset>
 	<pathconvert refid="source.fileset.ejbca-util" pathsep=" " property="source.fileset.ejbca-util.files">
 		<map from="${src.dir}/" to=""/>
@@ -418,7 +420,6 @@
 		<include name="org/ejbca/core/ejb/vpn/VpnUserHelper.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnCrlGenerator.java"/>
 		<include name="org/ejbca/core/ejb/vpn/VpnWebUtils.java"/>
-		<include name="org/ejbca/core/ejb/vpn/useragent/*.java"/>
 	</fileset>
 
 	<pathconvert refid="source.fileset.ejbca-common-web" pathsep=" " property="source.fileset.ejbca-common-web.files">
