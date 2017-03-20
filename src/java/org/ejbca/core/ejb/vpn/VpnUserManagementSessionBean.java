@@ -125,6 +125,33 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
     }
 
     @Override
+    public String getAdminRole(String cname){
+        if (cname == null || cname.isEmpty()){
+            return null;
+        }
+
+        final String[] parts = cname.split("/", 2);
+        if (parts.length != 2){
+            log.info("User format invalid: " + cname);
+            return null;
+        }
+
+        try{
+            final VpnUser vpnUser = vpnUserSession.getVpnUser(parts[0], parts[1]);
+            if (vpnUser == null){
+                return null;
+            }
+
+            return vpnUser.getAdminRole();
+
+        } catch (Exception e){
+            log.info("Exception in loading the user " + cname, e);
+        }
+
+        return null;
+    }
+
+    @Override
     public void deleteVpnUser(AuthenticationToken authenticationToken, int vpnUserId) throws AuthorizationDeniedException {
         if (!accessControlSessionSession.isAuthorized(authenticationToken,
                 VpnRules.USER_DELETE.resource() + "/" + vpnUserId)) {

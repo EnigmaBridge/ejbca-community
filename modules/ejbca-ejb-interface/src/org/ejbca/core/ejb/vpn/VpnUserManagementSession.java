@@ -37,6 +37,13 @@ public interface VpnUserManagementSession {
     List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken);
 
     /**
+     * Returns true if user is allowed to
+     * @param cname user cname
+     * @return admin role for the access or null
+     */
+    String getAdminRole(String cname);
+
+    /**
      * Returns true if the given user name is available
      *
      * @param user vpn user
