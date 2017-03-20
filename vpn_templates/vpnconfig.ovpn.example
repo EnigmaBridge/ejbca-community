@@ -13,7 +13,7 @@
 #
 # ----------------------------------------------------------------------------------------------------------------------
 #  Generated:  [(${generated_time})]
-#  User ID:    [(${entity.username})]
+#  User ID:    [(${entity_username})]
 #  VPN server: [(${vpn_hostname})]
 #  Version:    [(${user.configVersion})]
 #
