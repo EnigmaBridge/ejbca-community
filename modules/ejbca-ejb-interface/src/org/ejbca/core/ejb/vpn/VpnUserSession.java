@@ -23,7 +23,11 @@ import java.util.List;
  */
 public interface VpnUserSession {
 
-    /** @return true if the specified name is already in use by another VpnUser (checks the database, not the cache) */
+    /**
+     *
+     * @param email
+     * @return true if the specified name is already in use by another VpnUser (checks the database, not the cache)
+     */
     boolean isVpnUserNameUsed(String email);
     boolean isVpnUserNameUsed(String email, String device);
 
@@ -55,7 +59,12 @@ public interface VpnUserSession {
      */
     VpnUser getVpnUser(String email, String device);
 
-    /** Add the specified VPNUser to the database and return the id used to store it */
+    /**
+     * Add the specified VPNUser to the database and return the id used to store it
+     * @param vpnUser
+     * @return
+     * @throws VpnUserNameInUseException
+     */
     VpnUser mergeVpnUser(VpnUser vpnUser) throws VpnUserNameInUseException;
 
     /** Remove the specified VPNUser from the database.
@@ -81,12 +90,20 @@ public interface VpnUserSession {
      */
     VpnUser downloadOtp(int vpnUserId, String otpToken);
 
-    /** @return a list of all VPNUser identifiers in the database. */
+    /**
+     * 
+     * @return a list of all VPNUser identifiers in the database.
+     */
     List<Integer> getVpnUserIds();
 
-    /** Clears the VPNUser cache. */
+    /**
+     * Clears the VPNUser cache.
+     */
     void flushCache();
 
-    /** Clears the VPNUser cache except for the cache entries specified in excludeIDs */
+    /**
+     * Clears the VPNUser cache except for the cache entries specified in excludeIDs
+     * @param excludeIDs
+     */
     void flushExcludingIDs(List<Integer> excludeIDs);
 }
