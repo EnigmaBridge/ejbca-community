@@ -35,6 +35,7 @@ public class VpnConfig {
     public static final String CONFIG_VPN_CRL_REFRESH_FILE_ON_REVOKE = "vpn.crl.refresh_file_on_revoke";
     public static final String CONFIG_VPN_DOWNLOAD_TITLE = "vpn.download.title";
     public static final String CONFIG_VPN_HOME_DIR = "vpn.ejbca.home";
+    public static final String CONFIG_VPN_ENABLE_P12_FLOW = "vpn.p12.downflow";
 
     public static final String CONFIG_VPN_SUBNET_ADDRESS = "vpn.vpn.subnet.address";
     public static final String CONFIG_VPN_SUBNET_SIZE = "vpn.vpn.subnet.size";
@@ -452,5 +453,14 @@ public class VpnConfig {
         return VpnCons.DEFAULT_VPN_SUBNET_SIZE;
     }
 
-
+    /**
+     * Returns the VPN subnet. Can be used to restrict access to the resource based on the IP address.
+     * @return ip address string
+     */
+    public static boolean isP12DownloadFlowEnabled(){
+        return Boolean.parseBoolean(
+                getDefaultIfEmpty(
+                        EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_ENABLE_P12_FLOW),
+                        "false"));
+    }
 }

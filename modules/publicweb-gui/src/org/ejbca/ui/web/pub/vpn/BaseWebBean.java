@@ -136,7 +136,15 @@ public abstract class BaseWebBean implements Serializable {
      * @return absolute link
      */
     public String buildPrivateSpaceAdminPageLink(){
-        final int port = VpnConfig.getPrivateHttpsPort();
+        return buildPrivateSpaceAdminPageLink(true);
+    }
+
+    /**
+     * Builds link to the private space administration
+     * @return absolute link
+     */
+    public String buildPrivateSpaceAdminPageLink(boolean withClientCert){
+        final int port = withClientCert ? VpnConfig.getPrivateHttpsPort() : VpnConfig.getPublicHttpsPort();
         final String hostname = VpnConfig.getServerHostname();
         return String.format("https://%s:%d/admin", hostname, port);
     }

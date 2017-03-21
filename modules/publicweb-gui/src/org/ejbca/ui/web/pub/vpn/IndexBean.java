@@ -41,6 +41,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
     private Boolean isAdminP12Available;
     private Boolean isOnlyAdmin;
     private Boolean isVpnDownloaded;
+    private Boolean isP12downloadFlowEnabled;
     private OtpDownload otpDownload;
     private VpnUser vpnUser;
     private GlobalConfiguration globalConfiguration;
@@ -70,6 +71,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         this.hostname = VpnConfig.getServerHostname();
         this.hostPort = VpnWebUtils.getRequestServerName(request);
         this.spaceName = VpnUtils.getHostnameId();
+        this.isP12downloadFlowEnabled = VpnConfig.isP12DownloadFlowEnabled();
 
         userAgentParse(request);
         loadVpnAdminUser();
@@ -86,13 +88,13 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         // Admin -> redirect to the admin page
         if (isAdmin){
             log.info("Redirecting to admin");
-            response.sendRedirect(buildPrivateSpaceAdminPageLink());
+            response.sendRedirect(buildPrivateSpaceAdminPageLink(!isP12downloadFlowEnabled));
             response.flushBuffer();
             return;
         }
 
         // Using VPN & p12 for download -> redirect to p12 download page
-        if (isOnlyAdmin && connectedFromVpn && isAdminP12Available){
+        if (isOnlyAdmin && connectedFromVpn && isAdminP12Available && isP12downloadFlowEnabled){
             log.info("Redirecting to p12 download");
             response.sendRedirect(buildP12Link(otpDownload.getOtpDownload()));
             response.flushBuffer();
@@ -153,7 +155,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
     }
 
     /**
-     * Checks if admin P12 OTP is avaialble for download.
+     * Checks if admin P12 OTP is available for download.
      * Does data load to the internal state.
      * @return true if admin p12 OTP is ready
      */
@@ -237,5 +239,9 @@ public class IndexBean  extends BaseWebBean implements Serializable {
 
     public String getSpaceName() {
         return spaceName;
+    }
+
+    public Boolean getP12downloadFlowEnabled() {
+        return isP12downloadFlowEnabled;
     }
 }

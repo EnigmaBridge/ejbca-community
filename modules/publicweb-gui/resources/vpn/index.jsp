@@ -53,7 +53,7 @@
     <div class="container">
         <c:choose>
 
-            <%-- VPN has not been downloaded yet --%>
+            <%-- VPN config has not been downloaded yet --%>
             <c:when test="${indexBean.onlyAdmin && !indexBean.vpnDownloaded}">
                 <div id="divError" class="alert alert-warning">
                     You are not connected to your Private Space, you need to download your user key first.
