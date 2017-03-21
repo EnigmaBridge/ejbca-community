@@ -5,6 +5,7 @@ import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
 import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.authorization.control.AccessControlSessionLocal;
+import org.cesecore.certificates.certificate.CertificateStoreSessionLocal;
 import org.cesecore.configuration.ConfigurationBase;
 import org.cesecore.configuration.GlobalConfigurationData;
 import org.cesecore.configuration.GlobalConfigurationSessionLocal;
@@ -34,6 +35,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
     private AccessControlSessionLocal accessControlSessionLocal = ejb.getAccessControlSession();
     private GlobalConfigurationSessionLocal configurationSessionLocal = ejb.getGlobalConfigurationSession();
     private VpnUserManagementSessionLocal vpnUserManagementSession = ejb.getVpnUserManagementSession();
+    private CertificateStoreSessionLocal certificateStoreSessionLocal = ejb.getCertificateStoreSession();
 
     private VpnWebUtils.AdminAuthorization adminChecker;
     private Boolean connectedFromVpn;
@@ -57,7 +59,11 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         authToken = new AlwaysAllowLocalAuthenticationToken(new UsernamePrincipal("Public Web: "+request.getRemoteAddr()));
         this.request = request;
         this.ip = request.getRemoteAddr();
-        this.adminChecker = VpnWebUtils.buildAdminChecker(authenticationSessionLocal, endEntityManagementSessionLocal, accessControlSessionLocal);
+        this.adminChecker = VpnWebUtils.buildAdminChecker(authenticationSessionLocal,
+                endEntityManagementSessionLocal,
+                accessControlSessionLocal,
+                vpnUserManagementSession,
+                certificateStoreSessionLocal);
 
         this.isAdmin = null;
         this.isAdminP12Available = null;

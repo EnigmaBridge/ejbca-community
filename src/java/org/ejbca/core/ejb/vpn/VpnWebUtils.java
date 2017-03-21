@@ -143,6 +143,23 @@ public class VpnWebUtils {
     }
 
     /**
+     * Builds a new auth checker.
+     * @param authenticationSession
+     * @param endEntityManagementSession
+     * @param authorizationSession
+     * @return
+     */
+    public static AdminAuthorization buildAdminChecker(AuthenticationProvider authenticationSession,
+                                                       EndEntityManagementSession endEntityManagementSession,
+                                                       AccessControlSession authorizationSession,
+                                                       VpnUserManagementSession vpnUserManagementSession,
+                                                       CertificateStoreSession certStoreSession
+                                                       ){
+        return new AdminAuthorization(authenticationSession, endEntityManagementSession, authorizationSession,
+                vpnUserManagementSession, certStoreSession);
+    }
+
+    /**
      * Admin auth checker.
      * Checks user authorization to the resource based on the client certificate in the request.
      */
@@ -165,13 +182,19 @@ public class VpnWebUtils {
         public AdminAuthorization() {
         }
 
-        public AdminAuthorization(AuthenticationProvider authenticationSession, EndEntityManagementSession endEntityManagementSession, AccessControlSession authorizationSession) {
+        public AdminAuthorization(AuthenticationProvider authenticationSession,
+                                  EndEntityManagementSession endEntityManagementSession,
+                                  AccessControlSession authorizationSession) {
             this.authenticationSession = authenticationSession;
             this.endEntityManagementSession = endEntityManagementSession;
             this.authorizationSession = authorizationSession;
         }
 
-        public AdminAuthorization(AuthenticationProvider authenticationSession, EndEntityManagementSession endEntityManagementSession, AccessControlSession authorizationSession, VpnUserManagementSession vpnUserManagementSession, CertificateStoreSession certStoreSession) {
+        public AdminAuthorization(AuthenticationProvider authenticationSession,
+                                  EndEntityManagementSession endEntityManagementSession,
+                                  AccessControlSession authorizationSession,
+                                  VpnUserManagementSession vpnUserManagementSession,
+                                  CertificateStoreSession certStoreSession) {
             this.authenticationSession = authenticationSession;
             this.endEntityManagementSession = endEntityManagementSession;
             this.authorizationSession = authorizationSession;
