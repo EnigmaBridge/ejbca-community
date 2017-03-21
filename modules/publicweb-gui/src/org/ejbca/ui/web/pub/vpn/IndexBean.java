@@ -94,7 +94,7 @@ public class IndexBean  extends BaseWebBean implements Serializable {
         // Admin -> redirect to the admin page
         if (isAdmin){
             log.info("Redirecting to admin");
-            response.sendRedirect(buildPrivateSpaceAdminPageLink(!isP12downloadFlowEnabled));
+            response.sendRedirect(buildPrivateSpaceAdminPageLink(isP12downloadFlowEnabled));
             response.flushBuffer();
             return;
         }
