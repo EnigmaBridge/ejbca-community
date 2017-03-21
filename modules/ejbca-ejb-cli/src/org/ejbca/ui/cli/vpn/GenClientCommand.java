@@ -47,6 +47,7 @@ public class GenClientCommand extends BaseVpnCommand {
     private static final String PASSWORD_KEY = "--password";
     private static final String PEM_KEY = "--pem";
     private static final String VPN_CONFIG_KEY = "--vpn";
+    private static final String VPN_SUPERADMIN_KEY = "--superadmin";
 
     {
         registerParameter(new Parameter(DIRECTORY_KEY, "Directory", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.ARGUMENT,
@@ -63,6 +64,8 @@ public class GenClientCommand extends BaseVpnCommand {
                 "If parameter is used, PEM files are dumped together with P12."));
         registerParameter(new Parameter(VPN_CONFIG_KEY, "VpnConfig", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.FLAG,
                 "If parameter is used, OpenVPN config files are dumped together with P12."));
+        registerParameter(new Parameter(VPN_SUPERADMIN_KEY, "Superadmin", MandatoryMode.OPTIONAL, StandaloneMode.FORBID, ParameterMode.FLAG,
+                "If parameter is used, the user is given superadmin role"));
     }
 
     private String mainStoreDir;
@@ -84,6 +87,7 @@ public class GenClientCommand extends BaseVpnCommand {
         final boolean shouldRegenerate = (parameters.get(REGENERATE_KEY) != null);
         final boolean genPem = (parameters.get(PEM_KEY) != null);
         final boolean genVpnConfig = (parameters.get(VPN_CONFIG_KEY) != null);
+        final boolean isSuperadmin = (parameters.get(VPN_SUPERADMIN_KEY) != null);
 
         // Email validity test & device non-nullity test.
         if (!isEmailAndDeviceValid(argEmail, argDevice)){
@@ -99,6 +103,10 @@ public class GenClientCommand extends BaseVpnCommand {
             final VpnUser tplUser = new VpnUser();
             tplUser.setEmail(argEmail);
             tplUser.setDevice(argDevice);
+            if (isSuperadmin){
+                tplUser.setAdminRole(VpnCons.ROLE_SUPERADMIN);
+            }
+
             final String userName = VpnUtils.getUserName(tplUser);
 
             // Key & config export directory.
@@ -142,6 +150,11 @@ public class GenClientCommand extends BaseVpnCommand {
                 // Load user & entity
                 vpnUser = getRemoteSession(VpnUserManagementSessionRemote.class)
                         .getVpnUser(getAuthenticationToken(), tplUser.getEmail(), tplUser.getDevice());
+
+                // Admin role update
+                vpnUser.setAdminRole(isSuperadmin ? VpnCons.ROLE_SUPERADMIN : null);
+                getRemoteSession(VpnUserManagementSessionRemote.class)
+                        .saveVpnUser(getAuthenticationToken(), vpnUser);
 
                 // Revoke existing certificate
                 getRemoteSession(EndEntityManagementSessionRemote.class)

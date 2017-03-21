@@ -46,12 +46,15 @@ public class VpnCons {
      */
     public static final String VPN_DATA = "vpn";
 
+    /**
+     * OTP downloading - index bean
+     */
     public static final String OTP_SUPERADMIN = "superadmin";
     public static final String OTP_TYPE_P12 = "p12";
     public static final String OTP_AUX_P12_PATH = "p12_path";
 
     /**
-     * VPN config json
+     * VPN config json keys
      */
     public static final String VPN_CFG = "config";
     public static final String VPN_CFG_VERSION = "version";
@@ -61,4 +64,9 @@ public class VpnCons {
     public static final String VPN_CFG_CA = "vpn_ca";
     public static final String VPN_CFG_CERT = "vpn_cert";
     public static final String VPN_CFG_KEY = "vpn_key";
+
+    /**
+     * Admin roles
+     */
+    public static final String ROLE_SUPERADMIN = "superadmin";
 }
