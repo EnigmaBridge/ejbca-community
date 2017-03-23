@@ -987,7 +987,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         }
 
         // Also handles the case if there is no previous user -> set to null.
-        vpnUser.setAdminRole(getDefaultAdminRole(vpnUser.getEmail()));
+        vpnUser.setAdminRole(getDefaultAdminRoleInternal(vpnUser.getEmail()));
     }
 
     /**
