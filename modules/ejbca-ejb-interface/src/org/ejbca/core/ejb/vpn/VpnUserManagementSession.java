@@ -37,7 +37,7 @@ public interface VpnUserManagementSession {
     List<Integer> geVpnUsersIds(AuthenticationToken authenticationToken);
 
     /**
-     * Returns true if user is allowed to
+     * Returns admin role associated to the user name (email/device) or null if there is none.
      * @param cname user cname
      * @return admin role for the access or null
      */
@@ -147,9 +147,25 @@ public interface VpnUserManagementSession {
     VpnUser downloadOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties)
             throws AuthorizationDeniedException, VpnOtpOldException, VpnOtpTooManyException, VpnOtpCookieException, VpnOtpDescriptorException, VpnOtpInvalidException, VpnNoConfigException;
 
+    /**
+     * Creates a new VpnUser record
+     * @param authenticationToken auth token
+     * @param user user template
+     * @return newly created user
+     * @throws AuthorizationDeniedException
+     * @throws VpnUserNameInUseException
+     */
     VpnUser createVpnUser(final AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;
 
+    /**
+     * Updates the already existing VpnUser record
+     * @param authenticationToken auth token
+     * @param user user data - will be merged with the existing entity
+     * @return updated user record
+     * @throws AuthorizationDeniedException
+     * @throws VpnUserNameInUseException
+     */
     VpnUser saveVpnUser(AuthenticationToken authenticationToken, VpnUser user)
             throws AuthorizationDeniedException, VpnUserNameInUseException;
 
