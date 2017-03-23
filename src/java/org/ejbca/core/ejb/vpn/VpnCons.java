@@ -69,4 +69,5 @@ public class VpnCons {
      * Admin roles
      */
     public static final String ROLE_SUPERADMIN = "superadmin";
+    public static final String ROLE_NONE = "__NONE__";
 }

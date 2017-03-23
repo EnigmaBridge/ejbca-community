@@ -170,6 +170,23 @@ public interface VpnUserManagementSession {
             throws AuthorizationDeniedException, VpnUserNameInUseException;
 
     /**
+     * Returns default admin role for the user with given email.
+     * Returns null if there is no admin policy in place or no user is there.
+     *
+     * @param email email
+     * @return admin role or null
+     */
+    String getDefaultAdminRole(String email);
+
+    /**
+     * Updates the admin role for user being created according to the admin roles policies in place.
+     * If the admin role is same for all users based on their email this is going to update
+     * admin role of the user according to the already existing records in the database.
+     * @param vpnUser
+     */
+    void setAdminRoleForNewUser(AuthenticationToken authenticationToken, VpnUser vpnUser);
+
+    /**
      * Sends a configuration email or throws an exception
      *
      * @param authenticationToken auth token

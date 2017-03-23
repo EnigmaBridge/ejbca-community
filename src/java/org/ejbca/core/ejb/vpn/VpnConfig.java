@@ -36,6 +36,7 @@ public class VpnConfig {
     public static final String CONFIG_VPN_DOWNLOAD_TITLE = "vpn.download.title";
     public static final String CONFIG_VPN_HOME_DIR = "vpn.ejbca.home";
     public static final String CONFIG_VPN_ENABLE_P12_FLOW = "vpn.p12.downflow";
+    public static final String CONFIG_VPN_ADMIN_ROLE_SAME_EMAIL = "vpn.admin.sameemail";
 
     public static final String CONFIG_VPN_SUBNET_ADDRESS = "vpn.vpn.subnet.address";
     public static final String CONFIG_VPN_SUBNET_SIZE = "vpn.vpn.subnet.size";
@@ -455,12 +456,24 @@ public class VpnConfig {
 
     /**
      * Returns the VPN subnet. Can be used to restrict access to the resource based on the IP address.
-     * @return ip address string
+     * @return true if P12 download flow is enabled
      */
     public static boolean isP12DownloadFlowEnabled(){
         return Boolean.parseBoolean(
                 getDefaultIfEmpty(
                         EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_ENABLE_P12_FLOW),
+                        "false"));
+    }
+
+    /**
+     * Returns true if a new user should get assigned the admin role same as the other already existing user in the
+     * database with the same email.
+     * @return true if admin role is email based
+     */
+    public static boolean isAdminRoleEmailBased(){
+        return Boolean.parseBoolean(
+                getDefaultIfEmpty(
+                        EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_ADMIN_ROLE_SAME_EMAIL),
                         "false"));
     }
 }

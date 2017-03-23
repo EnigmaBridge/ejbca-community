@@ -405,6 +405,9 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             throw new RuntimeException("Failed to allocate a new vpnUserId.");
         }
 
+        // Admin role setup
+        setAdminRoleForNewUserInternal(user);
+
         user.setId(vpnUserId);
         user = vpnUserSession.mergeVpnUser(user);
 
@@ -495,6 +498,16 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         }
 
         return user;
+    }
+
+    @Override
+    public String getDefaultAdminRole(String email) {
+        return getDefaultAdminRoleInternal(email);
+    }
+
+    @Override
+    public void setAdminRoleForNewUser(AuthenticationToken authenticationToken, VpnUser vpnUser) {
+        setAdminRoleForNewUserInternal(vpnUser);
     }
 
     /**
@@ -951,6 +964,52 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         } catch(Exception e){
             throw new VpnException("Exception in loading CRL", e);
         }
+    }
+
+    /**
+     * Updates the admin role for user being created according to the admin roles policies in place.
+     * If the admin role is same for all users based on their email this is going to update
+     * admin role of the user according to the already existing records in the database.
+     * @param vpnUser
+     */
+    private void setAdminRoleForNewUserInternal(VpnUser vpnUser){
+        final String existingRole = vpnUser.getAdminRole();
+
+        // Role was explicitly set to null by a special placeholder
+        if (VpnCons.ROLE_NONE.equals(existingRole)){
+            vpnUser.setAdminRole(null);
+            return;
+        }
+
+        // Role was explicitly set to a different value
+        if (existingRole != null){
+            return;
+        }
+
+        // Also handles the case if there is no previous user -> set to null.
+        vpnUser.setAdminRole(getDefaultAdminRole(vpnUser.getEmail()));
+    }
+
+    /**
+     * Returns default admin role for the user with given email.
+     * Returns null if there is no admin policy in place or no user is there.
+     *
+     * @param email
+     * @return
+     */
+    private String getDefaultAdminRoleInternal(String email){
+        if (!VpnConfig.isAdminRoleEmailBased()){
+            return null;
+        }
+
+        // Get users with the same email from the database.
+        final List<VpnUser> users = vpnUserSession.getVpnUser(email);
+        String lastRole = null;
+        for(VpnUser user : users){
+            lastRole = user.getAdminRole();
+        }
+
+        return lastRole;
     }
 
     //
