@@ -81,10 +81,12 @@ org.cesecore.authorization.control.CryptoTokenRules
         }
 
         function regenerateQrCode(link){
+            var wrapper = $('#qrWrap');
             var divQrCode = $('#qrcode');
             divQrCode.html("");
 
             if (!link || 0 === link.length) {
+                wrapper.hide();
                 return;
             }
 
@@ -94,6 +96,7 @@ org.cesecore.authorization.control.CryptoTokenRules
                 "size": 300
             };
             divQrCode.qrcode(qrCodeSettings);
+            wrapper.show();
         }
 
         $(function() {
@@ -230,7 +233,9 @@ org.cesecore.authorization.control.CryptoTokenRules
 	</div>
 	</div>
 
-	<div class="qrWrap">
+	<div id="qrWrap" class="qrWrap" style="display: none">
+		<h4>Key transfer</h4>
+		<p>By scanning the QR code below you can open the key download page</p>
 		<div id="qrcode" class="qr"></div>
 	</div>
 
