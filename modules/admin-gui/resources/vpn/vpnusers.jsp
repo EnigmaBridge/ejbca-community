@@ -149,7 +149,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<%= ejbcawebbean.getHelpReference("/userguide.html#Managing%20Crypto%20Tokens") %>
 	</h1>
 
-	<div class="message"><h:messages layout="table" errorClass="alert"/></div>
+	<div class="message"><h:messages layout="table" errorClass="alert" infoClass="info"/></div>
 	<h:form id="vpnusers">
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
 		<h:column>
