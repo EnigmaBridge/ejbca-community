@@ -306,7 +306,7 @@ html {
     padding-left: 0;
 }
 
-.eb-ejbca .eb-footer{
+.eb-ejbca .eb-footer {
     display: none;
 }
 
@@ -314,3 +314,6 @@ html {
     color: #fff;
 }
 
+.eb-solo .message .info {
+    color: #00a7d7;
+}

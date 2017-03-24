@@ -410,6 +410,55 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
         }
     }
 
+    /**
+     * Information message for the user
+     */
+    public static class UserErrorMessage {
+        private boolean isError = true;
+        private boolean nonTranslated = true;
+        private String message;
+
+        public UserErrorMessage(Throwable exc) {
+            this.message = exc.getMessage();
+        }
+
+        public UserErrorMessage(String message) {
+            this.message = message;
+        }
+
+        public UserErrorMessage(boolean isError, String message) {
+            this.isError = isError;
+            this.message = message;
+        }
+
+        public UserErrorMessage(boolean isError, boolean nonTranslated, String message) {
+            this.isError = isError;
+            this.nonTranslated = nonTranslated;
+            this.message = message;
+        }
+
+        public boolean isError() {
+            return isError;
+        }
+
+        public boolean isNonTranslated() {
+            return nonTranslated;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        @Override
+        public String toString() {
+            return "UserErrorMessage{" +
+                    "isError=" + isError +
+                    ", nonTranslated=" + nonTranslated +
+                    ", message='" + message + '\'' +
+                    '}';
+        }
+    }
+
     private List<VpnUserGuiInfo> vpnUserGuiInfos = new ArrayList<VpnUserGuiInfo>();
 
     @SuppressWarnings("rawtypes") //JDK6 does not support typing for ListDataModel
@@ -450,6 +499,32 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
     /** Force reload from underlying (cache) layer for the current CryptoToken and its list of key pairs */
     private void flushCurrent() {
         currentVpnUser = null;
+    }
+
+    /**
+     * Displays an error / info message to the user
+     * @param msg
+     */
+    private void displayMessage(UserErrorMessage msg){
+        if (msg == null){
+            return;
+        }
+
+        if (msg.isError()){
+            if (msg.isNonTranslated()){
+                super.addNonTranslatedErrorMessage(msg.getMessage());
+            } else {
+                super.addErrorMessage(msg.getMessage());
+            }
+        } else {
+            if (msg.isNonTranslated()){
+                super.addNonTranslatedInfoMessage(msg.getMessage());
+            } else {
+                super.addInfoMessage(msg.getMessage());
+            }
+        }
+
+        log.info("Message displayed to user: " + msg);
     }
 
     /**
@@ -607,7 +682,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             return;
         }
 
-        String msg = null;
+        UserErrorMessage msg = null;
         try {
             int revokedCnt = 0;
             for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
@@ -659,7 +734,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 vpnUserManagementSession.sendConfigurationEmail(authenticationToken, vpnUserGuiInfo.getId(), null);
 
                 currentVpnUserId = vpnUser.getId();
-                msg = "VpnUser regenerated successfully.";
+                msg = new UserErrorMessage(false, "VpnUser regenerated successfully.");
             }
 
             if (revokedCnt > 0){
@@ -667,16 +742,13 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             }
 
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
-            msg = e.getMessage();
+            msg = new UserErrorMessage(e);
         } catch (IOException | EjbcaException | CesecoreException | UserDoesntFullfillEndEntityProfile e) {
-            msg = e.getMessage();
+            msg = new UserErrorMessage(e);
         }
 
         flushCaches();
-        if (msg != null) {
-            log.info("Message displayed to user: " + msg);
-            super.addNonTranslatedErrorMessage(msg);
-        }
+        displayMessage(msg);
     }
 
     /** Invoked when admin requests a VpnUser certificate revocation. */
@@ -685,7 +757,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             return;
         }
 
-        String msg = null;
+        UserErrorMessage msg = null;
         try {
             int revokedCnt = 0;
             for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
@@ -704,15 +776,15 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             if (revokedCnt > 0) {
                 checkCrl();
             }
+
+            msg = new UserErrorMessage(false, "Revoke successful");
+
         } catch (ApprovalException | WaitingForApprovalException | FinderException | AlreadyRevokedException e) {
-            msg = e.getMessage();
+            msg = new UserErrorMessage(e);
         }
 
         flushCaches();
-        if (msg != null) {
-            log.info("Message displayed to user: " + msg);
-            super.addNonTranslatedErrorMessage(msg);
-        }
+        displayMessage(msg);
     }
 
     /** Invoked when admin requests a VpnUsers deletion. */
@@ -721,7 +793,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             return;
         }
 
-        String msg = null;
+        UserErrorMessage msg = null;
         try {
             int revokedCnt = 0;
             for (VpnUserGuiInfo vpnUserGuiInfo : vpnUserGuiInfos) {
@@ -746,15 +818,14 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 checkCrl();
             }
 
+            msg = new UserErrorMessage(false, "Delete successful");
+
         } catch (ApprovalException | WaitingForApprovalException | RemoveException e) {
-            msg = e.getMessage();
+            msg = new UserErrorMessage(e);
         }
 
         flushCaches();
-        if (msg != null) {
-            log.info("Message displayed to user: " + msg);
-            super.addNonTranslatedErrorMessage(msg);
-        }
+        displayMessage(msg);
     }
 
     /** Sends configuration email to the user */
@@ -763,13 +834,16 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             return;
         }
 
+        UserErrorMessage msg = null;
         try {
             final VpnUserGuiInfo current = (VpnUserGuiInfo) vpnUserGuiList.getRowData();
             vpnUserManagementSession.sendConfigurationEmail(authenticationToken, current.getId(), null);
+            msg = new UserErrorMessage(false, "Email sent successfully");
+            displayMessage(msg);
 
         } catch (Exception e) {
-            final String msg = "Sending an email by administrator " + authenticationToken.toString() + " failed. ";
-            super.addNonTranslatedErrorMessage(msg);
+            msg = new UserErrorMessage("Sending an email by administrator " + authenticationToken.toString() + " failed. ");
+            displayMessage(msg);
             log.info(msg, e);
         }
         flushCaches();
@@ -920,7 +994,7 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
 
     /** Invoked when admin requests a VPNUser creation. */
     public void saveCurrentVpnUser() throws AuthorizationDeniedException {
-        String msg = null;
+        UserErrorMessage msg = null;
         try {
             final String name = StringTools.stripUsername(getCurrentVpnUser().getName());
             final String email = getCurrentVpnUser().getEmail();
@@ -984,29 +1058,26 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
                 }
 
                 currentVpnUserId = newVpnUser.getId();
-                msg = "VpnUser created successfully.";
+                msg = new UserErrorMessage(false, "VpnUser created successfully.");
 
             } else {
                 vpnUserManagementSession.saveVpnUser(authenticationToken, vpnUser);
-                msg = "VpnUser saved successfully.";
+                msg = new UserErrorMessage(false, "VpnUser created successfully.");
             }
 
             setCurrentVpnUserEditMode(false);
 
         } catch (AuthorizationDeniedException e) {
-            msg = e.getMessage();
+            msg = new UserErrorMessage(e);
         } catch (IllegalArgumentException e) {
-            msg = e.getMessage();
+            msg =new UserErrorMessage(e);
         } catch (Throwable e) {
-            msg = e.getMessage();
+            msg = new UserErrorMessage(e);
             log.info("General exception in saving the user", e);
         }
 
         flushCaches();
-        if (msg != null) {
-            log.info("Message displayed to user: " + msg);
-            super.addNonTranslatedErrorMessage(msg);
-        }
+        displayMessage(msg);
     }
 
     /** Invoked when admin cancels a VpnUser create or edit. */
