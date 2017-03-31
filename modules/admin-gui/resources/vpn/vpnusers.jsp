@@ -140,7 +140,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<p><%= org.ejbca.core.ejb.vpn.VpnConfig.getServerHostname() %></p>
 </div>
 
-<div class="container">
+<div class="container eb-main-body">
 <% } %>
 
 	<h:outputText value="" rendered="#{vpnUsersMBean.pageLoadResetTrigger}"/>
@@ -267,26 +267,27 @@ org.cesecore.authorization.control.CryptoTokenRules
 	</div>
 <% } %>
 
-	<%	// Include Footer 
-	String footurl = globalconfiguration.getFootBanner(); %>
-	<jsp:include page="<%= footurl %>" />
-
 	<div class="modal">
 		<div class="modal-wrap"></div>
 	</div>
 
 	<footer class="footer eb-footer hidden">
 		<div class="container nav navbar navbar-toggleable-md ">
-			<div class="collapse navbar-collapse" id="navbarCollapse">
-				<ul class="nav navbar-nav mr-auto">
-					<li class="nav-item">
-						<a class="nav-link" href="<%= globalconfiguration.getAdminWebPath() %>">EJBCA Admin</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="<%= org.ejbca.core.ejb.vpn.VpnConfig.getPublicPageLink() %>">EJBCA Public</a>
-					</li>
-				</ul>
-			</div>
+
+			<%	// Include Footer
+				String footurl = globalconfiguration.getFootBanner(); %>
+			<jsp:include page="<%= footurl %>" />
+
+			<%--<div class="collapse navbar-collapse" id="navbarCollapse">--%>
+				<%--<ul class="nav navbar-nav mr-auto">--%>
+					<%--<li class="nav-item">--%>
+						<%--<a class="nav-link" href="<%= globalconfiguration.getAdminWebPath() %>">EJBCA Admin</a>--%>
+					<%--</li>--%>
+					<%--<li class="nav-item">--%>
+						<%--<a class="nav-link" href="<%= org.ejbca.core.ejb.vpn.VpnConfig.getPublicPageLink() %>">EJBCA Public</a>--%>
+					<%--</li>--%>
+				<%--</ul>--%>
+			<%--</div>--%>
 		</div>
 	</footer>
 
