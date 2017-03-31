@@ -82,7 +82,7 @@
 
 <div class="jumbotron text-center">
     <h1>Welcome to Private Space</h1>
-    <p>User key download</p>
+    <p>Device key download</p>
 </div>
 
 <div class="container">
