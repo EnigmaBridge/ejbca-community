@@ -198,7 +198,7 @@
                     <h3>Troubleshooting</h3>
                     <p>
                         In case of a problem please consult your administrator.
-                        Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank"> our user guides</a> if unsure.
+                        Alternatively, feel free to <a href="https://enigmabridge.freshdesk.com/helpdesk/tickets/new">request help from Enigma Bridge</a>
                     </p>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                     <div class="col-sm-12">
                         <h3>Key transfer</h3>
                         <p>
-                            If the key is for another device able to read QR codes, you can use the code below.
+                            If the key is for a device able to read QR codes, you can use the code below.
                         </p>
 
                         <div class="qrWrap">
