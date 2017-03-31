@@ -247,7 +247,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<div class="modal-wrap"></div>
 	</div>
 
-	<footer class="footer eb-footer hidden">
+	<footer class="footer eb-footer">
 		<div class="container nav navbar navbar-toggleable-md ">
 
 			<%	// Include Footer
