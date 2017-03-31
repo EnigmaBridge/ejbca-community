@@ -160,7 +160,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 	    	</h:inputText>
 		</h:panelGroup>
 
-		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:" rendered="#{vpnUsersMBean.currentVpnUserEditMode}" />/>
+		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:" rendered="#{vpnUsersMBean.currentVpnUserEditMode}" />
 		<h:panelGroup id="currentVpnUserDevice" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
 	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" required="true"
 						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
