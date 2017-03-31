@@ -235,15 +235,15 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 	<div class="btn-group">
 	<h:panelGroup>
-		<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
-						 rendered="#{vpnUsersMBean.allowedToDelete}"
-						 styleClass="btn btn-default"
-						 onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_DELETE}')"/>
-
 		<h:commandButton value="#{web.text.VPNUSER_REVOKE}" action="#{vpnUsersMBean.revokeVpnUsers}"
 						 rendered="#{vpnUsersMBean.allowedToDelete}"
 						 styleClass="btn btn-default"
 						 onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_REVOKE}')"/>
+
+		<h:commandButton value="#{web.text.VPNUSER_DELETE}" action="#{vpnUsersMBean.deleteVpnUsers}"
+						 rendered="#{vpnUsersMBean.allowedToDelete}"
+						 styleClass="btn btn-default"
+						 onclick="return confirmAndModal('#{web.text.VPNUSER_CONF_DELETE}')"/>
 
 		<h:commandButton value="#{web.text.VPNUSER_REGENERATE}" action="#{vpnUsersMBean.regenerateVpnUsers}"
 						 rendered="#{vpnUsersMBean.allowedToDelete}"
