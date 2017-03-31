@@ -173,6 +173,10 @@ public class VpnWebUtils {
         private String remoteip;
         private String forwardedip;
 
+        private String lastVpnAuthJson;
+        private String lastVpnAuthCname;
+        private String lastVpnAuthAdminRole;
+
         private AuthenticationProvider authenticationSession;
         private EndEntityManagementSession endEntityManagementSession;
         private AccessControlSession authorizationSession;
@@ -271,26 +275,41 @@ public class VpnWebUtils {
             }
 
             try {
-                log.info("VPNAuth: " + json.toString());
+                lastVpnAuthJson = json.toString();
+                log.info("VPNAuth: " + lastVpnAuthJson);
+
                 final String cname = json.getString("cname");
+                lastVpnAuthCname = cname;
+
                 final String adminRole = vpnUserManagementSession.getAdminRole(cname);
+                lastVpnAuthAdminRole = adminRole;
+
                 if (adminRole == null){
                     throw new AuthenticationFailedException("User is not permitted to act as an admin");
                 }
 
                 // load certificate from cert store...
-                final List<Certificate> certs = certStoreSession.findCertificatesByUsername(adminRole);
-                if (certs == null || certs.isEmpty()){
-                    throw new AuthenticationFailedException("User was not found");
-                }
-
-                certificates = new X509Certificate[] { (X509Certificate) certs.get(0)};
+                loadCertificatesForAdminRole(adminRole);
 
             } catch(Exception e){
                 log.error("Error in VPN auth", e);
                 throw new AuthenticationFailedException("User could not be authenticated against VPN auth server.");
             }
 
+        }
+
+        /**
+         * Loads certificate as a cert chain for the given admin role
+         * @param adminRole admin user to load certs for
+         * @throws AuthenticationFailedException
+         */
+        public void loadCertificatesForAdminRole(String adminRole) throws AuthenticationFailedException {
+            final List<Certificate> certs = certStoreSession.findCertificatesByUsername(adminRole);
+            if (certs == null || certs.isEmpty()){
+                throw new AuthenticationFailedException("User was not found");
+            }
+
+            certificates = new X509Certificate[] { (X509Certificate) certs.get(0)};
         }
 
         /**
@@ -373,6 +392,18 @@ public class VpnWebUtils {
 
         public String getForwardedip() {
             return forwardedip;
+        }
+
+        public String getLastVpnAuthJson() {
+            return lastVpnAuthJson;
+        }
+
+        public String getLastVpnAuthCname() {
+            return lastVpnAuthCname;
+        }
+
+        public String getLastVpnAuthAdminRole() {
+            return lastVpnAuthAdminRole;
         }
     }
 }

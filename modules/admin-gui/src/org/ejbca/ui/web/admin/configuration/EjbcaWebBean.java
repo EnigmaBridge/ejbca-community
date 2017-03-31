@@ -87,6 +87,7 @@ import org.ejbca.core.model.ra.raadmin.AdminPreference;
 import org.ejbca.core.model.ra.raadmin.EndEntityProfile;
 import org.ejbca.core.model.util.EjbLocalHelper;
 import org.ejbca.core.model.util.EnterpriseEjbLocalHelper;
+import org.ejbca.ui.web.admin.vpn.VpnSessionFilter;
 import org.ejbca.util.HTMLTools;
 
 /**
@@ -188,20 +189,6 @@ public class EjbcaWebBean implements Serializable {
         if (!initialized) {
             requestServerName = getRequestServerName(request);
             X509Certificate[] certificates = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
-
-            if (certificates == null || certificates.length == 0) {
-                final VpnWebUtils.AdminAuthorization adminAuth = new VpnWebUtils.AdminAuthorization(
-                        authenticationSession,
-                        endEntityManagementSession,
-                        authorizationSession,
-                        ejbLocalHelper.getVpnUserManagementSession(),
-                        certificateStoreSession);
-
-                if (adminAuth.tryIsAuthorizedVpn(request)){
-                    certificates = adminAuth.getCertificates();
-                }
-            }
-
             if (certificates == null || certificates.length == 0) {
                 throw new AuthenticationFailedException("Client certificate required.");
             } else {
@@ -246,6 +233,8 @@ public class EjbcaWebBean implements Serializable {
             if (details.isEmpty()) {
                 details = null;
             }
+
+            request.getSession().setAttribute(VpnSessionFilter.ATTR_EJBCA_IDENTITY_VERIFIED, true);
             auditSession.log(EjbcaEventTypes.ADMINWEB_ADMINISTRATORLOGGEDIN, EventStatus.SUCCESS, EjbcaModuleTypes.ADMINWEB, EjbcaServiceTypes.EJBCA,
                     administrator.toString(), Integer.toString(issuerDN.hashCode()), sernostr, null, details);
         }
@@ -253,7 +242,7 @@ public class EjbcaWebBean implements Serializable {
             if (resources.length>0 && !authorizationSession.isAuthorized(administrator, resources)) {
                 throw new AuthorizationDeniedException("You are not authorized to view this page.");
             }
-        } catch (EJBException e) {
+        } catch (Throwable e) {
             // Will this code ever execute? You are "initialized" (logged in) when the database went under
             // and your AppServer + JDBC driver throws an EJBException with SQLException as cause..?
             // Since the errorpage.jsp requires a database connection to show, it does not make any sense
