@@ -152,22 +152,20 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:outputLabel for="currentVpnUserName" value="#{web.text.VPNUSER_NAME}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 		<h:outputText id="currentVpnUserName" value="#{vpnUsersMBean.currentVpnUser.name}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
 
-		<h:outputLabel for="currentVpnUserEmail" value="#{web.text.VPNUSER_EMAIL}:"/>
-		<h:panelGroup id="currentVpnUserEmail">
+		<h:outputLabel for="currentVpnUserEmail" value="#{web.text.VPNUSER_EMAIL}:" rendered="#{vpnUsersMBean.currentVpnUserEditMode}" />
+		<h:panelGroup id="currentVpnUserEmail" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
 	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.email}" style="width: 300px" required="true"
 						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
 	    		<f:validator validatorId="emailValidator"/>
 	    	</h:inputText>
-	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.email}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
 
-		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:"/>
-		<h:panelGroup id="currentVpnUserDevice">
+		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:" rendered="#{vpnUsersMBean.currentVpnUserEditMode}" />/>
+		<h:panelGroup id="currentVpnUserDevice" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
 	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" required="true"
 						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
 	    		<f:validator validatorId="legalCharsValidator"/>
 	    	</h:inputText>
-	    	<h:outputText value="#{vpnUsersMBean.currentVpnUser.device}" rendered="#{!vpnUsersMBean.currentVpnUserEditMode || vpnUsersMBean.currentVpnUserId != null}"/>
 		</h:panelGroup>
 
 		<h:outputLabel for="dateCreated" value="#{web.text.VPNUSER_DATE_CREATED}:" rendered="#{!vpnUsersMBean.currentVpnUserEditMode}"/>
