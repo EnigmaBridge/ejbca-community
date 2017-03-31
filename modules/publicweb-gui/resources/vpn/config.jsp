@@ -132,7 +132,17 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Recommended Client</h3>
+                        <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
+                        <h3>Download Client OpenVPN Connect</h3>
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.IOS) { %>
+                        <h3>Download Client OpenVPN Connect</h3>
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
+                        <h3>Download Client OpenVPN</h3>
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
+                        <h3>Download Client OpenVPN</h3>
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
+                        <h3>Download Client Tunnelblick</h3>
+                        <% } %>
 
                         <% if (vpnBean.getIsMobileDevice()) { %>
                         <p>Once you download the key, your mobile device will let you choose which app will open it.
