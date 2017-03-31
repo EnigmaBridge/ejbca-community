@@ -100,12 +100,8 @@
                                 <td style="border-top: none">${vpnBean.hostname}</td>
                             </tr>
                             <tr>
-                                <th>Email</th>
-                                <td>${vpnBean.vpnUser.email}</td>
-                            </tr>
-                            <tr>
                                 <th>Device</th>
-                                <td>${vpnBean.vpnUser.device}</td>
+                                <td>${vpnBean.vpnUser.email}/${vpnBean.vpnUser.device}</td>
                             </tr>
                             <tr>
                                 <th>Generated</th>
