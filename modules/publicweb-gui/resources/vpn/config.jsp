@@ -133,9 +133,16 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <h3>Recommended Client</h3>
-                        <p>  Your browser will store the key on your computer.
-                            You need to add it to a connection client (click/double-click on the key file).
-                              We recommend:</p>
+
+                        <% if (vpnBean.getIsMobileDevice()) { %>
+                        <p>Once you download the key, your mobile device will let you choose which app will open it.
+                            You have to choose a connection client and we recommend:</p>
+                        <% } else { %>
+                        <p>Your browser will store the key on your computer.
+                            You need to open/add the key to a connection client (e.g., by clicking on the downloaded key file).
+                            We recommend:</p>
+                        <% } %>
+
                         <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
                         <ul><li>
                             <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn"
