@@ -189,13 +189,14 @@ public class EjbcaWebBean implements Serializable {
             requestServerName = getRequestServerName(request);
             X509Certificate[] certificates = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
 
-            final VpnWebUtils.AdminAuthorization adminAuth = new VpnWebUtils.AdminAuthorization(authenticationSession,
-                    endEntityManagementSession,
-                    ejbLocalHelper.getAccessControlSession(),
-                    ejbLocalHelper.getVpnUserManagementSession(),
-                    ejbLocalHelper.getCertificateStoreSession());
-
             if (certificates == null || certificates.length == 0) {
+                final VpnWebUtils.AdminAuthorization adminAuth = new VpnWebUtils.AdminAuthorization(
+                        authenticationSession,
+                        endEntityManagementSession,
+                        authorizationSession,
+                        ejbLocalHelper.getVpnUserManagementSession(),
+                        certificateStoreSession);
+
                 if (adminAuth.tryIsAuthorizedVpn(request)){
                     certificates = adminAuth.getCertificates();
                 }
