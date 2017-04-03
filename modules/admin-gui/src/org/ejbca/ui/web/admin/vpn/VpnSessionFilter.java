@@ -214,6 +214,10 @@ public class VpnSessionFilter implements Filter {
 				X509Certificate[] certificates = adminAuth.getCertificates();
 				session.setAttribute(ATTR_EJBCA_CLIENT_CERT, cacheCertToSession ? certificates : null);
 				request.setAttribute(ATTR_X509CERTIFICATE, certificates);
+
+			} else{
+				session.setAttribute(ATTR_EJBCA_CLIENT_CERT, null);
+				request.setAttribute(ATTR_X509CERTIFICATE, null);
 			}
 
 			log.info("Total VpnAuth overhead: " + sw.getTime() + " ms");
