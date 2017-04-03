@@ -241,8 +241,9 @@ button {
     margin-bottom: 0 !important;
 }
 
-.enigmabridge .btn-primary {
+.eb-solo .btn-primary {
     background-color: #00a7d7;
+    color: #fff;
 }
 
 .enigmabridge .jumbotron {
@@ -329,10 +330,6 @@ html {
 
 .eb-ejbca .eb-footer {
     display: none;
-}
-
-.enigmabridge .btn-primary {
-    color: #fff;
 }
 
 .eb-solo .message .info {
