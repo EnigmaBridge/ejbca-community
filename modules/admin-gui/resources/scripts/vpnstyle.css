@@ -169,6 +169,17 @@ body.loading .modal {
     border: none;
 }
 
+#vpnusers .grid .check-col,
+#vpnusers .grid .checkAll {
+    text-align: center;
+}
+
+#vpnusers .grid .check-col input[type=checkbox],
+#vpnusers .grid .checkAll input[type=checkbox] {
+    padding: 0;
+    margin: 0;
+}
+
 .btn {
     /*margin: 0 5px 5px 0;*/
 }
@@ -324,3 +335,15 @@ html {
 .eb-solo .eb-main-body {
     margin-bottom: 50px;
 }
+
+.eb-solo .eb-main-body form label {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.eb-solo .eb-main-body table td {
+    vertical-align: middle;
+}
+

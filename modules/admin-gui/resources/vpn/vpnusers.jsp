@@ -152,7 +152,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 	<div class="message"><h:messages layout="table" errorClass="alert" infoClass="info"/></div>
 	<h:form id="vpnusers">
 	<h:dataTable value="#{vpnUsersMBean.vpnUserGuiList}" var="vpnUserGuiInfo" styleClass="grid">
-		<h:column>
+		<h:column styleClass="check-col">
 			<f:facet name="header"><h:selectBooleanCheckbox styleClass="checkAll"/></f:facet>
 			<h:selectBooleanCheckbox value="#{vpnUserGuiInfo.selected}" styleClass="checkAnchor"/>
 		</h:column>
