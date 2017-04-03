@@ -97,7 +97,7 @@ public class InitEntityProfilesCommand extends BaseVpnCommand {
             log.info("End entity for server exists");
 
         } else {
-            // Create end entity profile - client
+            // Create end entity profile - server
             final EndEntityProfileSessionRemote remote = EjbRemoteHelper.INSTANCE.getRemoteSession(EndEntityProfileSessionRemote.class);
             final EndEntityProfile profile = VpnProfiles.getDefaultServerEndEntityProfile(vpnCA.getCAId());
             try {
