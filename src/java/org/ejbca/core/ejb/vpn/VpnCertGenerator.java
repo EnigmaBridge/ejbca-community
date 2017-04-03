@@ -143,7 +143,7 @@ public class VpnCertGenerator extends VpnBaseHelper {
             }
 
         } else {
-            String sigAlg = AlgorithmConstants.SIGALG_SHA1_WITH_RSA;
+            String sigAlg = AlgorithmConstants.SIGALG_SHA256_WITH_RSA;
             X509Certificate selfcert = CertTools.genSelfCert("CN=selfsigned", 1, null, rsaKeys.getPrivate(), rsaKeys.getPublic(), sigAlg, false);
             cert = (X509Certificate) getSignSession().createCertificate(getAuthToken(), username, password, selfcert);
         }
