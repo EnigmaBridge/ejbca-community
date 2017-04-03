@@ -47,6 +47,7 @@ public class VpnSessionFilter implements Filter {
 
 	private static final String ATTR_X509CERTIFICATE = "javax.servlet.request.X509Certificate";
     private static final String ATTR_EJBCA_LOCAL_PORT = "ejbcaLocalPort";
+    private static final String ATTR_EJBCA_REMOTE_ADDR = "ejbcaClientRemoteAddr";
     private static final String ATTR_EJBCA_CLIENT_CERT = "ejbcaVpnAuthClientCert";
     public static final String ATTR_EJBCA_IDENTITY_VERIFIED = "ejbcaIdentityVerified";
 
@@ -142,6 +143,31 @@ public class VpnSessionFilter implements Filter {
 		return true;
 	}
 
+	/**
+	 * Flushes cached certificate on IP change forcing to do vpn auth again.
+	 * @param session session associated to the request
+	 */
+	private void flushCacheOnIpChange(HttpServletRequest request, HttpSession session){
+		final Object remoteAddrSession = session.getAttribute(ATTR_EJBCA_REMOTE_ADDR);
+		final String remoteAddrRequest = request.getRemoteAddr();
+
+		if (remoteAddrSession == null){
+			session.setAttribute(ATTR_EJBCA_REMOTE_ADDR, remoteAddrRequest);
+			return;
+		}
+
+		if (remoteAddrRequest == null){
+			log.info("Remote address is null, should not happen");
+			return;
+		}
+
+		if (!remoteAddrRequest.equals(remoteAddrSession)){
+			log.info(String.format("Remote address change from %s to %s", remoteAddrSession, remoteAddrRequest));
+			session.setAttribute(ATTR_EJBCA_CLIENT_CERT, null);
+			session.setAttribute(ATTR_EJBCA_REMOTE_ADDR, remoteAddrRequest);
+		}
+	}
+
 	@Override
 	public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain filterChain) throws IOException, ServletException {
 		final StopWatch sw = new StopWatch();
@@ -164,14 +190,14 @@ public class VpnSessionFilter implements Filter {
 
 			// Cached certificate in the session
 			final HttpSession session = request.getSession();
-			if (cacheCertToSession){
-				final Object cachedCerts = session.getAttribute(ATTR_EJBCA_CLIENT_CERT);
-				if (checkCachedCert(cachedCerts)){
-					log.info("Authenticating with Cached VpnAuth, time: " + sw.getTime() + " ms");
-					request.setAttribute(ATTR_X509CERTIFICATE, cachedCerts);
-					filterChain.doFilter(req, res);
-					return;
-				}
+			flushCacheOnIpChange(request, session);
+
+			final Object cachedCerts = session.getAttribute(ATTR_EJBCA_CLIENT_CERT);
+			if (cacheCertToSession && checkCachedCert(cachedCerts)){
+				log.info("Authenticating with Cached VpnAuth, time: " + sw.getTime() + " ms");
+				request.setAttribute(ATTR_X509CERTIFICATE, cachedCerts);
+				filterChain.doFilter(req, res);
+				return;
 			}
 
 			// Non-cached version
