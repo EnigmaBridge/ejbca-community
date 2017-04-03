@@ -1586,12 +1586,12 @@ public abstract class CertTools {
         Date firstDate = new Date();
 
         // Set back startdate ten minutes to avoid some problems with wrongly set clocks.
-        firstDate.setTime(firstDate.getTime() - (10 * 60 * 1000));
+        firstDate.setTime(firstDate.getTime() - (10L * 60L * 1000L));
 
         Date lastDate = new Date();
 
         // validity in days = validity*24*60*60*1000 milliseconds
-        lastDate.setTime(lastDate.getTime() + (validity * (24 * 60 * 60 * 1000)));
+        lastDate.setTime(lastDate.getTime() + (validity * (24L * 60L * 60L * 1000L)));
 
         // Transform the PublicKey to be sure we have it in a format that the X509 certificate generator handles, it might be
         // a CVC public key that is passed as parameter
