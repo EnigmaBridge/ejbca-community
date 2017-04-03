@@ -174,10 +174,17 @@ body.loading .modal {
     text-align: center;
 }
 
+#vpnusers .grid .check-col-div {
+    display: block;
+    vertical-align: middle;
+    text-align: center;
+}
+
 #vpnusers .grid .check-col input[type=checkbox],
+#vpnusers .grid .check-col-div input[type=checkbox],
 #vpnusers .grid .checkAll input[type=checkbox] {
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
 }
 
 .btn {
