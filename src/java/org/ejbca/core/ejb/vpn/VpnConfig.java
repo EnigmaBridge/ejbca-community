@@ -46,6 +46,36 @@ public class VpnConfig {
         return (src == null || src.isEmpty()) ? defaultValue : src;
     }
 
+    public static long getDefaultLongIfEmpty(String src, final long defaultValue){
+        final String cfgStr = EjbcaConfigurationHolder.getString(src);
+
+        long val = defaultValue;
+        if (cfgStr != null && !cfgStr.isEmpty()) {
+            try{
+                val = Long.parseLong(cfgStr);
+            } catch(Exception e){
+                log.error("Exception in parsing config number " + src, e);
+            }
+        }
+
+        return val;
+    }
+
+    public static int getDefaultIntIfEmpty(String src, final int defaultValue){
+        final String cfgStr = EjbcaConfigurationHolder.getString(src);
+
+        int val = defaultValue;
+        if (cfgStr != null && !cfgStr.isEmpty()) {
+            try{
+                val = Integer.parseInt(cfgStr);
+            } catch(Exception e){
+                log.error("Exception in parsing config number " + src, e);
+            }
+        }
+
+        return val;
+    }
+
     /**
      * Generic configuration getter.
      * @param key config key
@@ -216,19 +246,8 @@ public class VpnConfig {
      * @return integer port number
      */
     public static int getPublicHttpsPort(){
-        final int DEFAULT_PORT = 8442;
-        final String portStr = EjbcaConfigurationHolder.getString("httpserver.pubhttps");
-
-        int port = DEFAULT_PORT;
-        if (portStr != null && !portStr.isEmpty()) {
-            try{
-                port = Integer.parseInt(portStr);
-            } catch(Exception e){
-                log.error("Exception in parsing port number", e);
-            }
-        }
-
-        return port;
+        return getDefaultIntIfEmpty(EjbcaConfigurationHolder.getString("httpserver.pubhttps"),
+                8442);
     }
 
     /**
@@ -236,19 +255,8 @@ public class VpnConfig {
      * @return integer port number
      */
     public static int getPrivateHttpsPort(){
-        final int DEFAULT_PORT = 8443;
-        final String portStr = EjbcaConfigurationHolder.getString("httpserver.privhttps");
-
-        int port = DEFAULT_PORT;
-        if (portStr != null && !portStr.isEmpty()) {
-            try{
-                port = Integer.parseInt(portStr);
-            } catch(Exception e){
-                log.error("Exception in parsing port number", e);
-            }
-        }
-
-        return port;
+        return getDefaultIntIfEmpty(EjbcaConfigurationHolder.getString("httpserver.privhttps"),
+                8443);
     }
 
     /**
