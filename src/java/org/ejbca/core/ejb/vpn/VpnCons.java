@@ -12,7 +12,6 @@ public class VpnCons {
     public static final String DEFAULT_CA = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE_SERVER = "VPNServer";
-    public static final String DEFAULT_CERTIFICATE_PROFILE_SERVER = "SERVER";
     public static final String DEFAULT_CERTIFICATE_PROFILE_SERVER_VPN = "VPNSERVER";
     public static final String DEFAULT_CERTIFICATE_PROFILE_CLIENT = "VPNCLIENT";
     public static final long DEFAULT_VPN_SERVER_VALIDITY = 10*366;
