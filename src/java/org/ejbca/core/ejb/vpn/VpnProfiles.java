@@ -100,9 +100,13 @@ public class VpnProfiles {
         profile.setPrintedCopies(1);
 
         profile.setAllowMergeDnWebServices(false);
-        profile.setAvailableCertificateProfileIds(
-                Collections.singletonList(
-                        certProfileId != null ? certProfileId : CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER));
+
+        final Integer certProfile = certProfileId != null ? certProfileId :
+                CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
+
+        profile.setAvailableCertificateProfileIds(Collections.singletonList(certProfile));
+        profile.setUse(EndEntityProfile.DEFAULTCERTPROFILE,0, true);
+        profile.setValue(EndEntityProfile.DEFAULTCERTPROFILE,0, Integer.toString(certProfile));
         return profile;
     }
 
@@ -141,10 +145,13 @@ public class VpnProfiles {
         profile.setRequired(DnComponents.ORGANIZATIONALUNIT, 0, false);
 
         profile.setAllowMergeDnWebServices(false);
-        profile.setAvailableCertificateProfileIds(
-                Collections.singletonList(
-                        certProfileId != null ? certProfileId : CertificateProfileConstants.CERTPROFILE_FIXED_SERVER));
 
+        final Integer certProfile = certProfileId != null ? certProfileId :
+                CertificateProfileConstants.CERTPROFILE_FIXED_SERVER;
+
+        profile.setAvailableCertificateProfileIds(Collections.singletonList(certProfile));
+        profile.setUse(EndEntityProfile.DEFAULTCERTPROFILE,0, true);
+        profile.setValue(EndEntityProfile.DEFAULTCERTPROFILE,0, Integer.toString(certProfile));
         return profile;
     }
 
