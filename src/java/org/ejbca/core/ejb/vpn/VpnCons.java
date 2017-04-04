@@ -12,6 +12,11 @@ public class VpnCons {
     public static final String DEFAULT_CA = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE = "VPN";
     public static final String DEFAULT_END_ENTITY_PROFILE_SERVER = "VPNServer";
+    public static final String DEFAULT_CERTIFICATE_PROFILE_SERVER = "SERVER";
+    public static final String DEFAULT_CERTIFICATE_PROFILE_SERVER_VPN = "VPNSERVER";
+    public static final String DEFAULT_CERTIFICATE_PROFILE_CLIENT = "VPNCLIENT";
+    public static final long DEFAULT_VPN_SERVER_VALIDITY = 10*366;
+    public static final long DEFAULT_VPN_CLIENT_VALIDITY = 2*366;
     public static final String DEFAULT_KEYSTORE_PASS = "enigma";
     public static final String DEFAULT_KEY_ALGORITHM = AlgorithmConstants.KEYALGORITHM_RSA;
     public static final String DEFAULT_KEY_SIZE = "2048";

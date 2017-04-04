@@ -21,6 +21,11 @@ public class VpnConfig {
     public static final String CONFIG_VPN_CA = "vpn.ca";
     public static final String CONFIG_VPN_CLIENT_END_PROFILE = "vpn.client.endprofile";
     public static final String CONFIG_VPN_SERVER_END_PROFILE = "vpn.server.endprofile";
+    public static final String CONFIG_VPN_SERVER_CERTIFICATE_PROFILE = "vpn.server.certprofile.tpl";
+    public static final String CONFIG_VPN_SERVER_CERTIFICATE_PROFILE_VPN = "vpn.server.certprofile";
+    public static final String CONFIG_VPN_CLIENT_CERTIFICATE_PROFILE_VPN = "vpn.client.certprofile";
+    public static final String CONFIG_VPN_SERVER_VALIDITY = "vpn.server.validity";
+    public static final String CONFIG_VPN_CLIENT_VALIDITY = "vpn.client.validity";
     public static final String CONFIG_VPN_KEYSTORE_PASS = "vpn.keystorepass";
     public static final String CONFIG_VPN_KEY_TYPE = "vpn.key.type";
     public static final String CONFIG_VPN_KEY_SIZE = "vpn.key.size";
@@ -120,6 +125,51 @@ public class VpnConfig {
     public static String getServerEndEntityProfile() {
         return getDefaultIfEmpty(EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_SERVER_END_PROFILE),
                 VpnCons.DEFAULT_END_ENTITY_PROFILE_SERVER);
+    }
+
+    /**
+     * The configured certificate profile name for the general server template.
+     * @return server certificate profile name
+     */
+    public static String getServerCertificateProfile() {
+        return getDefaultIfEmpty(EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_SERVER_CERTIFICATE_PROFILE),
+                VpnCons.DEFAULT_CERTIFICATE_PROFILE_SERVER);
+    }
+
+    /**
+     * The configured certificate profile name for VPN server.
+     * @return server certificate profile name
+     */
+    public static String getVpnServerCertificateProfile() {
+        return getDefaultIfEmpty(EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_SERVER_CERTIFICATE_PROFILE_VPN),
+                VpnCons.DEFAULT_CERTIFICATE_PROFILE_SERVER_VPN);
+    }
+
+    /**
+     * The configured certificate profile name for VPN client.
+     * @return client certificate profile name
+     */
+    public static String getVpnClientCertificateProfile() {
+        return getDefaultIfEmpty(EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CLIENT_CERTIFICATE_PROFILE_VPN),
+                VpnCons.DEFAULT_CERTIFICATE_PROFILE_CLIENT);
+    }
+
+    /**
+     * The configured VPN server certificate validity in days
+     * @return vpn server certificate validity in days.
+     */
+    public static long getVpnServerValidity() {
+        return getDefaultLongIfEmpty(EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_SERVER_VALIDITY),
+                VpnCons.DEFAULT_VPN_SERVER_VALIDITY);
+    }
+
+    /**
+     * The configured VPN server certificate validity in days
+     * @return vpn server certificate validity in days.
+     */
+    public static long getVpnClientValidity() {
+        return getDefaultLongIfEmpty(EjbcaConfigurationHolder.getExpandedString(CONFIG_VPN_CLIENT_VALIDITY),
+                VpnCons.DEFAULT_VPN_CLIENT_VALIDITY);
     }
 
     /**

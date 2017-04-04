@@ -1,5 +1,7 @@
 package org.ejbca.core.ejb.vpn;
 
+import org.cesecore.certificates.certificate.CertificateConstants;
+import org.cesecore.certificates.certificateprofile.CertificateProfile;
 import org.cesecore.certificates.certificateprofile.CertificateProfileConstants;
 import org.cesecore.certificates.util.DnComponents;
 import org.ejbca.core.model.SecConst;
@@ -24,7 +26,7 @@ public class VpnProfiles {
      * @param vpnCA CA for VPN to use - only allowed in the profile.
      * @return client end entity profile.
      */
-    public static EndEntityProfile getDefaultClientEndEntityProfile(int vpnCA){
+    public static EndEntityProfile getDefaultClientEndEntityProfile(int vpnCA, Integer certProfileId){
         final EndEntityProfile profile = new EndEntityProfile();
 
         // Default CA & Available CAs
@@ -98,7 +100,9 @@ public class VpnProfiles {
         profile.setPrintedCopies(1);
 
         profile.setAllowMergeDnWebServices(false);
-        profile.setAvailableCertificateProfileIds(Collections.singletonList(CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER));
+        profile.setAvailableCertificateProfileIds(
+                Collections.singletonList(
+                        certProfileId != null ? certProfileId : CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER));
         return profile;
     }
 
@@ -108,7 +112,7 @@ public class VpnProfiles {
      * @param vpnCA CA for VPN to use - only allowed in the profile.
      * @return server end entity profile.
      */
-    public static EndEntityProfile getDefaultServerEndEntityProfile(int vpnCA){
+    public static EndEntityProfile getDefaultServerEndEntityProfile(int vpnCA, Integer certProfileId){
         final EndEntityProfile profile = new EndEntityProfile();
 
         // Default CA & Available CAs - bound to VPN CA.
@@ -137,7 +141,34 @@ public class VpnProfiles {
         profile.setRequired(DnComponents.ORGANIZATIONALUNIT, 0, false);
 
         profile.setAllowMergeDnWebServices(false);
-        profile.setAvailableCertificateProfileIds(Collections.singletonList(CertificateProfileConstants.CERTPROFILE_FIXED_SERVER));
+        profile.setAvailableCertificateProfileIds(
+                Collections.singletonList(
+                        certProfileId != null ? certProfileId : CertificateProfileConstants.CERTPROFILE_FIXED_SERVER));
+
+        return profile;
+    }
+
+    /**
+     * Returns default template for the client certificate profile.
+     * @param vpnCA
+     * @return
+     */
+    public static CertificateProfile getDefaultClientCertProfile(int vpnCA){
+        final CertificateProfile profile = new CertificateProfile(CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER);
+        profile.setAvailableCAs(Collections.singletonList(vpnCA));
+        profile.setValidity(VpnConfig.getVpnClientValidity());
+        return profile;
+    }
+
+    /**
+     * Returns default template for the server certificate profile.
+     * @param vpnCA
+     * @return
+     */
+    public static CertificateProfile getDefaultServerCertProfile(int vpnCA){
+        final CertificateProfile profile = new CertificateProfile(CertificateProfileConstants.CERTPROFILE_FIXED_SERVER);
+        profile.setAvailableCAs(Collections.singletonList(vpnCA));
+        profile.setValidity(VpnConfig.getVpnServerValidity());
         return profile;
     }
 

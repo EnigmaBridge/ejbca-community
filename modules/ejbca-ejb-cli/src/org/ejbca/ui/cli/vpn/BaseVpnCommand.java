@@ -61,6 +61,24 @@ public abstract class BaseVpnCommand extends EjbcaCliUserCommandBase {
     }
 
     /**
+     * VPN certificate server profile.
+     * @return
+     */
+    protected int getVpnServerCertificateProfile() {
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(CertificateProfileSessionRemote.class)
+                .getCertificateProfileId(VpnConfig.getVpnServerCertificateProfile());
+    }
+
+    /**
+     * VPN certificate client profile.
+     * @return
+     */
+    protected int getVpnClientCertificateProfile() {
+        return EjbRemoteHelper.INSTANCE.getRemoteSession(CertificateProfileSessionRemote.class)
+                .getCertificateProfileId(VpnConfig.getVpnClientCertificateProfile());
+    }
+
+    /**
      * VPN end entity server profile.
      * @return
      * @throws EndEntityProfileNotFoundException
