@@ -98,8 +98,8 @@ public class GenClientCommand extends BaseVpnCommand {
         // Test if the server end entity profile exists.
         try {
             final CAInfo vpnCA = this.getVpnCA();
-            final int endEntityClientProfile = this.getVpnClientEndEntityProfile();
-            final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_ENDUSER;
+            final int endEntityClientProfile = getVpnClientEndEntityProfile();
+            final int certProfileId = getVpnClientCertificateProfile();
             final VpnUser tplUser = new VpnUser();
             tplUser.setEmail(argEmail);
             tplUser.setDevice(argDevice);

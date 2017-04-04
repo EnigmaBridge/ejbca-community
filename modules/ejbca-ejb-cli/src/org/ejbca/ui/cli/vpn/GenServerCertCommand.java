@@ -90,7 +90,7 @@ public class GenServerCertCommand extends BaseVpnCommand {
 
             // 1. Create a new End Entity
             final int endProfileId = getVpnServerEndEntityProfile();
-            final int certProfileId = CertificateProfileConstants.CERTPROFILE_FIXED_SERVER;
+            final int certProfileId = getVpnServerCertificateProfile();
             final CAInfo vpnCA = getVpnCA();
             final String cn = CertTools.getPartFromDN(vpnCA.getSubjectDN(), "CN");
             EndEntityInformation uservo = null;
