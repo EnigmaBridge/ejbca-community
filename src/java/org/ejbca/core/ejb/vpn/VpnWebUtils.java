@@ -14,6 +14,7 @@ import org.ejbca.core.ejb.ra.EndEntityManagementSession;
 import org.ejbca.core.model.authorization.AccessRulesConstants;
 import org.json.JSONObject;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,9 +23,7 @@ import java.math.BigInteger;
 import java.net.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Utils and helper for web.
@@ -65,6 +64,40 @@ public class VpnWebUtils {
         // Remove application path
         requestURL = requestURL.substring(0, firstSlash);
         return requestURL;
+    }
+
+    /**
+     * Iterates through cookies from the request, returns collections of cookies with matching name.
+     * @param name cookie name
+     * @return non-null list of matching cookies
+     */
+    public static List<Cookie> getCookies(HttpServletRequest request, String name){
+        if (request == null){
+            return Collections.emptyList();
+        }
+
+        final Cookie[] cookies = request.getCookies();
+        return getCookies(cookies, name);
+    }
+
+    /**
+     * Iterates through cookie array, returns collections of cookies with matching name.
+     * @param name cookie name
+     * @return non-null list of matching cookies
+     */
+    public static List<Cookie> getCookies(Cookie[] cookies, String name){
+        if (cookies == null || cookies.length == 0){
+            return Collections.emptyList();
+        }
+
+        List<Cookie> ret = new ArrayList<>();
+        for (Cookie curCookie : cookies) {
+            if (name.equals(curCookie.getName())){
+                ret.add(curCookie);
+            }
+        }
+
+        return ret;
     }
 
     /**
