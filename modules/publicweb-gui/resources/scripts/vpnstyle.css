@@ -107,6 +107,32 @@ button {
     padding-left: 20px;
 }
 
+/* = Big checkbox
+-------------------------------------------------------------- */
+
+.grp-check .form-group input[type="checkbox"] {
+    display: none;
+}
+
+.grp-check .form-group input[type="checkbox"] + .btn-group > label span {
+    width: 20px;
+}
+
+.grp-check .form-group input[type="checkbox"] + .btn-group > label span:first-child {
+    display: none;
+}
+.grp-check .form-group input[type="checkbox"] + .btn-group > label span:last-child {
+    display: inline-block;
+}
+
+.grp-check .form-group input[type="checkbox"]:checked + .btn-group > label span:first-child {
+    display: inline-block;
+}
+
+.grp-check .form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
+    display: none;
+}
+
 /* = Square buttons
 -------------------------------------------------------------- */
 
