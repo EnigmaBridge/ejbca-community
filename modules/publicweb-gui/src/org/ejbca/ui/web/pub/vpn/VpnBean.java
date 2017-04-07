@@ -12,9 +12,11 @@ import org.ejbca.core.ejb.vpn.*;
 import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
 import org.ejbca.core.model.util.EjbLocalHelper;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -29,6 +31,8 @@ public class VpnBean extends BaseWebBean implements Serializable {
     private static final Logger log = Logger.getLogger(VpnBean.class);
     public static final String LINK_ERROR_SESSION = "otpLinkError";
     public static final String DOWNLOADED_COOKIE = "fileDownload";
+
+    public static final String LAST_OTP_TOKEN_DOWNLOADED = "pspaceLastOtpTokenDownloaded";
 
     private String otp;
     private Integer vpnUserId;
@@ -220,6 +224,60 @@ public class VpnBean extends BaseWebBean implements Serializable {
 
     public Boolean getOtpValid() {
         return otpValid;
+    }
+
+    /**
+     * Returns true if the current OTP token was already downloaded recently
+     * i.e., it is the last OTP token downloaded in the current session.
+     * @return true if downloaded
+     */
+    public Boolean getOtpAlreadyDownloadedSession(){
+        if (otp == null){
+            return false;
+        }
+
+        try {
+            final String lastDownloaded = (String) request.getSession().getAttribute(VpnBean.LAST_OTP_TOKEN_DOWNLOADED);
+            return lastDownloaded != null && !lastDownloaded.isEmpty() && otp.equals(lastDownloaded);
+
+        } catch(Exception e){
+            log.error("Error in parsing link error from the session ", e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the current OTP token was already downloaded recently
+     * i.e., it is the last OTP token downloaded in the current cookie.
+     * @return true if downloaded
+     */
+    public Boolean getOtpAlreadyDownloadedCookie(){
+        if (otp == null){
+            return false;
+        }
+
+        try {
+            final List<Cookie> cookies = VpnWebUtils.getCookies(request, VpnBean.LAST_OTP_TOKEN_DOWNLOADED);
+            if (cookies.isEmpty()){
+                return false;
+            }
+
+            return otp.equals(cookies.get(0).getValue());
+
+        } catch(Exception e){
+            log.error("Error in parsing link error from the session ", e);
+        }
+
+        return false;
+    }
+
+    public Boolean getOtpAlreadyDownloaded() {
+        if (getOtpAlreadyDownloadedSession()){
+            return true;
+        }
+
+        return getOtpAlreadyDownloadedCookie();
     }
 
     public VpnLinkError getLinkError() {

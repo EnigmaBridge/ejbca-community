@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.cesecore.authentication.tokens.AlwaysAllowLocalAuthenticationToken;
 import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.cesecore.authentication.tokens.UsernamePrincipal;
-import org.cesecore.authorization.AuthorizationDeniedException;
 import org.cesecore.configuration.GlobalConfigurationSessionLocal;
 import org.cesecore.util.CryptoProviderTools;
 import org.cesecore.util.StringTools;
@@ -36,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -79,18 +79,10 @@ public class VpnDownloadServlet extends HttpServlet {
             final String otp = request.getParameter("otp");
             final String vpnUserIdTxt = request.getParameter("id");
             final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
-            final String cookie_name = OTP_COOKIE;
+            final String cookieName = OTP_COOKIE;
 
-            Cookie cookie = null;
-            final Cookie[] cookies = request.getCookies();
-            if (cookies != null){
-                for (Cookie curCookie : cookies) {
-                    if (cookie_name.equals(curCookie.getName())){
-                        cookie = curCookie;
-                        break;
-                    }
-                }
-            }
+            final List<Cookie> matchingCookies = VpnWebUtils.getCookies(request, cookieName);
+            final Cookie cookie = !matchingCookies.isEmpty() ? matchingCookies.get(0) : null;
 
             final Properties properties = new Properties();
             VpnBean.buildDescriptorProperties(request, properties);
@@ -107,7 +99,7 @@ public class VpnDownloadServlet extends HttpServlet {
             try {
                 vpnUser = vpnUserManagementSession.downloadOtp(admin, vpnUserId, otp, cookieValue, properties);
 
-                final Cookie newCookie = new Cookie(cookie_name, vpnUser.getOtpCookie());
+                final Cookie newCookie = new Cookie(cookieName, vpnUser.getOtpCookie());
                 newCookie.setMaxAge(600);   // 10 minutes validity
                 newCookie.setSecure(true);  // cookie should be sent only over a secure channel
                 response.addCookie(newCookie);
@@ -164,6 +156,13 @@ public class VpnDownloadServlet extends HttpServlet {
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
 
+                // Cookie this OTP was downloaded already, survives browser restart
+                final Cookie downloadCookie = new Cookie(VpnBean.LAST_OTP_TOKEN_DOWNLOADED, otp);
+                downloadCookie.setMaxAge(3600);   // 60 minutes validity
+                downloadCookie.setSecure(true);  // cookie should be sent only over a secure channel
+                downloadCookie.setPath("/");     // universal path - reachable in the config.jsf
+                response.addCookie(downloadCookie);
+
                 final VpnGenOptions genOptions = new VpnGenOptions();
                 final String userAgent = request.getHeader("User-Agent");
                 if (userAgent != null) {
@@ -174,6 +173,8 @@ public class VpnDownloadServlet extends HttpServlet {
                 final byte[] bytes2send = vpnConfig.getBytes("UTF-8");
                 response.setContentLength(bytes2send.length);
                 response.getOutputStream().write(bytes2send);
+
+                request.getSession().setAttribute(VpnBean.LAST_OTP_TOKEN_DOWNLOADED, otp);
 
                 log.info(String.format("OTP download OK ID: %d, OTP[%s], src: %s, ua: %s, method: %s, cookie: %s",
                         vpnUserId, otp, sourceAddr, ua, method, cookieValue));
