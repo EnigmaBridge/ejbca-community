@@ -167,13 +167,13 @@
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
                         <ul><li>
-                            <a href="https://openvpn.net"
+                            <a href="https://openvpn.net/index.php/open-source/downloads.html"
                                rel="nofollow" target="_blank">OpenVPN</a> client for Windows.
                         </li></ul>
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
                         <ul><li>
-                            <a href="https://openvpn.net"
+                            <a href="https://openvpn.net/index.php/open-source/downloads.html"
                                rel="nofollow" target="_blank">OpenVPN</a> client for Linux.
                         </li></ul>
 
@@ -190,7 +190,7 @@
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
                         <ul><li>
-                            <a href="https://tunnelblick.net/"
+                            <a href="https://tunnelblick.net/downloads.html"
                                rel="nofollow" target="_blank">Tunnelblick</a> for Mac OS X.
                         </li></ul>
 
