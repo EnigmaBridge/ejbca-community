@@ -37,6 +37,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
     private String otp;
     private Integer vpnUserId;
     private Boolean otpValid;
+    private Boolean clientInstalledCheck = false;
     private VpnUser vpnUser;
     private Exception exception;
     private VpnLinkError linkError;
@@ -286,5 +287,13 @@ public class VpnBean extends BaseWebBean implements Serializable {
 
     public Date getDateGenerated() {
         return dateGenerated;
+    }
+
+    public Boolean getClientInstalledCheck() {
+        return clientInstalledCheck;
+    }
+
+    public void setClientInstalledCheck(Boolean clientInstalledCheck) {
+        this.clientInstalledCheck = clientInstalledCheck;
     }
 }

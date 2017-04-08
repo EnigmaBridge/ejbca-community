@@ -3,6 +3,41 @@
  * Created by dusanklinec on 26.01.17.
  */
 
+/**
+ * Returns if given element is completelly visible on the screen.
+ * @param elem
+ * @param partially if true partially visibility is OK -> no scrolling
+ */
+function isVisibleOnScreen(elem, partially){
+    return elem.visible(partially === undefined ? false : partially, false, "both");
+}
+
+/**
+ * Scrolls given element in such a way it is visible on the bottom.
+ * @param D
+ */
+function scrollToElementBottom(D)
+{
+    var top = D.offset().top - 200;
+    if($('.sticky-nav').length) // Sticky Nav in use
+    {
+        D = D-100;
+    }
+
+    $('html,body').animate({scrollTop:top}, 'slow');
+}
+
+/**
+ * Scrolls to element if not visible
+ * @param elem
+ * @param partially if true partially visibility is OK -> no scrolling
+ */
+function scrollToIfNotVisible(elem, partially){
+    if (!isVisibleOnScreen(elem, partially)){
+        scrollToElementBottom(elem);
+    }
+}
+
 /*
  * jQuery File Download Plugin v1.4.5
  * Modified version - triggered on a href on click
