@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="../scripts/vpnstyle.css" type="text/css" />
     <script type="text/javascript" src="../scripts/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="../scripts/jquery.qrcode.min.js"></script>
+    <script type="text/javascript" src="../scripts/jquery.visible.min.js"></script>
     <script type="text/javascript" src="../scripts/bootstrap-3.3.7.min.js"></script>
     <script type="text/javascript" src="../scripts/vpnfunctions.js"></script>
     <script type="text/javascript" src="../scripts/checkbox-x.min.js" ></script>
