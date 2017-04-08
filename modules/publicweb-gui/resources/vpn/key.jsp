@@ -83,11 +83,10 @@
                 downloadButton.prop('disabled', !checked);
                 if (checked) {
                     downloadButton.removeClass('disabled');
+                    scrollToIfNotVisible(downloadButton);
                 } else {
                     downloadButton.addClass('disabled');
                 }
-
-                scrollToIfNotVisible(downloadButton);
             });
         });
     </script>
