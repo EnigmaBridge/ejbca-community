@@ -137,14 +137,7 @@
                 </div>
             </div>
             </h:panelGroup>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Welcome!</h3>
-                    <p>We will guide you through a few easy steps you will get access to your private space.</p>
-                </div>
-            </div>
-
+                
             <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID
                     || vpnBean.getOsGroup() == OperatingSystem.IOS
                     || vpnBean.getOsGroup() == OperatingSystem.WINDOWS
