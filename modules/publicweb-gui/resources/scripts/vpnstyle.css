@@ -107,6 +107,14 @@ button {
     padding-left: 20px;
 }
 
+#divStatusClient label {
+    font-size: 28px;
+}
+
+#divStatusClient .cbx-container {
+    margin-top: -12px;
+}
+
 /* = Big checkbox
 -------------------------------------------------------------- */
 
