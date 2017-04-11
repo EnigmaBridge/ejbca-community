@@ -150,32 +150,32 @@
             <div class="row">
                 <div class="col-sm-12">
                     <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                    <h3>Step 1 - Download OpenVPN Client</h3>
+                        <h3>Step 1 - Download OpenVPN Client</h3>
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                    <h3>Step 1 - Download OpenVPN Client</h3>
+                        <h3>Step 1 - Download OpenVPN Client</h3>
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                    <h3>Step 1 - Download Tunnelblick Client</h3>
+                        <h3>Step 1 - Download Tunnelblick Client</h3>
                     <% } %>
                     <% curstep +=1; %>
 
                     <%--<p>In order to enter the private space you need a connection client installed, we recommend:</p>--%>
                     <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                    <p>
-                        <a href="https://openvpn.net/index.php/open-source/downloads.html"
-                           rel="nofollow" target="_blank">OpenVPN</a> client for Windows.
-                    </p>
+                        <p>
+                            <a href="https://openvpn.net/index.php/open-source/downloads.html"
+                               rel="nofollow" target="_blank">OpenVPN</a> client for Windows.
+                        </p>
 
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                    <p>
-                        <a href="https://openvpn.net/index.php/open-source/downloads.html"
-                           rel="nofollow" target="_blank">OpenVPN</a> client for Linux.
-                    </p>
+                        <p>
+                            <a href="https://openvpn.net/index.php/open-source/downloads.html"
+                               rel="nofollow" target="_blank">OpenVPN</a> client for Linux.
+                        </p>
 
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                    <p>
-                        <a href="https://tunnelblick.net/downloads.html"
-                           rel="nofollow" target="_blank">Tunnelblick</a> for Mac OS X.
-                    </p>
+                        <p>
+                            <a href="https://tunnelblick.net/downloads.html"
+                               rel="nofollow" target="_blank">Tunnelblick</a> for Mac OS X.
+                        </p>
 
                     <% } %>
                 </div>
@@ -189,49 +189,49 @@
 
                     <%-- For mobile devices - download is together with install --%>
                     <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
-                    <ul><li>
-                        <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn"
-                           rel="nofollow" target="_blank">OpenVPN Connect</a> for Android.
-                    </li></ul>
+                        <ul><li>
+                            <a href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn"
+                               rel="nofollow" target="_blank">OpenVPN Connect</a> for Android.
+                        </li></ul>
 
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.IOS) { %>
-                    <ul><li>
-                        <a href="https://itunes.apple.com/us/app/openvpn-connect/id590379981?mt=8"
-                           rel="nofollow" target="_blank">OpenVPN Connect</a> for iOS.
-                    </li></ul>
+                        <ul><li>
+                            <a href="https://itunes.apple.com/us/app/openvpn-connect/id590379981?mt=8"
+                               rel="nofollow" target="_blank">OpenVPN Connect</a> for iOS.
+                        </li></ul>
 
                     <%-- Desktop platforms below - more instructions --%>
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                    <p>
-                        Click the client icon in your Downloads folder to install.
-                        Follow instructions and re-confirm the install request if asked
-                    </p>
+                        <p>
+                            Click the client icon in your Downloads folder to install.
+                            Follow instructions and re-confirm the install request if asked
+                        </p>
 
-                    <p>
-                        <img src="../images/openvpn-down.png" alt="OpenVPN downloaded icon">
-                    </p>
+                        <p>
+                            <img src="../images/openvpn-down.png" alt="OpenVPN downloaded icon">
+                        </p>
 
-                    <p>
-                        If you need more help, please use our <a href="https://openvpn.net/index.php/access-server/docs/admin-guides-sp-859543150/howto-connect-client-configuration/395-how-to-install-the-openvpn-client-on-windows.html">installation guides </a>
-                    </p>
+                        <p>
+                            If you need more help, please use our <a href="https://openvpn.net/index.php/access-server/docs/admin-guides-sp-859543150/howto-connect-client-configuration/395-how-to-install-the-openvpn-client-on-windows.html">installation guides </a>
+                        </p>
 
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                    <h3>Installation using package managers</h3>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Yum</div>
-                        <div class="panel-body pre-block">sudo yum install openvpn</div>
-                    </div>
+                        <h3>Installation using package managers</h3>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Yum</div>
+                            <div class="panel-body pre-block">sudo yum install openvpn</div>
+                        </div>
 
-                    <div class="panel panel-default">
-                        <div class="panel-heading">apt-get</div>
-                        <div class="panel-body pre-block">sudo apt-get install openvpn</div>
-                    </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">apt-get</div>
+                            <div class="panel-body pre-block">sudo apt-get install openvpn</div>
+                        </div>
 
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                    <p>
-                        Click the client icon in your Downloads folder to install.
-                        Follow instructions and re-confirm the install request if asked
-                    </p>
+                        <p>
+                            Click the client icon in your Downloads folder to install.
+                            Follow instructions and re-confirm the install request if asked
+                        </p>
 
                     <% } %>
 
@@ -254,7 +254,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Step <%=curstep%> - Download a Private Space Key </h3>
+                    <h3>Step <%=curstep%> - Download a Private Space Key</h3>
                     <% curstep +=1; %>
 
                     <p>Download your private space key to your device.</p>
