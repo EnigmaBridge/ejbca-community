@@ -297,8 +297,8 @@
                         <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
                             <p>
                                 <ul>
-                                    <li>Open the OpenVPN Connect client.</li>
-                                    <li>Import the key via the options.</li>
+                                    <li>Open the downloaded Private Space Key in your browser.</li>
+                                    <li>Import the key in the OpenVPN Connect client.</li>
                                 </ul>
                             </p>
 
