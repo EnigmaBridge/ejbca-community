@@ -152,7 +152,13 @@ public class VpnDownloadServlet extends HttpServlet {
                 response.sendRedirect("key.jsf");
 
             } else {
-                final String fileName = VpnUtils.genVpnConfigFileNameHuman(vpnUser);
+                final VpnGenOptions genOptions = new VpnGenOptions();
+                final String userAgent = request.getHeader("User-Agent");
+                if (userAgent != null) {
+                    genOptions.setOs(OperatingSystem.parseUserAgentString(userAgent));
+                }
+
+                final String fileName = VpnUtils.genVpnConfigFileNameHuman(vpnUser, genOptions);
                 response.setContentType("application/ovpn");
                 response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
 
@@ -162,12 +168,6 @@ public class VpnDownloadServlet extends HttpServlet {
                 downloadCookie.setSecure(true);  // cookie should be sent only over a secure channel
                 downloadCookie.setPath("/");     // universal path - reachable in the config.jsf
                 response.addCookie(downloadCookie);
-
-                final VpnGenOptions genOptions = new VpnGenOptions();
-                final String userAgent = request.getHeader("User-Agent");
-                if (userAgent != null) {
-                    genOptions.setOs(OperatingSystem.parseUserAgentString(userAgent));
-                }
 
                 final String vpnConfig = vpnUserManagementSession.generateVpnConfig(admin, vpnUser, genOptions);
                 final byte[] bytes2send = vpnConfig.getBytes("UTF-8");

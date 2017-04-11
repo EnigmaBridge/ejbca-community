@@ -9,6 +9,7 @@ import org.cesecore.util.CertTools;
 import org.cesecore.util.StringTools;
 import org.cesecore.vpn.OtpDownload;
 import org.cesecore.vpn.VpnUser;
+import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
 import org.ejbca.util.passgen.IPasswordGenerator;
 import org.ejbca.util.passgen.PasswordGeneratorFactory;
 import org.json.JSONObject;
@@ -294,9 +295,10 @@ public class VpnUtils {
     /**
      * Generates a file name for the ovpn file - more human friendly
      * @param user vpn user to generate filename for
+     * @param genOptions options for generating the file name
      * @return human friendly OpenVPN configuration file name
      */
-    public static String genVpnConfigFileNameHuman(VpnUser user){
+    public static String genVpnConfigFileNameHuman(VpnUser user, VpnGenOptions genOptions){
         final String settingHostname = VpnConfig.getServerHostname();
         final String hostPart = getHostnameId(settingHostname);
 
@@ -311,6 +313,14 @@ public class VpnUtils {
         fileName += ".ovpn";
 
         fileName = VpnUtils.sanitizeFileName(fileName, true, "_");
+
+        // If Android, remove white spaces
+        if (genOptions != null && genOptions.getOs() != null){
+            final OperatingSystem group = genOptions.getOs().getGroup();
+            if (OperatingSystem.ANDROID.equals(group)){
+                fileName = fileName.replace(" ", "");
+            }
+        }
         return fileName;
     }
 
