@@ -84,9 +84,11 @@
                 downloadButton.prop('disabled', !checked);
                 if (checked) {
                     downloadButton.removeClass('disabled');
+                    downloadButton.show('slow');
                     scrollToIfNotVisible(downloadButton);
                 } else {
                     downloadButton.addClass('disabled');
+                    downloadButton.hide('slow');
                 }
             });
         });
@@ -228,6 +230,17 @@
                         </p>
 
                     <% } %>
+                </div>
+            </div>
+
+            <% } %>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Step <%=curstep%> - Download your key</h3>
+                    <% curstep +=1; %>
+
+                    <p>Download your private space key to your device.</p>
 
                     <%-- General checkbox for all platforms --%>
                     <div id="divStatusClient" class="alert alert-info">
@@ -241,17 +254,6 @@
                             downloadButton.addClass('disabled');
                         });
                     </script>
-                </div>
-            </div>
-
-            <% } %>
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Step <%=curstep%> - Download your key</h3>
-                    <% curstep +=1; %>
-
-                    <p>Download your private space key to your device.</p>
 
                     <div id="divStatusNotif" class="alert alert-success" style="display: none;">
                         You will now need to open the downloaded key in your connection client.
@@ -260,7 +262,7 @@
 
                     <div class="form-group">
                         <div id="divButtonDownload">
-                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnDownload"
+                            <a class="btn btn-primary btn-xl btn-block btn-wrap hidden" id="btnDownload"
                                href="${vpnBean.downloadLink}">Download Key</a>
                         </div>
                     </div>
