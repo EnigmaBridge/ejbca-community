@@ -339,23 +339,16 @@
             </div>
 
             <hr />
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <h3>Connected to Private Space</h3>
-                    <ul>
-                        <li>Connection clients use the technology called "VPN" for providing the required level of control and security of your Private Space.</li>
-                        <li>Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank">our user manuals</a> for more information, examples, and videos how to use recommended connection clients.</li>
-                    </ul>
-                </div>
-            </div>
-
+                
             <div class="row">
                 <div class="col-sm-12">
                     <h3>Troubleshooting</h3>
                     <p>
-                        In case of a problem please consult your administrator.
-                        Alternatively, feel free to <a href="https://enigmabridge.freshdesk.com/helpdesk/tickets/new">request help from Enigma Bridge</a>
+                        <ul>
+                            <li>Please have a look at <a href="https://enigmabridge.freshdesk.com/solution/categories/19000098261" rel="nofollow" target="_blank">our user manuals</a> for more information, examples, and videos how to use recommended connection clients.</li>
+                            <li>In case of a problem please consult your administrator. Alternatively, feel free to <a href="https://enigmabridge.freshdesk.com/helpdesk/tickets/new">request help from Enigma Bridge</a>.</li>
+                            <li>Connection clients use the technology called "VPN" for providing the required level of control and security of your Private Space.</li>
+                        </ul>
                     </p>
                 </div>
             </div>
