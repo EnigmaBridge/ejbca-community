@@ -158,7 +158,7 @@
 
                     <div class="form-group">
                         <div id="divButtonClientDownload">
-                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload" target="_blank" rel="nofollow" 
+                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload" target="_blank" rel="nofollow"
                             <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
                                href="https://openvpn.net/index.php/open-source/downloads.html">Download OpenVPN Client</a>
                             <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
@@ -195,7 +195,7 @@
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
                         <p>
                             Click the client icon in your Downloads folder to install.
-                            Follow instructions and re-confirm the install request if asked
+                            Follow instructions and re-confirm the install request if asked.
                         </p>
 
                         <p>
@@ -321,7 +321,7 @@
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
                             <p>
                                 <ul>
-                                    <li>Double click the priate space key to import it to the Tunnelblick.</li>
+                                    <li>Double click the private space key to import it to the Tunnelblick.</li>
                                     <li>Click on Tunnelblick icon in task bar, connect to the private space.</li>
                                 </ul>
                             </p>
