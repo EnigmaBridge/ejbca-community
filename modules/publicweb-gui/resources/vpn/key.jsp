@@ -158,7 +158,7 @@
 
                     <div class="form-group">
                         <div id="divButtonClientDownload">
-                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload"
+                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload" target="_blank" rel="nofollow" 
                             <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
                                href="https://openvpn.net/index.php/open-source/downloads.html">Download OpenVPN Client</a>
                             <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
