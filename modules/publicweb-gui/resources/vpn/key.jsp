@@ -148,32 +148,27 @@
                     || vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
 
             <%-- Extra download step - needed for mobile devices - and linux (package manager) --%>
-            <% if (!vpnBean.getIsMobileDevice() && vpnBean.getOsGroup() != OperatingSystem.LINUX) { %>
+            <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS
+                    || vpnBean.getOsGroup() == OperatingSystem.LINUX
+                    || vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
             <div class="row">
                 <div class="col-sm-12">
                     <h3>Step 1 - Download a connection client</h3>
                     <% curstep +=1; %>
 
-                    <%--<p>In order to enter the private space you need a connection client installed, we recommend:</p>--%>
-                    <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                        <p>
-                            <a href="https://openvpn.net/index.php/open-source/downloads.html"
-                               rel="nofollow" target="_blank">OpenVPN</a> client for Windows.
-                        </p>
+                    <div class="form-group">
+                        <div id="divButtonClientDownload">
+                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload"
+                            <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
+                               href="https://openvpn.net/index.php/open-source/downloads.html">Download OpenVPN Client</a>
+                            <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
+                                href="https://openvpn.net/index.php/open-source/downloads.html">Download OpenVPN Client</a>
+                            <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
+                                href="https://tunnelblick.net/downloads.html">Download Tunnelblick Client</a>
+                            <% } %>
+                        </div>
+                    </div>
 
-                    <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                        <p>
-                            <a href="https://openvpn.net/index.php/open-source/downloads.html"
-                               rel="nofollow" target="_blank">OpenVPN</a> client for Linux.
-                        </p>
-
-                    <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                        <p>
-                            <a href="https://tunnelblick.net/downloads.html"
-                               rel="nofollow" target="_blank">Tunnelblick</a> for Mac OS X.
-                        </p>
-
-                    <% } %>
                 </div>
             </div>
             <% } %>
