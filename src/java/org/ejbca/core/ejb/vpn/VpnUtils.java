@@ -269,6 +269,18 @@ public class VpnUtils {
     }
 
     /**
+     * Capitalize the first letter of the string
+     * @param original input word to capitalize
+     * @return string with the first letter capitalized
+     */
+    public static String capitalizeFirstLetter(String original) {
+        if (original == null || original.length() == 0) {
+            return original;
+        }
+        return original.substring(0, 1).toUpperCase() + original.substring(1);
+    }
+
+    /**
      * Generates a file name for the ovpn file
      * @param user vpn user to generate filename for
      * @return OpenVPN configuration file name
@@ -302,8 +314,13 @@ public class VpnUtils {
         final String settingHostname = VpnConfig.getServerHostname();
         final String hostPart = getHostnameId(settingHostname);
 
+        final OperatingSystem osGroup = genOptions != null && genOptions.getOs() != null ? genOptions.getOs().getGroup() : null;
+        final boolean noSpaces = osGroup != null && OperatingSystem.ANDROID.equals(osGroup);
+        final String hostNameStr = noSpaces ? capitalizeFirstLetter(hostPart) : hostPart;
+        final String deviceStr = noSpaces ? capitalizeFirstLetter(user.getDevice()) : user.getDevice();
+
         String fileName = String.format("Private Space %s - %s - %s",
-                hostPart, user.getDevice(), user.getEmail().replace("@", "_"));
+                hostNameStr, deviceStr, user.getEmail().replace("@", "_"));
 
         final SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd", Locale.getDefault());
         final String dateFmted = formatter.format(
@@ -315,12 +332,10 @@ public class VpnUtils {
         fileName = VpnUtils.sanitizeFileName(fileName, true, "_");
 
         // If Android, remove white spaces
-        if (genOptions != null && genOptions.getOs() != null){
-            final OperatingSystem group = genOptions.getOs().getGroup();
-            if (OperatingSystem.ANDROID.equals(group)){
-                fileName = fileName.replace(" ", "");
-            }
+        if (noSpaces){
+            fileName = fileName.replace(" ", "");
         }
+
         return fileName;
     }
 
