@@ -254,7 +254,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Step <%=curstep%> - Download the key</h3>
+                    <h3>Step <%=curstep%> - Download a Private Space Key </h3>
                     <% curstep +=1; %>
 
                     <p>Download your private space key to your device.</p>
