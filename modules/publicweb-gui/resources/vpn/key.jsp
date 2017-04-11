@@ -282,7 +282,7 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Step <%=curstep%> - import the key to the client</h3>
+                        <h3>Step <%=curstep%> - Import the key to the client</h3>
                         <% curstep +=1; %>
 
                         <%-- For mobile devices - download is together with install --%>
