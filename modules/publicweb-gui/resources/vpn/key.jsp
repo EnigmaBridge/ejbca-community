@@ -289,8 +289,8 @@
                         <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
                             <p>
                                 <ul>
-                                    <li>Open the OpenVPN Connect client </li>
-                                    <li>Import the key via the options</li>
+                                    <li>Open the OpenVPN Connect client.</li>
+                                    <li>Import the key via the options.</li>
                                 </ul>
                             </p>
 
@@ -298,7 +298,7 @@
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.IOS) { %>
                             <p>
                                 <ul>
-                                    <li>Open the downloaded key in the OpenVPN Connect from the browser</li>
+                                    <li>Open the downloaded key in the OpenVPN Connect from the browser.</li>
                                 </ul>
                             </p>
 
@@ -312,8 +312,8 @@
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
                             <p>
                                 <ul>
-                                    <li>Copy the private space key (VPN config) to the OpenVPN Connect config directory</li>
-                                    <li>Or import the key to the OpenVPN Connect directly</li>
+                                    <li>Copy the private space key (VPN config) to the OpenVPN Connect config directory.</li>
+                                    <li>Or import the key to the OpenVPN Connect directly.</li>
                                 </ul>
                             </p>
 
@@ -321,8 +321,8 @@
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
                             <p>
                                 <ul>
-                                    <li>Double click the priate space key to import the key</li>
-                                    <li>Click on Tunnelblick icon in task bar, connect to the private space</li>
+                                    <li>Double click the priate space key to import it to the Tunnelblick.</li>
+                                    <li>Click on Tunnelblick icon in task bar, connect to the private space.</li>
                                 </ul>
                             </p>
 
