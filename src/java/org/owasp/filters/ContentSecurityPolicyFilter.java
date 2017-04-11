@@ -36,7 +36,7 @@ public class ContentSecurityPolicyFilter implements Filter {
     public static final boolean APP_USE_WEBFONTS = true;
 
     /** Configuration member to specify if web app use videos or audios */
-    public static final boolean APP_USE_AUDIOS_OR_VIDEOS = false;
+    public static final boolean APP_USE_AUDIOS_OR_VIDEOS = true;
 
     /** List CSP HTTP Headers */
     private List<String> cspHeaders = new ArrayList<String>();
@@ -97,10 +97,10 @@ public class ContentSecurityPolicyFilter implements Filter {
         cspPolicies.add("img-src " + originLocationRef);
         // Frame + Sandbox : Here sandbox allow nothing, customize sandbox options depending on your app....
         //policiesBuffer.append(";").append("frame-src 'self';sandbox");
-        cspPolicies.add("frame-src 'self'");
+        cspPolicies.add("child-src 'self' https://player.vimeo.com");
         // --Define loading policies for Audios/Videos
         if (APP_USE_AUDIOS_OR_VIDEOS) {
-            cspPolicies.add("media-src " + originLocationRef);
+            cspPolicies.add("media-src *"); // + originLocationRef);
         }
         // --Define loading policies for Fonts
         if (APP_USE_WEBFONTS) {
