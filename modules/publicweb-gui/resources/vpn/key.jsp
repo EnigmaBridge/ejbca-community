@@ -158,13 +158,13 @@
 
                     <div class="form-group">
                         <div id="divButtonClientDownload">
-                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload" target="_blank" rel="nofollow"
+                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnClientDownload" rel="nofollow"
                             <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                               href="https://openvpn.net/index.php/open-source/downloads.html">Download OpenVPN Client</a>
+                               href="https://privatespace-deploy.enigmabridge.com/vpnclient/openvpn-latest.exe">Download OpenVPN Client</a>
                             <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                                href="https://openvpn.net/index.php/open-source/downloads.html">Download OpenVPN Client</a>
+                                href="https://openvpn.net/index.php/open-source/downloads.html" target="_blank">Download OpenVPN Client</a>
                             <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                                href="https://tunnelblick.net/downloads.html">Download Tunnelblick Client</a>
+                                href="https://privatespace-deploy.enigmabridge.com/vpnclient/tunnelblick-latest.dmg">Download Tunnelblick Client</a>
                             <% } %>
                         </div>
                     </div>
