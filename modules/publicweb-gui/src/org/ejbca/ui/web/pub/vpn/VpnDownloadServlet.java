@@ -154,13 +154,21 @@ public class VpnDownloadServlet extends HttpServlet {
             } else {
                 final VpnGenOptions genOptions = new VpnGenOptions();
                 final String userAgent = request.getHeader("User-Agent");
+                OperatingSystem os = null;
+
                 if (userAgent != null) {
-                    genOptions.setOs(OperatingSystem.parseUserAgentString(userAgent));
+                    os = OperatingSystem.parseUserAgentString(userAgent);
+                    genOptions.setOs(os);
+                }
+
+                String contentType = "application/ovpn";
+                if (os != null && OperatingSystem.ANDROID.equals(os.getGroup())){
+                    contentType = "application/x-openvpn-profile";
                 }
 
                 final String fileName = VpnUtils.genVpnConfigFileNameHuman(vpnUser, genOptions);
-                response.setContentType("application/ovpn");
-                response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName) + "\"");
+                response.setContentType(contentType);
+                response.setHeader("Content-disposition", " attachment; filename=\"" + StringTools.stripFilename(fileName).trim() + "\"");
 
                 // Cookie this OTP was downloaded already, survives browser restart
                 final Cookie downloadCookie = new Cookie(VpnBean.LAST_OTP_TOKEN_DOWNLOADED, otp);
