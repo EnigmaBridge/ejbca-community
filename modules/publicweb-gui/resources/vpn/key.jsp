@@ -285,14 +285,66 @@
                         <h3>Step <%=curstep%> - import the key to the client</h3>
                         <% curstep +=1; %>
 
-                        <ul>
-                            <li>Lorem ipsum dolor sit amet open</li>
-                            <li>Lorem ipsum dolor sit amet import</li>
-                        </ul>
+                        <%-- For mobile devices - download is together with install --%>
+                        <% if (vpnBean.getOsGroup() == OperatingSystem.ANDROID) { %>
+                            <p>
+                                <ul>
+                                    <li>Open the OpenVPN Connect client </li>
+                                    <li>Import the key via the options</li>
+                                </ul>
+                            </p>
+
+
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.IOS) { %>
+                            <p>
+                                <ul>
+                                    <li>Open the downloaded key in the OpenVPN Connect from the browser</li>
+                                </ul>
+                            </p>
+
+
+                        <%-- Desktop platforms below - more instructions --%>
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
+                            <div class="form-group">
+                                <iframe src="https://player.vimeo.com/video/212612132" width="800" height="450" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div>
+
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
+                            <p>
+                                <ul>
+                                    <li>Copy the private space key (VPN config) to the OpenVPN Connect config directory</li>
+                                    <li>Or import the key to the OpenVPN Connect directly</li>
+                                </ul>
+                            </p>
+
+
+                        <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
+                            <p>
+                                <ul>
+                                    <li>Double click the priate space key to import the key</li>
+                                    <li>Click on Tunnelblick icon in task bar, connect to the private space</li>
+                                </ul>
+                            </p>
+
+
+                        <% } %>
                     </div>
                 </div>
 
             <% } %>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>Step <%=curstep%> - Open Private Space</h3>
+                    <% curstep +=1; %>
+                    <p>
+                        Navigate your browser to <a href="http://private.space">http://private.space</a>.
+                        If all steps were done correctly you will see Private Space intro page.
+                    </p>
+                </div>
+            </div>
+
+            <hr />
 
             <div class="row">
                 <div class="col-sm-12">
