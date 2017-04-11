@@ -19,6 +19,9 @@
 <%
     vpnBean.initialize(request);
     int curstep = 1;
+
+    // Init OTP check
+    vpnBean.isOtpValid();
 %>
 <f:view>
 <html>
@@ -76,6 +79,7 @@
         $(function() {
             regenerateQrCode('${!vpnBean.landingLink != null ? vpnBean.landingLink : ""}');
 
+            <% if (vpnBean.isOtpValid()) { %>
             downloadButton = $("#btnDownload");
             installedCheck = $("#check-installed");
             installedCheck.checkboxX({threeState: false, size:'xl'});
@@ -91,6 +95,7 @@
                     downloadButton.hide('slow');
                 }
             });
+            <% } %>
         });
     </script>
 </head>
@@ -235,6 +240,8 @@
                     <h3>Step <%=curstep%> - Download your key</h3>
                     <% curstep +=1; %>
 
+                    <%-- Download link is still valid --%>
+                    <% if (vpnBean.isOtpValid()) { %>
                     <p>Download your private space key to your device.</p>
 
                     <%-- General checkbox for all platforms --%>
@@ -261,6 +268,16 @@
                                href="${vpnBean.downloadLink}">Download Key</a>
                         </div>
                     </div>
+
+                    <% } else { %>
+                        <%-- Download link is invalid - show information --%>
+                        <div class="form-group">
+                            <div id="divStatusNotif2" class="alert alert-info">
+                                The Private Space key was already downloaded. Proceed to the next step.
+                            </div>
+                        </div>
+
+                    <% } %>
 
                 </div>
             </div>
