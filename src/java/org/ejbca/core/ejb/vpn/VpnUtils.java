@@ -334,6 +334,20 @@ public class VpnUtils {
     }
 
     /**
+     * Converts string with \r\n or \n line endings to the \r\n line ending
+     * @param data input data to process to
+     * @return output converted string
+     */
+    public static String toWindowsEOL(String data){
+        // Normalize all possible line endings
+        data = data.replaceAll("\\r\\n", "\n");
+        data = data.replaceAll("\\r", "\n");
+        // Transform to windows line ending
+        data = data.replaceAll("\\n", "\r\n");
+        return data;
+    }
+
+    /**
      * Converts properties to a JSON.
      * @param properties
      * @return

@@ -819,13 +819,14 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             ctx.setVariable(VpnCons.VPN_CFG_USER, user);
             ctx.setVariable("generated_time", new Date(user.getConfigGenerated()));
 
-            // Candidate templte names
+            // Candidate template names
             LinkedList<String> candidateTemplates = new LinkedList<>();
             candidateTemplates.add(VpnCons.VPN_CONFIG_TEMPLATE);
 
             // OS - dependent template name, higher priority.
+            OperatingSystem os = null;
             if (options != null && options.getOs() != null) {
-                final OperatingSystem os = options.getOs().getGroup();
+                os = options.getOs().getGroup();
                 final String osTemplateSuffix = VpnUtils.sanitizeFileName(os.getName().toLowerCase().trim());
                 candidateTemplates.add(0, VpnCons.VPN_CONFIG_TEMPLATE + "_" + osTemplateSuffix);
             }
@@ -833,7 +834,11 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             // Try each template according to the preference.
             for(String templateName : candidateTemplates){
                 try{
-                    final String tpl = templateEngine.process(templateName, ctx);
+                    String tpl = templateEngine.process(templateName, ctx);
+                    if (os != null && OperatingSystem.WINDOWS.equals(os)){
+                        tpl = VpnUtils.toWindowsEOL(tpl);
+                    }
+
                     return tpl;
                 } catch(Exception e){
 
