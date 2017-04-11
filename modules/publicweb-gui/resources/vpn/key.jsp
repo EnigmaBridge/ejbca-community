@@ -203,7 +203,7 @@
                         </p>
 
                         <p>
-                            If you need more help, please use our <a href="https://openvpn.net/index.php/access-server/docs/admin-guides-sp-859543150/howto-connect-client-configuration/395-how-to-install-the-openvpn-client-on-windows.html">installation guides </a>
+                            If you need more help, please use our <a href="https://openvpn.net/index.php/access-server/docs/admin-guides-sp-859543150/howto-connect-client-configuration/395-how-to-install-the-openvpn-client-on-windows.html">installation guides</a>.
                         </p>
 
                     <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
