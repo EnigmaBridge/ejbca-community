@@ -262,7 +262,7 @@
 
                     <div class="form-group">
                         <div id="divButtonDownload">
-                            <a class="btn btn-primary btn-xl btn-block btn-wrap hidden" id="btnDownload"
+                            <a class="btn btn-primary btn-xl btn-block btn-wrap" id="btnDownload" style="display: none"
                                href="${vpnBean.downloadLink}">Download Key</a>
                         </div>
                     </div>
