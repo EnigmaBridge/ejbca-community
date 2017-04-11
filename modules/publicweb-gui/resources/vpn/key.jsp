@@ -149,13 +149,7 @@
             <% if (!vpnBean.getIsMobileDevice() && vpnBean.getOsGroup() != OperatingSystem.LINUX) { %>
             <div class="row">
                 <div class="col-sm-12">
-                    <% if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
-                        <h3>Step 1 - Download OpenVPN Client</h3>
-                    <% } else if (vpnBean.getOsGroup() == OperatingSystem.LINUX) { %>
-                        <h3>Step 1 - Download OpenVPN Client</h3>
-                    <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                        <h3>Step 1 - Download Tunnelblick Client</h3>
-                    <% } %>
+                    <h3>Step 1 - Download a connection client</h3>
                     <% curstep +=1; %>
 
                     <%--<p>In order to enter the private space you need a connection client installed, we recommend:</p>--%>
@@ -254,7 +248,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Step <%=curstep%> - Download a Private Space Key</h3>
+                    <h3>Step <%=curstep%> - Download your key</h3>
                     <% curstep +=1; %>
 
                     <p>Download your private space key to your device.</p>
@@ -282,7 +276,7 @@
 
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Step <%=curstep%> - Import the key to the client</h3>
+                        <h3>Step <%=curstep%> - Import your key to the client</h3>
                         <% curstep +=1; %>
 
                         <%-- For mobile devices - download is together with install --%>
@@ -335,7 +329,7 @@
 
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Step <%=curstep%> - Open Private Space</h3>
+                    <h3>Step <%=curstep%> - Open your Private Space</h3>
                     <% curstep +=1; %>
                     <p>
                         Navigate your browser to <a href="http://private.space">http://private.space</a>.
