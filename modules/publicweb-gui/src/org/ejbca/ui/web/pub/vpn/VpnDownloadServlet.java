@@ -149,7 +149,7 @@ public class VpnDownloadServlet extends HttpServlet {
             if (vpnUser == null){
                 // Set error to the session - picked up by the VpnBean.
                 request.getSession().setAttribute(VpnBean.LINK_ERROR_SESSION, vpnError.toString());
-                response.sendRedirect("config.jsf");
+                response.sendRedirect("key.jsf");
 
             } else {
                 final String fileName = VpnUtils.genVpnConfigFileNameHuman(vpnUser);
