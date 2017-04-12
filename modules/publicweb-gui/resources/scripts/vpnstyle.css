@@ -110,6 +110,7 @@ button {
 #divStatusClient label {
     font-size: 28px;
     font-weight: 400;
+    display: inline;
 }
 
 #divStatusClient .cbx-container {
