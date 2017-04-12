@@ -314,15 +314,20 @@
                         <%-- Desktop platforms below - more instructions --%>
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.WINDOWS) { %>
                             <div class="form-group">
+                                Please take a look at the video below. It has 20 sec only and helps you with this step.
+                            </div>
+
+                            <div class="form-group">
+                                <iframe src="https://player.vimeo.com/video/212612132" width="800" height="450" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div>
+
+                            <div class="form-group">
+                                The video basically instructs you to:
                                 <ul>
                                     <li>Start the client if not running yet.</li>
                                     <li>Find its icon in the task bar in bottom right corner and right click it to select your key's configuration file.</li>
                                     <li>Once done, click on "Connect". The icon will turn green.</li>
                                 </ul>
-                            </div>
-
-                            <div class="form-group">
-                                <iframe src="https://player.vimeo.com/video/212612132" width="800" height="450" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                             </div>
 
 
