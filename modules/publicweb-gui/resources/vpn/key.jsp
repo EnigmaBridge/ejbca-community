@@ -341,13 +341,14 @@
 
 
                         <% } else if (vpnBean.getOsGroup() == OperatingSystem.MAC_OS_X) { %>
-                            <p>
-                                <ul>
-                                    <li>Double click the private space key to import it to the Tunnelblick.</li>
-                                    <li>Click on Tunnelblick icon in task bar, connect to the private space.</li>
-                                </ul>
-                            </p>
 
+                            <div class="form-group">
+                                Please take a look at the video below. It has 60 seconds only and helps you with this step.
+                            </div>
+
+                            <div class="form-group">
+                                <iframe src="https://player.vimeo.com/video/214844950" width="800" height="450" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div>
 
                         <% } %>
                     </div>
