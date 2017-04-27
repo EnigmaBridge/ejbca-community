@@ -5,6 +5,7 @@ import org.cesecore.authentication.tokens.AuthenticationToken;
 import org.ejbca.core.ejb.vpn.VpnConfig;
 import org.ejbca.core.ejb.vpn.VpnCons;
 import org.ejbca.core.ejb.vpn.VpnUserManagementSession;
+import org.ejbca.core.ejb.vpn.VpnWebUtils;
 import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
 import org.ejbca.core.model.util.EjbLocalHelper;
 
@@ -79,22 +80,7 @@ public abstract class BaseWebBean implements Serializable {
      * @return properties
      */
     public static Properties buildDescriptorProperties(HttpServletRequest request, Properties properties){
-        if (properties == null){
-            properties = new Properties();
-        }
-
-        final String xFwded = request.getHeader("X-Forwarded-For");
-        final String ip = request.getRemoteAddr();
-        final String ua = request.getHeader("User-Agent");
-        final String method = request.getMethod();
-        final String qrNonce = request.getParameter("qrnonce");
-
-        properties.setProperty(VpnCons.KEY_IP, ip+"");
-        properties.setProperty(VpnCons.KEY_FORWARDED, xFwded+"");
-        properties.setProperty(VpnCons.KEY_USER_AGENT, ua+"");
-        properties.setProperty(VpnCons.KEY_METHOD, method+"");
-        properties.setProperty(VpnCons.KEY_QR_NONCE, qrNonce+"");
-        return properties;
+        return VpnWebUtils.buildDescriptorProperties(request, properties);
     }
 
     /**
