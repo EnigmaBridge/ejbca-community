@@ -87,11 +87,13 @@ public abstract class BaseWebBean implements Serializable {
         final String ip = request.getRemoteAddr();
         final String ua = request.getHeader("User-Agent");
         final String method = request.getMethod();
+        final String qrNonce = request.getParameter("qrnonce");
 
         properties.setProperty(VpnCons.KEY_IP, ip+"");
         properties.setProperty(VpnCons.KEY_FORWARDED, xFwded+"");
         properties.setProperty(VpnCons.KEY_USER_AGENT, ua+"");
         properties.setProperty(VpnCons.KEY_METHOD, method+"");
+        properties.setProperty(VpnCons.KEY_QR_NONCE, qrNonce+"");
         return properties;
     }
 

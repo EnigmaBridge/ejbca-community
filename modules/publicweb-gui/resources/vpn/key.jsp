@@ -19,6 +19,7 @@
 <%
     vpnBean.initialize(request);
     int curstep = 1;
+    final long tstamp = System.currentTimeMillis();
 
     // Init OTP check
     vpnBean.isOtpValid();

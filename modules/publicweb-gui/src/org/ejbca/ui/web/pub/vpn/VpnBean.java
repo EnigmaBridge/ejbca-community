@@ -47,6 +47,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
     private Date dateGenerated;
     private String landingLink;
     private String jsonAction;
+    private String qrNonce;
 
     private final CaSessionLocal caSession = ejb.getCaSession();
 
@@ -173,6 +174,10 @@ public class VpnBean extends BaseWebBean implements Serializable {
         final String jsAction = request.getParameter("json");
         jsonAction = jsAction != null && !jsAction.isEmpty() ? jsAction : null;
 
+        // QR nonce
+        final String qrNonce = request.getParameter("qrnonce");
+        this.qrNonce = qrNonce != null && !qrNonce.isEmpty() ? qrNonce : null;
+
         // LinkError from session - download servlet
         try {
             final String errorLinkString = (String)request.getSession().getAttribute(VpnBean.LINK_ERROR_SESSION);
@@ -196,7 +201,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
      * @return link for the download
      */
     public String getDownloadLink(){
-        return String.format("getvpn?id=%s&otp=%s", vpnUserId, otp);
+        return String.format("getvpn?id=%s&otp=%s&qrnonce=%s", vpnUserId+"", otp+"", qrNonce+"");
     }
 
     /**

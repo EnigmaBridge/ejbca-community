@@ -326,6 +326,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
 
         // Analyse request method. If HEAD, cookie is not mandatory.
         final String requestMethod = properties.getProperty(VpnCons.KEY_METHOD);
+        final String qrNonce = properties.getProperty(VpnCons.KEY_QR_NONCE);
         properties.remove(VpnCons.KEY_METHOD);
 
         // Build download spec.
@@ -342,7 +343,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         checkOtpConditions(user, true);
 
         // Check descriptors.
-        checkOtpDescriptor(user, specJson, true, true);
+        final boolean checkCookie = checkOtpDescriptor(user, specJson, true, true);
 
         // If cookie is set in the database, require the same cookie.
         // Chrome on iOS does two concurrent requests. The one with HEAD does
@@ -350,7 +351,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         // In that case we relax this condition - no cookie check.
         final boolean isHead = requestMethod.equalsIgnoreCase("head");
         final String otpCookie = user.getOtpCookie();
-        if (otpCookie != null && !isHead && !otpCookie.equals(cookie)){
+        if (checkCookie && otpCookie != null && !isHead && !otpCookie.equals(cookie)){
             clearOtp(user);
             tryMergeUser(user);
             throw new VpnOtpCookieException();
@@ -431,22 +432,85 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
 
     /**
      * Checks OTP descriptor
+     * Allows relaxed user agent matching if there is a correct QR code nonce used & stored.
+     * Relaxed matching -> OS has to be the same.
+     *
      * @param user
      * @param specJson
-     * @throws VpnOtpDescriptorException
+     * @param clearOnFail
+     * @param checkNonce
+     * @return true whether to check also the cookie
+     * @throws VpnOtpDescriptorException descriptor invalid - new disallowed device attempt
      */
-    private void checkOtpDescriptor(VpnUser user, JSONObject specJson, boolean clearOnFail, boolean checkNonce) throws VpnOtpDescriptorException {
+    private boolean checkOtpDescriptor(VpnUser user, JSONObject specJson, boolean clearOnFail, boolean checkNonce) throws VpnOtpDescriptorException {
         final String otpUsedDescriptor = user.getOtpUsedDescriptor();
-        if (otpUsedDescriptor != null) {
-            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
-            if (!dbDescriptor.similar(specJson)){
-                if (clearOnFail) {
-                    clearOtp(user);
-                    tryMergeUser(user);
-                }
-                throw new VpnOtpDescriptorException();
+        if (otpUsedDescriptor == null){
+            return true;
+        }
+
+        boolean valid = true;
+        final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
+        if (!dbDescriptor.getString(VpnCons.KEY_IP).equals(specJson.getString(VpnCons.KEY_IP))){
+            valid = false;
+        }
+        if (!dbDescriptor.getString(VpnCons.KEY_FORWARDED).equals(specJson.getString(VpnCons.KEY_FORWARDED))){
+            valid = false;
+        }
+
+        // Nonce checking - for QR readers no exact match check
+        boolean permissiveUaCheck = false;
+        final String qrNonceDbRecord = user.getOtpNonce();
+        if (valid
+                && checkNonce
+                && qrNonceDbRecord != null
+                && !qrNonceDbRecord.isEmpty()
+                && specJson.has(VpnCons.KEY_QR_NONCE))
+        {
+            final JSONObject qrDbRec = new JSONObject(qrNonceDbRecord);
+            final String curQrNonce = specJson.getString(VpnCons.KEY_QR_NONCE);
+            final long curTime = System.currentTimeMillis();
+            final long qrDbGenTime = qrDbRec.getLong(VpnCons.OTP_NONCE_TIME);
+            final long qrTimeShift = (curTime - qrDbGenTime);
+            final boolean qrTimeOk = qrTimeShift > 0 && qrTimeShift < 1000*60*60*12L; // everybody should scan QR in 12hours...
+            final boolean qrNonceOk = qrDbRec.has(VpnCons.OTP_NONCE) && qrDbRec.getString(VpnCons.OTP_NONCE).equals(curQrNonce);
+
+            if (!qrTimeOk){
+                log.info("Permissive UA check dismissed, time shift too big for " + user.getOtpDownload());
+            }
+
+            if (!qrNonceOk){
+                log.info("Permissie UA check dismissed, nonce mismatch for " + user.getOtpDownload());
+            }
+
+            permissiveUaCheck = qrTimeOk && qrNonceOk;
+        }
+
+        // the last check - user agent.
+        final String curUA = specJson.getString(VpnCons.KEY_USER_AGENT);
+        final String oldUA = dbDescriptor.getString(VpnCons.KEY_USER_AGENT);
+        if (permissiveUaCheck){
+            final OperatingSystem curOS = OperatingSystem.parseUserAgentString(curUA);
+            final OperatingSystem oldOS = OperatingSystem.parseUserAgentString(oldUA);
+
+            if (!curOS.equals(oldOS)){
+                valid = false;
+            }
+
+        } else {
+            if (!curUA.equals(oldUA)){
+                valid = false;
             }
         }
+
+        if (!valid){
+            if (clearOnFail) {
+                clearOtp(user);
+                tryMergeUser(user);
+            }
+            throw new VpnOtpDescriptorException();
+        }
+
+        return !permissiveUaCheck;
     }
 
     @Override

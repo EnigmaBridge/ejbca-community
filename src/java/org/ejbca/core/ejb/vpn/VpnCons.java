@@ -45,6 +45,7 @@ public class VpnCons {
     public static final String KEY_USER_AGENT = "ua";
     public static final String KEY_IP = "ip";
     public static final String KEY_FORWARDED = "fwded";
+    public static final String KEY_QR_NONCE = "qrNonce";
 
     public static final String OTP_NONCE = "nonce";
     public static final String OTP_NONCE_CNT = "cnt";

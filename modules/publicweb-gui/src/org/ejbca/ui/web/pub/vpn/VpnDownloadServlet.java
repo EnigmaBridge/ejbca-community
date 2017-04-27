@@ -78,6 +78,7 @@ public class VpnDownloadServlet extends HttpServlet {
 
             final String otp = request.getParameter("otp");
             final String vpnUserIdTxt = request.getParameter("id");
+            final String qrNonce = request.getParameter("qrnonce");
             final int vpnUserId = Integer.parseInt(vpnUserIdTxt);
             final String cookieName = OTP_COOKIE;
 
