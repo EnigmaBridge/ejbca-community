@@ -54,6 +54,7 @@ org.cesecore.authorization.control.CryptoTokenRules
   <link rel="shortcut icon" href="<%= globalconfiguration.getAdminWebPath() %>images/favicon-eb.png" type="image/png" />
   <link rel="stylesheet" type="text/css" href="<%= ejbcawebbean.getCssFile() %>" />
   <link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/vpnstyle.css"/>
+  <link rel="stylesheet" type="text/css" href="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-ui-1.12.1.min.css"/>
   <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery.qrcode.min.js"></script>
