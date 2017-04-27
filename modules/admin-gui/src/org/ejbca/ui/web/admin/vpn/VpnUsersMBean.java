@@ -42,11 +42,14 @@ import org.ejbca.core.model.ra.raadmin.UserDoesntFullfillEndEntityProfile;
 import org.ejbca.ui.web.admin.BaseManagedBean;
 import org.ejbca.ui.web.admin.rainterface.RAInterfaceBean;
 import org.ejbca.ui.web.admin.rainterface.UserView;
+import org.json.JSONObject;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.PrivateKey;
@@ -1163,6 +1166,139 @@ public class VpnUsersMBean extends BaseManagedBean implements Serializable {
             }
         }
         return this.currentVpnUser;
+    }
+
+    /**
+     * AJAX JSON handler for VPN
+     * @param request
+     * @param response
+     */
+    public void json(HttpServletRequest request, HttpServletResponse response) throws IOException, AuthorizationDeniedException {
+        final JSONObject root = new JSONObject();
+        final String jsonAction = request.getParameter("json");
+        Integer resultCode = null;
+
+        // QR code nonce
+        if ("qr".equals(jsonAction)) {
+            resultCode = jsonQr(request, response, root);
+
+        } else if ("ac-email".equals(jsonAction)){
+            resultCode = jsonAutocompleteEmail(request, response, root);
+
+        } else if ("ac-device".equals(jsonAction)){
+            resultCode = jsonAutocompleteDevice(request, response, root);
+
+        } else if (jsonAction == null){
+            // null action, do nothing - empty json object
+
+        } else {
+            log.info("Unknown JSON action: " + jsonAction);
+        }
+
+        response.getWriter().write(root.toString(4));
+    }
+
+    /**
+     * JSON QR response for QR reader workaround.
+     * @param request
+     * @param response
+     * @param root
+     * @return
+     * @throws AuthorizationDeniedException
+     */
+    private Integer jsonQr(HttpServletRequest request, HttpServletResponse response, JSONObject root) throws AuthorizationDeniedException {
+        root.put("nonce", (String)null);
+        root.put("otp", (String)null);
+
+        final CurrentVpnUserGuiInfo currentVpnUser = getCurrentVpnUser();
+        if (currentVpnUser == null){
+            return null;
+        }
+
+        // new QR code nonce as a workaround for QR readers with embedded browsers.
+        final Properties properties = org.ejbca.core.ejb.vpn.VpnWebUtils.buildDescriptorProperties(request, null);
+        String nonce = null;
+
+        try {
+            final VpnUser vpnUser =  vpnUserManagementSession.newNonceOtp(
+                    authenticationToken,
+                    currentVpnUser.getId(),
+                    currentVpnUser.getOtpDownload(),
+                    null,
+                    properties);
+
+            final String otpNonce = vpnUser.getOtpNonce();
+            if (otpNonce != null && !otpNonce.isEmpty()){
+                final JSONObject otpJs = new JSONObject(otpNonce);
+                nonce = otpJs.getString(VpnCons.OTP_NONCE);
+            }
+
+        } catch (VpnOtpInvalidException e) {
+            log.info("QRnonce: otp invalid");
+        } catch (VpnOtpTooManyException e) {
+            log.info("QRnonce: otp too many");
+        } catch (VpnOtpOldException e) {
+            log.info("QRnonce: otp old");
+        } catch (VpnOtpDescriptorException e) {
+            log.info("QRnonce: otp descriptor");
+        } catch (VpnOtpCookieException e) {
+            log.info("QRnonce: otp cookie");
+        } finally {
+            root.put("nonce", nonce);
+            root.put("otp", currentVpnUser.getOtpDownload());
+        }
+
+        return null;
+    }
+
+    private Integer jsonAutocompleteEmail(HttpServletRequest request, HttpServletResponse response, JSONObject root){
+        if (vpnUserGuiInfos == null || vpnUserGuiInfos.isEmpty()){
+            root.put("error", "no_data_cached");
+            root.put("result", new String[0]);
+            return null;
+        }
+
+        final String term = request.getParameter("term");
+
+        Set<String> result = new HashSet<>();
+        for (VpnUserGuiInfo info : vpnUserGuiInfos) {
+            final String email = info.getEmail();
+            if (term != null && !term.isEmpty() && !email.contains(term)){
+                continue;
+            }
+            result.add(email);
+        }
+
+        List<String> resList = new ArrayList<>(result);
+        Collections.sort(resList);
+        root.put("result", resList);
+
+        return null;
+    }
+
+    private Integer jsonAutocompleteDevice(HttpServletRequest request, HttpServletResponse response, JSONObject root){
+        if (vpnUserGuiInfos == null || vpnUserGuiInfos.isEmpty()){
+            root.put("error", "no_data_cached");
+            root.put("result", new String[0]);
+            return null;
+        }
+
+        final String term = request.getParameter("term");
+
+        Set<String> result = new HashSet<>();
+        for (VpnUserGuiInfo info : vpnUserGuiInfos) {
+            final String device = info.getDevice();
+            if (term != null && !term.isEmpty() && !device.contains(term)){
+                continue;
+            }
+            result.add(device);
+        }
+
+        List<String> resList = new ArrayList<>(result);
+        Collections.sort(resList);
+        root.put("result", resList);
+
+        return null;
     }
 
     public boolean isCurrentVpnUserEditMode() {

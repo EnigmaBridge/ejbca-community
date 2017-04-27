@@ -42,6 +42,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 <%
 	final String VIEWCERT_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "viewcertificate.jsp";
 	final String VIEWUSER_LINK            = ejbcawebbean.getBaseUrl() + globalconfiguration.getRaPath() + "/viewendentity.jsp";
+	final String JS_LINK                  = ejbcawebbean.getBaseUrl() + globalconfiguration.getAdminWebPath() + "/vpn/js.jsf";
 %>
 <c:set var="SHOW_FIRST_ROW" value="#{vpnUsersMBean.paramRef eq 'default'}" />
 
@@ -56,6 +57,7 @@ org.cesecore.authorization.control.CryptoTokenRules
   <script src="<%= globalconfiguration.getAdminWebPath() %>ejbcajslib.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-2.1.0.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery.qrcode.min.js"></script>
+  <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/jquery-ui-1.12.1.min.js"></script>
   <script src="<%= globalconfiguration.getAdminWebPath() %>scripts/vpn.js"></script>
 
 <% if (!vpnUsersMBean.getEjbcaMode()) { %>
@@ -90,17 +92,64 @@ org.cesecore.authorization.control.CryptoTokenRules
                 return;
             }
 
-            var qrCodeSettings = {
-                "render": "canvas",
-                "text": link,
-                "size": 300
-            };
-            divQrCode.qrcode(qrCodeSettings);
-            wrapper.show();
+            // If already rendered from QR code, generate no more
+            // Would overwrite QR nonce
+            var qr_nonce = findGetParameter('qrnonce');
+            if (qr_nonce){
+                console.log('QRnonce present: ' + qr_nonce);
+                wrapper.hide();
+                return;
+            }
+
+			<% if (!vpnUsersMBean.isCurrentVpnUserEditMode()) { %>
+            // Get QR nonce async.
+            $.getJSON('<%=JS_LINK%>?json=qr')
+                .done(function(data) {
+                    try{
+                        var nonce = data['nonce'];
+                        var otp = data['otp'];
+                        if (otp !== '${vpnUsersMBean.currentVpnUser.otpDownload}'){
+                            console.log('OTP nonce invalid');
+                            wrapper.hide();
+                            return;
+                        }
+
+                        wrapper.show();
+                        var qrCodeSettings = {
+                            "render": "canvas",
+                            "text": link + '&qrnonce=' + nonce,
+                            "size": 300
+                        };
+                        divQrCode.qrcode(qrCodeSettings);
+                    } catch (e){
+                        console.log(e);
+                    }
+                });
+            <% } %>
         }
 
         $(function() {
             regenerateQrCode('${!vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUser.otpDownloadLink != null ? vpnUsersMBean.currentVpnUser.otpDownloadLink : ""}');
+
+            <% if (vpnUsersMBean.isCurrentVpnUserEditMode()) { %>
+            $( ".userEmailField" ).autocomplete({
+				'source': function(request, response) {
+                    $.getJSON('<%=JS_LINK%>?json=ac-email&term=' + request['term'])
+                        .done(function (data) {
+                            response(data['result']);
+                        });
+                }
+			});
+
+            $( ".userDeviceField" ).autocomplete({
+				'source': function(request, response) {
+                    $.getJSON('<%=JS_LINK%>?json=ac-device&term=' + request['term'])
+                        .done(function (data) {
+                            response(data['result']);
+                        });
+                }
+			});
+			<% } %>
         });
 	</script>
 </head>
@@ -155,7 +204,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:outputLabel for="currentVpnUserEmail" value="#{web.text.VPNUSER_EMAIL}:" rendered="#{vpnUsersMBean.currentVpnUserEditMode}" />
 		<h:panelGroup id="currentVpnUserEmail" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
 	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.email}" style="width: 300px" required="true"
-						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
+						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"
+						 styleClass="userEmailField">
 	    		<f:validator validatorId="emailValidator"/>
 	    	</h:inputText>
 		</h:panelGroup>
@@ -163,7 +213,8 @@ org.cesecore.authorization.control.CryptoTokenRules
 		<h:outputLabel for="currentVpnUserDevice" value="#{web.text.VPNUSER_DEVICE}:" rendered="#{vpnUsersMBean.currentVpnUserEditMode}" />
 		<h:panelGroup id="currentVpnUserDevice" rendered="#{vpnUsersMBean.currentVpnUserEditMode}">
 	    	<h:inputText value="#{vpnUsersMBean.currentVpnUser.device}" style="width: 300px" required="true"
-						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}">
+						 rendered="#{vpnUsersMBean.currentVpnUserEditMode && vpnUsersMBean.currentVpnUserId == null}"
+						 styleClass="userDeviceField">
 	    		<f:validator validatorId="legalCharsValidator"/>
 	    	</h:inputText>
 		</h:panelGroup>
