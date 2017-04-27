@@ -68,6 +68,11 @@ public class VpnUser implements Serializable, Cloneable {
     private String otpCookie;
 
     /**
+     * OTP nonce generated for QR readers
+     */
+    private String otpNonce;
+
+    /**
      * Number of times the OTP token was authorised and content was provided.
      */
     private int otpUsedCount;
@@ -329,6 +334,14 @@ public class VpnUser implements Serializable, Cloneable {
         this.otpCookie = otpCookie;
     }
 
+    public String getOtpNonce() {
+        return otpNonce;
+    }
+
+    public void setOtpNonce(String otpNonce) {
+        this.otpNonce = otpNonce;
+    }
+
     public int getOtpUsedCount() {
         return otpUsedCount;
     }
@@ -380,6 +393,7 @@ public class VpnUser implements Serializable, Cloneable {
         if (otpUsedDescriptor != null ? !otpUsedDescriptor.equals(vpnUser.otpUsedDescriptor) : vpnUser.otpUsedDescriptor != null)
             return false;
         if (otpCookie != null ? !otpCookie.equals(vpnUser.otpCookie) : vpnUser.otpCookie != null) return false;
+        if (otpNonce != null ? !otpNonce.equals(vpnUser.otpNonce) : vpnUser.otpNonce != null) return false;
         if (lastMailSent != null ? !lastMailSent.equals(vpnUser.lastMailSent) : vpnUser.lastMailSent != null)
             return false;
         if (certificateId != null ? !certificateId.equals(vpnUser.certificateId) : vpnUser.certificateId != null)
@@ -410,6 +424,7 @@ public class VpnUser implements Serializable, Cloneable {
         result = 31 * result + (otpUsed != null ? otpUsed.hashCode() : 0);
         result = 31 * result + (otpUsedDescriptor != null ? otpUsedDescriptor.hashCode() : 0);
         result = 31 * result + (otpCookie != null ? otpCookie.hashCode() : 0);
+        result = 31 * result + (otpNonce != null ? otpNonce.hashCode() : 0);
         result = 31 * result + otpUsedCount;
         result = 31 * result + (lastMailSent != null ? lastMailSent.hashCode() : 0);
         result = 31 * result + (certificateId != null ? certificateId.hashCode() : 0);

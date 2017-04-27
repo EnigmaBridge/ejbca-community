@@ -416,6 +416,7 @@
             <basic fetch="EAGER" name="otpFirstUsed"><column name="otpFirstUsed" column-definition="BIGINT" nullable="true"/></basic>
             <basic fetch="EAGER" name="otpUsedDescriptor"><column name="otpUsedDescriptor" column-definition="LONGTEXT" nullable="true"/></basic>
             <basic fetch="EAGER" name="otpCookie"><column name="otpCookie" column-definition="VARCHAR(256)" nullable="true"/></basic>
+            <basic fetch="EAGER" name="otpNonce"><column name="otpNonce" column-definition="VARCHAR(256)" nullable="true"/></basic>
             <basic fetch="EAGER" name="otpUsedCount"><column name="otpUsedCount" column-definition="INTEGER" nullable="false"/></basic>
             <basic fetch="EAGER" name="lastMailSent"><column name="lastMailSent" column-definition="BIGINT" nullable="true"/></basic>
             <basic fetch="EAGER" name="certificateId"><column name="certificateId" column-definition="VARCHAR(256)"/></basic>
