@@ -180,6 +180,16 @@ public class VpnUtils {
     }
 
     /**
+     * Generated a random password
+     *
+     * @return a randomly generated password
+     */
+    public static String genRandomPwd(int len) {
+        final IPasswordGenerator pwdgen = PasswordGeneratorFactory.getInstance(PasswordGeneratorFactory.PASSWORDTYPE_NOSOUNDALIKEENLD);
+        return pwdgen.getNewPassword(len, len);
+    }
+
+    /**
      * Generated a random OTP password
      *
      * @return a randomly generated password
