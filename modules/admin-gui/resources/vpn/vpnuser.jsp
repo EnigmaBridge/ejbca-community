@@ -285,7 +285,7 @@ org.cesecore.authorization.control.CryptoTokenRules
 
 	<div id="qrWrap" class="qrWrap" style="display: none">
 		<h4>Key transfer</h4>
-		<p>By scanning the QR code below you can open the key download page</p>
+		<p>If the key is for a device able to read QR codes, you can use the code below.</p>
 		<div id="qrcode" class="qr"></div>
 	</div>
 
