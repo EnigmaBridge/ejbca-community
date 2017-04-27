@@ -147,6 +147,7 @@ public enum EventTypes implements EventType {
     VPN_USER_REGENERATE,
     VPN_OTP_CHECK,
     VPN_OTP_DOWNLOADED,
+    VPN_OTP_NONCE,
     VPN_MAIL_SENT,
     VPN_OTP_NEW,
     VPN_OTP_GET,

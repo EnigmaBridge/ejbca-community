@@ -38,10 +38,17 @@ public class VpnCons {
     public static final String VPN_EMAIL_TEMPLATE = "emailconfig";
     public static final String VPN_CONFIG_TEMPLATE = "vpnconfig";
 
+    /**
+     * VPN OTP property keys
+     */
     public static final String KEY_METHOD = "method";
     public static final String KEY_USER_AGENT = "ua";
     public static final String KEY_IP = "ip";
     public static final String KEY_FORWARDED = "fwded";
+
+    public static final String OTP_NONCE = "nonce";
+    public static final String OTP_NONCE_CNT = "cnt";
+    public static final String OTP_NONCE_TIME = "time";
 
     public static final String KEY_RETURN_KEY_STORE = "returnKeyStore";
 

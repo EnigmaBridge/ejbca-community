@@ -229,13 +229,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         checkOtpConditions(user, false);
 
         // Check descriptors.
-        final String otpUsedDescriptor = user.getOtpUsedDescriptor();
-        if (otpUsedDescriptor != null) {
-            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
-            if (!dbDescriptor.similar(specJson)){
-                throw new VpnOtpDescriptorException();
-            }
-        }
+        checkOtpDescriptor(user, specJson, false, true);
 
         // Copy, detach from the persistence context, reset sensitive fields.
         final VpnUser userCopy = VpnUser.copy(user);
@@ -251,6 +245,72 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
         
         securityEventsLoggerSession.log(EventTypes.VPN_OTP_CHECK, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
+                authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
+
+        return userCopy;
+    }
+
+    public VpnUser newNonceOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnOtpDescriptorException, VpnOtpCookieException {
+        if (properties == null) {
+            properties = new Properties();
+        }
+
+        // Analyse request method. If HEAD, cookie is not mandatory.
+        final String requestMethod = properties.getProperty(VpnCons.KEY_METHOD);
+        properties.remove(VpnCons.KEY_METHOD);
+
+        final VpnUser user = vpnUserSession.downloadOtp(vpnUserId, otpToken);
+        if (user == null || otpToken == null || !otpToken.equals(user.getOtpDownload())) {
+            throw new VpnOtpInvalidException();
+        }
+
+        // Head preflight request - do nothing. Would generate redundant nonce.
+        if (requestMethod.equalsIgnoreCase("head")){
+            return user;
+        }
+
+        // Checking basic OTP validity conditions.
+        checkOtpConditions(user, false);
+
+        // Check descriptors.
+        final JSONObject specJson = VpnUtils.properties2json(properties);
+        checkOtpDescriptor(user, specJson, false, false);
+
+        // Cookie already set - no more nonces
+        final String otpCookie = user.getOtpCookie();
+        if (otpCookie != null){
+            throw new VpnOtpCookieException();
+        }
+
+        // otp nonce record.
+        final String nonceRec = user.getOtpNonce();
+        final JSONObject nonceJson = new JSONObject();
+        nonceJson.put(VpnCons.OTP_NONCE_CNT, 1);
+        nonceJson.put(VpnCons.OTP_NONCE, VpnUtils.genRandomPwd(8));
+        nonceJson.put(VpnCons.OTP_NONCE_TIME, System.currentTimeMillis());
+
+        if (nonceRec != null){
+            final JSONObject prevNonceRec = new JSONObject(nonceRec);
+            nonceJson.put(VpnCons.OTP_NONCE_CNT, 1 + prevNonceRec.getInt(VpnCons.OTP_NONCE_CNT));
+        }
+
+        user.setOtpNonce(nonceJson.toString());
+        tryMergeUser(user);
+
+        // Copy, detach from the persistence context
+        final VpnUser userCopy = VpnUser.copy(user);
+
+        final Map<String, Object> details = new LinkedHashMap<String, Object>();
+        details.put("msg", "VPN config OTP nonce for usrId: " + vpnUserId);
+        details.put("otpToken", otpToken);
+        details.put(VpnCons.KEY_IP, properties.getProperty(VpnCons.KEY_IP));
+        details.put(VpnCons.KEY_FORWARDED, properties.getProperty(VpnCons.KEY_FORWARDED));
+        details.put(VpnCons.KEY_USER_AGENT, properties.getProperty(VpnCons.KEY_USER_AGENT));
+
+        if (cookie != null) {
+            details.put("cookie", cookie);
+        }
+        securityEventsLoggerSession.log(EventTypes.VPN_OTP_NONCE, EventStatus.SUCCESS, ModuleTypes.VPN, ServiceTypes.CORE,
                 authenticationToken.toString(), String.valueOf(vpnUserId), null, null, details);
 
         return userCopy;
@@ -282,15 +342,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         checkOtpConditions(user, true);
 
         // Check descriptors.
-        final String otpUsedDescriptor = user.getOtpUsedDescriptor();
-        if (otpUsedDescriptor != null) {
-            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
-            if (!dbDescriptor.similar(specJson)){
-                clearOtp(user);
-                tryMergeUser(user);
-                throw new VpnOtpDescriptorException();
-            }
-        }
+        checkOtpDescriptor(user, specJson, true, true);
 
         // If cookie is set in the database, require the same cookie.
         // Chrome on iOS does two concurrent requests. The one with HEAD does
@@ -374,6 +426,26 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             clearOtp(user);
             tryMergeUser(user);
             throw new VpnOtpTooManyException();
+        }
+    }
+
+    /**
+     * Checks OTP descriptor
+     * @param user
+     * @param specJson
+     * @throws VpnOtpDescriptorException
+     */
+    private void checkOtpDescriptor(VpnUser user, JSONObject specJson, boolean clearOnFail, boolean checkNonce) throws VpnOtpDescriptorException {
+        final String otpUsedDescriptor = user.getOtpUsedDescriptor();
+        if (otpUsedDescriptor != null) {
+            final JSONObject dbDescriptor = new JSONObject(otpUsedDescriptor);
+            if (!dbDescriptor.similar(specJson)){
+                if (clearOnFail) {
+                    clearOtp(user);
+                    tryMergeUser(user);
+                }
+                throw new VpnOtpDescriptorException();
+            }
         }
     }
 

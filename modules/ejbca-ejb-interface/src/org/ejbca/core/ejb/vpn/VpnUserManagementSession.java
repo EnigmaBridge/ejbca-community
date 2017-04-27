@@ -127,6 +127,21 @@ public interface VpnUserManagementSession {
     VpnUser checkOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnNoConfigException, VpnOtpDescriptorException;
 
     /**
+     * Generates a new OTP nonce used for QR code readers.
+     *
+     * @param authenticationToken token invalid
+     * @param vpnUserId           vpn user id
+     * @param otpToken            OTP for download
+     * @param properties          user identification and misc data
+     * @return Vpnser copy, with nulled sensitive data
+     * @throws VpnOtpInvalidException    OTP is invalid
+     * @throws VpnOtpTooManyException    OTP used too many times
+     * @throws VpnOtpOldException        OTP is too old to use
+     * @throws VpnOtpDescriptorException OTP descriptor does not match, different device & source fingerprint as required
+     */
+    VpnUser newNonceOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnOtpDescriptorException, VpnOtpCookieException;
+
+    /**
      * Loads VpnUser via OTP token. If token matches and multiple criteria are met user is returned.
      * If check criteria are invalid a corresponding exception is thrown.
      *

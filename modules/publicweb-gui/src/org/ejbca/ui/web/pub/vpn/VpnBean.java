@@ -11,9 +11,12 @@ import org.cesecore.vpn.VpnUser;
 import org.ejbca.core.ejb.vpn.*;
 import org.ejbca.core.ejb.vpn.useragent.OperatingSystem;
 import org.ejbca.core.model.util.EjbLocalHelper;
+import org.json.JSONObject;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +46,7 @@ public class VpnBean extends BaseWebBean implements Serializable {
     private VpnLinkError linkError;
     private Date dateGenerated;
     private String landingLink;
+    private String jsonAction;
 
     private final CaSessionLocal caSession = ejb.getCaSession();
 
@@ -165,6 +169,10 @@ public class VpnBean extends BaseWebBean implements Serializable {
             changed = true;
         }
 
+        // JSON action
+        final String jsAction = request.getParameter("json");
+        jsonAction = jsAction != null && !jsAction.isEmpty() ? jsAction : null;
+
         // LinkError from session - download servlet
         try {
             final String errorLinkString = (String)request.getSession().getAttribute(VpnBean.LINK_ERROR_SESSION);
@@ -271,6 +279,50 @@ public class VpnBean extends BaseWebBean implements Serializable {
         }
 
         return false;
+    }
+
+    /**
+     * Produces JSON output on the given query
+     * @param response
+     */
+    public void json(HttpServletResponse response) throws IOException {
+        final JSONObject root = new JSONObject();
+
+        if ("qr".equals(jsonAction)){
+            // new QR code nonce as a workaround for QR readers with embedded browsers.
+            final Properties properties = buildDescriptorProperties(request, null);
+            String nonce = null;
+
+            try {
+                final VpnUser vpnUser = vpnUserManagementSession.newNonceOtp(authToken, vpnUserId, otp, null, properties);
+                final String otpNonce = vpnUser.getOtpNonce();
+                if (otpNonce != null && !otpNonce.isEmpty()){
+                    final JSONObject otpJs = new JSONObject(otpNonce);
+                    nonce = otpJs.getString(VpnCons.OTP_NONCE);
+                }
+
+            } catch (VpnOtpInvalidException e) {
+                log.info("QRnonce: otp invalid");
+            } catch (VpnOtpTooManyException e) {
+                log.info("QRnonce: otp too many");
+            } catch (VpnOtpOldException e) {
+                log.info("QRnonce: otp old");
+            } catch (VpnOtpDescriptorException e) {
+                log.info("QRnonce: otp descriptor");
+            } catch (VpnOtpCookieException e) {
+                log.info("QRnonce: otp cookie");
+            } finally {
+                root.put("nonce", nonce);
+                root.put("otp", otp);
+            }
+
+        } else if (jsonAction == null){
+            // null action, do nothing - empty json object
+        } else {
+            log.info("Unknown JSON action: " + jsonAction);
+        }
+
+        response.getWriter().write(root.toString(4));
     }
 
     public Boolean getOtpAlreadyDownloaded() {

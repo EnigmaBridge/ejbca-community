@@ -62,18 +62,46 @@
 
         function regenerateQrCode(link){
             var divQrCode = $('#qrcode');
+            var divKeyTransfer = $('#divKeyTransfer');
             divQrCode.html("");
 
             if (!link || 0 === link.length) {
+                divKeyTransfer.hide();
                 return;
             }
 
-            var qrCodeSettings = {
-                "render": "canvas",
-                "text": link,
-                "size": 300
-            };
-            divQrCode.qrcode(qrCodeSettings);
+            // If already rendered from QR code, generate no more
+            // Would overwrite QR nonce
+            var qr_nonce = findGetParameter('qrnonce');
+            if (qr_nonce){
+                console.log('QRnonce present: ' + qr_nonce);
+                divKeyTransfer.hide();
+                return;
+            }
+
+            // Get QR nonce async.
+            $.getJSON('js.jsf?json=qr')
+                .done(function(data) {
+                    try{
+                        var nonce = data['nonce'];
+                        var otp = data['otp'];
+                        if (otp !== '${vpnBean.otp}'){
+                            console.log('OTP nonce invalid');
+                            divKeyTransfer.hide();
+                            return;
+                        }
+
+                        divKeyTransfer.show();
+                        var qrCodeSettings = {
+                            "render": "canvas",
+                            "text": link + '&qrnonce=' + nonce,
+                            "size": 300
+                        };
+                        divQrCode.qrcode(qrCodeSettings);
+                    } catch (e){
+                        console.log(e);
+                    }
+            });
         }
 
         $(function() {
@@ -383,7 +411,7 @@
             </div>
 
             <% if (vpnBean.getLandingLink() != null) { %>
-                <div class="row">
+                <div class="row" id="divKeyTransfer">
                     <div class="col-sm-12">
                         <h3>Key transfer</h3>
                         <p>
