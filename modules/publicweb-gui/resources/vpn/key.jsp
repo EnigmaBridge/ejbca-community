@@ -51,9 +51,10 @@
                     'modal': false
                 }})
                 .done(function () {
-                    $( "#divStatusNotif" ).show( "slow" );
-                    $( "#divButtonDownload" ).hide( "slow" );
-                    $( "#divStatusClient" ).hide( "slow" );
+                    $( '#divStatusNotif' ).show( "slow" );
+                    $( '#divButtonDownload' ).hide( "slow" );
+                    $( '#divStatusClient' ).hide( "slow" );
+                    $( '#divKeyTransfer').hide();
                 })
                 .fail(function () {
                 });
