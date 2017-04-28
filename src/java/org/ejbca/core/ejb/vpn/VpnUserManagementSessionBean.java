@@ -250,6 +250,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
         return userCopy;
     }
 
+    @Override
     public VpnUser newNonceOtp(AuthenticationToken authenticationToken, int vpnUserId, String otpToken, String cookie, Properties properties) throws VpnOtpInvalidException, VpnOtpTooManyException, VpnOtpOldException, VpnOtpDescriptorException, VpnOtpCookieException {
         if (properties == null) {
             properties = new Properties();
@@ -435,10 +436,10 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
      * Allows relaxed user agent matching if there is a correct QR code nonce used & stored.
      * Relaxed matching -> OS has to be the same.
      *
-     * @param user
-     * @param specJson
-     * @param clearOnFail
-     * @param checkNonce
+     * @param user vpn user to check OTP validity for,
+     * @param specJson json with current request data
+     * @param clearOnFail clear OTP data on fail - invalidate
+     * @param checkNonce check also QR nonce
      * @return true whether to check also the cookie
      * @throws VpnOtpDescriptorException descriptor invalid - new disallowed device attempt
      */
