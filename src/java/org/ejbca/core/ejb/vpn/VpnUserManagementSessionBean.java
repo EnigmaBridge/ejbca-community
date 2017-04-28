@@ -882,6 +882,7 @@ public class VpnUserManagementSessionBean implements VpnUserManagementSessionLoc
             user.setOtpCookie(null);
             user.setOtpUsedCount(0);
             user.setOtpUsedDescriptor(null);
+            user.setOtpNonce(null);
             user.setOtpDownload(VpnUtils.genRandomPwd());
             user.setLastMailSent(null);
             user.setConfigGenerated(System.currentTimeMillis());
