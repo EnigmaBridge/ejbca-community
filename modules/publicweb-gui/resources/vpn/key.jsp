@@ -391,7 +391,7 @@
                     <h3>Step <%=curstep%> - Open your Private Space</h3>
                     <% curstep +=1; %>
                     <p>
-                        Navigate your browser to <a href="http://private.space">http://private.space</a>.
+                        Navigate your browser to <a href="http://theprivate.space">http://theprivate.space</a>.
                         If all steps were done correctly you will see Private Space intro page.
                     </p>
                 </div>

@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <div id="divStatusNotif" class="alert alert-success" style="display: none;">You will now need the recommended client (see below) to open the downloaded key. Then just click to connect and go to <a href="http://private.space">http://private.space</a>.</div>
+            <div id="divStatusNotif" class="alert alert-success" style="display: none;">You will now need the recommended client (see below) to open the downloaded key. Then just click to connect and go to <a href="http://theprivate.space">http://theprivate.space</a>.</div>
 
             <div id="divStatusClient" class="alert alert-info">Make sure you have installed a connection client before downloading the key.</div>
 
